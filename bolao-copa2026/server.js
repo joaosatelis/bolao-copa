@@ -14,7 +14,7 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Cria tabela se não existir
+// Cria tabelas se não existirem
 async function init() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS resultados (
@@ -23,11 +23,22 @@ async function init() {
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
+
+  // Nova tabela para registrar os palpites individuais das fases seguintes
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS palpites_fase_final (
+      participante TEXT NOT NULL,
+      jogo_num INTEGER NOT NULL,
+      palpite CHAR(1) NOT NULL,
+      updated_at TIMESTAMP DEFAULT NOW(),
+      PRIMARY KEY (participante, jogo_num)
+    )
+  `);
   console.log('✅ Banco pronto');
 }
 init();
 
-// GET todos os resultados
+// GET todos os resultados oficiais
 app.get('/api/resultados', async (req, res) => {
   const { rows } = await pool.query('SELECT jogo_num, resultado FROM resultados');
   const obj = {};
@@ -35,7 +46,7 @@ app.get('/api/resultados', async (req, res) => {
   res.json(obj);
 });
 
-// POST salvar resultado
+// POST salvar resultado oficial (admin)
 app.post('/api/resultados/:num', async (req, res) => {
   const num = parseInt(req.params.num);
   const { resultado } = req.body;
@@ -48,20 +59,39 @@ app.post('/api/resultados/:num', async (req, res) => {
   res.json({ ok: true });
 });
 
-// DELETE limpar resultado
+// DELETE limpar resultado oficial
 app.delete('/api/resultados/:num', async (req, res) => {
   await pool.query('DELETE FROM resultados WHERE jogo_num=$1', [parseInt(req.params.num)]);
   res.json({ ok: true });
 });
 
-// DELETE todos
+// DELETE todos os resultados oficiais
 app.delete('/api/resultados', async (req, res) => {
   await pool.query('DELETE FROM resultados');
   res.json({ ok: true });
 });
 
+// ROTA NOVA: GET todos os palpites dinâmicos das fases seguintes
+app.get('/api/palpites-finais', async (req, res) => {
+  const { rows } = await pool.query('SELECT participante, jogo_num, palpite FROM palpites_fase_final');
+  res.json(rows);
+});
+
+// ROTA NOVA: POST salvar ou atualizar palpite de um participante específico
+app.post('/api/palpites-finais', async (req, res) => {
+  const { participante, jogo_num, palpite } = req.body;
+  if (!participante || !jogo_num || !['V','E','D'].includes(palpite)) {
+    return res.status(400).json({ error: 'Dados incompletos ou inválidos' });
+  }
+  await pool.query(`
+    INSERT INTO palpites_fase_final (participante, jogo_num, palpite)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (participante, jogo_num) DO UPDATE SET palpite=$3, updated_at=NOW()
+  `, [participante, parseInt(jogo_num), palpite]);
+  res.json({ ok: true });
+});
+
 // POST verificar senha do admin
-// A senha fica APENAS na variável de ambiente — nunca no código!
 app.post('/api/admin/login', (req, res) => {
   const { senha } = req.body;
   const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
