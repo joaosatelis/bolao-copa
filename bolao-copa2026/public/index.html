@@ -3429,9 +3429,29 @@ function adminLogout() {
 function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  
+  // Trata a aba ativa no menu visualmente
+  const currentTabBtn = event ? event.target : document.querySelector(`.nav-tab[onclick="showTab('${name}')"]`);
+  if (currentTabBtn && currentTabBtn.classList && currentTabBtn.classList.contains('nav-tab')) {
+    currentTabBtn.classList.add('active');
+  } else {
+    document.querySelector(`.nav-tab[onclick="showTab('${name}')"]`).classList.add('active');
+  }
+
   document.getElementById(`tab-${name}`).classList.add('visible');
-  event.target.classList.add('active');
-  if (name === 'ao-vivo') fetchLiveScores();
+  
+  // Lógica de proteção da aba Ao Vivo
+  if (name === 'ao-vivo') {
+    if (isAdmin()) {
+      document.getElementById('ao-vivo-login').style.display = 'none';
+      document.getElementById('ao-vivo-content').style.display = 'block';
+      fetchLiveScores();
+    } else {
+      document.getElementById('ao-vivo-login').style.display = 'block';
+      document.getElementById('ao-vivo-content').style.display = 'none';
+    }
+  }
+  
   if (name === 'admin') {
     if (adminAuthorized) {
       document.getElementById('admin-login').style.display = 'none';
@@ -3440,7 +3460,6 @@ function showTab(name) {
     }
   }
 }
-
 // ═══════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════
