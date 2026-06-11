@@ -381,24 +381,34 @@ body {
   </div>
 
   <!-- AO VIVO -->
-  <div id="tab-ao-vivo" class="section">
-    <div class="live-section">
-      <div class="live-section-title">
-        <div class="live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--win);animation:pulse 1.5s infinite"></div>
-        Placares ao vivo (API-Football / via proxy)
-      </div>
-      <div id="live-games-container">
-        <div class="empty-state"><p>Buscando partidas ao vivo...</p></div>
-      </div>
+<div id="tab-ao-vivo" class="section">
+    
+    <div id="ao-vivo-login" class="import-box" style="max-width:360px;margin:0 auto;display:none;text-align:center;">
+      <h3>🔐 Acesso Restrito</h3>
+      <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
+      <button class="btn-primary" onclick="showTab('admin')">Ir para Login Admin</button>
     </div>
-    <div class="import-box">
-      <h3>📥 Inserir resultado manualmente</h3>
-      <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code>, um por linha. Ex: <code>1 2-0</code></p>
-      <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1&#10;3 0-1"></textarea>
-      <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
-    </div>
-  </div>
 
+    <div id="ao-vivo-content">
+      <div class="live-section">
+        <div class="live-section-title">
+          <div class="live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--win);animation:pulse 1.5s infinite"></div>
+          Placares ao vivo (API-Football / via proxy)
+        </div>
+        <div id="live-games-container">
+          <div class="empty-state"><p>Buscando partidas ao vivo...</p></div>
+        </div>
+      </div>
+      <div class="import-box">
+        <h3>📥 Inserir resultado manualmente</h3>
+        <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code>, um por linha. Ex: <code>1 2-0</code></p>
+        <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1&#10;3 0-1"></textarea>
+        <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
+      </div>
+    </div>
+
+  </div>
+  
   <!-- ADMIN -->
   <div id="tab-admin" class="section">
     <!-- LOGIN FORM -->
