@@ -60,5 +60,17 @@ app.delete('/api/resultados', async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST verificar senha do admin
+// A senha fica APENAS na variável de ambiente — nunca no código!
+app.post('/api/admin/login', (req, res) => {
+  const { senha } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senha === ADMIN_SENHA) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: 'Não autorizado' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
