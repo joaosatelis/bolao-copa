@@ -3307,7 +3307,7 @@ async function fetchLiveScores() {
   try {
     // TheSportsDB - Copa do Mundo 2026 tem id de liga 15
     const today = new Date().toISOString().split('T')[0];
-    const url = `https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${today}&s=Soccer`;
+    const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
     const resp = await fetch(url);
     const data = await resp.json();
     
