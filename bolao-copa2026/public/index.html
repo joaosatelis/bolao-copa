@@ -316,6 +316,17 @@ body {
 }
 .btn-primary:hover { background: var(--pitch-mid); }
 
+/* ─── BOTÕES EXCLUSIVOS DO FORMULÁRIO DE PALPITES DINÂMICOS ─── */
+.btn-palpite-op {
+  background: var(--bg3); border: 1px solid var(--border2); color: var(--text2);
+  padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm);
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-palpite-op:hover { border-color: var(--text3); color: var(--text); }
+.btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
+.btn-palpite-op.active-E { background: var(--draw-bg); color: var(--draw); border-color: var(--draw); }
+.btn-palpite-op.active-D { background: var(--loss-bg); color: var(--loss); border-color: var(--loss); }
+
 /* ─── UTILS ─── */
 .badge-live { background: rgba(245,200,66,.15); color: var(--gold); border: 1px solid rgba(245,200,66,.3); font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
 .badge-done { background: var(--win-bg); color: var(--win); border: 1px solid rgba(76,175,125,.3); font-size: 10px; padding: 1px 6px; border-radius: 4px; }
@@ -341,7 +352,7 @@ body {
   <div class="hero-inner">
     <div class="hero-left">
       <h1>BOLÃO <span>COPA 2026</span></h1>
-      <p>Grupo OSS · 27 participantes · 72 jogos na fase de grupos</p>
+      <p>Grupo OSS · 24 participantes · 72 jogos na fase de grupos</p>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
       <div class="live-badge">
@@ -363,26 +374,23 @@ body {
     <button class="nav-tab active" onclick="showTab('ranking')">🏅 Ranking</button>
     <button class="nav-tab" onclick="showTab('jogos')">⚽ Jogos</button>
     <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
+    <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
     <button class="nav-tab" onclick="showTab('admin')">⚙️ Admin</button>
   </div>
 </nav>
 
 <div class="main">
 
-  <!-- RANKING -->
   <div id="tab-ranking" class="section visible">
     <div class="update-info">Última atualização: <span id="last-update">—</span></div>
     <div class="ranking-grid" id="ranking-list"></div>
   </div>
 
-  <!-- JOGOS -->
   <div id="tab-jogos" class="section">
     <div id="jogos-list"></div>
   </div>
 
-  <!-- AO VIVO -->
-<div id="tab-ao-vivo" class="section">
-    
+  <div id="tab-ao-vivo" class="section">
     <div id="ao-vivo-login" class="import-box" style="max-width:360px;margin:0 auto;display:none;text-align:center;">
       <h3>🔐 Acesso Restrito</h3>
       <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
@@ -406,12 +414,23 @@ body {
         <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
       </div>
     </div>
-
   </div>
-  
-  <!-- ADMIN -->
+
+  <div id="tab-proximas-fases" class="section">
+    <div class="import-box" style="max-width:460px;margin:0 auto 24px">
+      <h3>👤 Escolha seu Perfil / Nome</h3>
+      <p style="margin-bottom:12px;color:var(--text2)">Selecione seu nome abaixo para registrar ou editar seus palpites do mata-mata.</p>
+      <select id="user-profile-select" class="res-input" style="width:100%;text-align:left;padding:8px 12px;height:auto;text-transform:none" onchange="loadUserProfileKnockouts()">
+        <option value="">-- Clique para selecionar seu nome --</option>
+      </select>
+    </div>
+    <div id="knockout-games-wrapper" style="display:none">
+      <div class="group-title">⚽ Jogos das Próximas Fases (Mata-Mata)</div>
+      <div id="knockout-games-list"></div>
+    </div>
+  </div>
+
   <div id="tab-admin" class="section">
-    <!-- LOGIN FORM -->
     <div id="admin-login" class="import-box" style="max-width:360px;margin:0 auto">
       <h3>🔐 Área do Administrador</h3>
       <p style="margin-bottom:16px">Digite a senha para acessar o painel de resultados.</p>
@@ -423,7 +442,6 @@ body {
       <div id="admin-login-err" style="color:var(--loss);font-size:12px;margin-top:8px;display:none">❌ Senha incorreta</div>
     </div>
 
-    <!-- PAINEL (oculto até login) -->
     <div id="admin-panel" style="display:none">
       <div class="import-box">
         <h3>⚙️ Configurações <button onclick="adminLogout()" style="float:right;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button></h3>
@@ -507,8 +525,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -542,8 +559,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -577,8 +593,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -612,8 +627,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -647,8 +661,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -682,8 +695,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -717,8 +729,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -752,8 +763,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -787,8 +797,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -822,8 +831,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "V",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -857,8 +865,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "E",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -892,8 +899,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -927,8 +933,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -962,8 +967,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -997,8 +1001,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1032,8 +1035,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "E",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1067,8 +1069,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1102,8 +1103,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1137,8 +1137,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1172,8 +1171,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "E",
         "David OSS": "D",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1207,8 +1205,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1242,8 +1239,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1277,8 +1273,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -1312,8 +1307,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1347,8 +1341,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1382,8 +1375,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1417,8 +1409,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1452,8 +1443,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1487,8 +1477,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1522,8 +1511,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "D",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1557,8 +1545,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1592,8 +1579,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1627,8 +1613,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1662,8 +1647,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1697,8 +1681,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1732,8 +1715,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1767,8 +1749,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1802,8 +1783,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1837,8 +1817,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1872,8 +1851,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1907,8 +1885,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "E",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -1942,8 +1919,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -1977,8 +1953,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2012,8 +1987,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2047,8 +2021,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2082,8 +2055,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2117,8 +2089,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "E",
         "David OSS": "D",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -2152,8 +2123,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -2187,8 +2157,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2222,8 +2191,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2257,8 +2225,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2292,8 +2259,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2327,8 +2293,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "V",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2362,8 +2327,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2397,8 +2361,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2432,8 +2395,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2467,8 +2429,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2502,8 +2463,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "E",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2537,8 +2497,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "D",
         "David OSS": "E",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -2572,8 +2531,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2607,8 +2565,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2642,8 +2599,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2677,8 +2633,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2712,8 +2667,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2747,8 +2701,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2782,8 +2735,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "E",
         "David OSS": "E",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2817,8 +2769,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "E"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2852,8 +2803,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "E",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2887,8 +2837,7 @@ const BOLAO = {
         "Satelis OSS": "V",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     },
     {
@@ -2922,8 +2871,7 @@ const BOLAO = {
         "Satelis OSS": "D",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "E",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "E"
       }
     },
     {
@@ -2957,8 +2905,7 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "D",
         "David OSS": "D",
-        "Carla (Lilian)": "D",
-        "Jogador 1": "D"
+        "Carla (Lilian)": "D"
       }
     },
     {
@@ -2992,16 +2939,30 @@ const BOLAO = {
         "Satelis OSS": "E",
         "Ana Claudia": "V",
         "David OSS": "V",
-        "Carla (Lilian)": "V",
-        "Jogador 1": "V"
+        "Carla (Lilian)": "V"
       }
     }
   ]
 };
 
 // ═══════════════════════════════════════════════════════════
-// ESTADO: resultados via API (banco de dados)
-// Em desenvolvimento local usa localStorage como fallback
+// ESTRUTURA PARA AS PRÓXIMAS FASES DO MATA-MATA
+// ═══════════════════════════════════════════════════════════
+const JOGOS_FASE_FINAL = [
+  { jogo: 73, mandante: "1º Grupo A", visitante: "3º Grupo C/D/E", fase: "Dezesseis-avos (R32)" },
+  { jogo: 74, mandante: "2º Grupo A", visitante: "2º Grupo B", fase: "Dezesseis-avos (R32)" },
+  { jogo: 75, mandante: "1º Grupo B", visitante: "3º Grupo A/C/D", fase: "Dezesseis-avos (R32)" },
+  { jogo: 76, mandante: "1º Grupo C", visitante: "3º Grupo A/B/F", fase: "Dezesseis-avos (R32)" },
+  { jogo: 77, mandante: "1º Grupo D", visitante: "3º Grupo B/E/F", fase: "Dezesseis-avos (R32)" },
+  { jogo: 78, mandante: "2º Grupo C", visitante: "2º Grupo D", fase: "Dezesseis-avos (R32)" },
+  { jogo: 79, mandante: "1º Grupo E", visitante: "2º Grupo F", fase: "Dezesseis-avos (R32)" },
+  { jogo: 80, mandante: "1º Grupo F", visitante: "2º Grupo E", fase: "Dezesseis-avos (R32)" }
+];
+
+let cachePalpitesFinais = []; // Memória dos palpites dinâmicos carregados do servidor
+
+// ═══════════════════════════════════════════════════════════
+// CONEXÃO E PERSISTÊNCIA DE DADOS
 // ═══════════════════════════════════════════════════════════
 const USE_API = window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'about:';
 
@@ -3013,6 +2974,16 @@ async function loadResultados() {
     const r = await fetch('/api/resultados');
     return await r.json();
   } catch { return {}; }
+}
+
+async function loadPalpitesFinaisServidor() {
+  if (!USE_API) {
+    try { return JSON.parse(localStorage.getItem('bolao_palpites_finais')) || []; } catch { return []; }
+  }
+  try {
+    const r = await fetch('/api/palpites-finais');
+    return await r.json();
+  } catch { return []; }
 }
 
 async function saveResultados(num, val) {
@@ -3039,7 +3010,7 @@ async function deleteAllAPI() {
   try { await fetch('/api/resultados', { method: 'DELETE' }); } catch {}
 }
 
-let resultados = {}; // carregado assincronamente no INIT
+let resultados = {}; 
 
 // ═══════════════════════════════════════════════════════════
 // LÓGICA DE PONTUAÇÃO
@@ -3141,7 +3112,6 @@ function renderJogos() {
       card.className = `jogo-card ${res ? 'encerrado' : ''}`;
       card.id = `jogo-card-${jogo.jogo}`;
 
-      // Placar exibido
       let placarHTML = '';
       if (res) {
         placarHTML = `<div class="jogo-placar"><span class="resultado-badge ${res}">${resultadoToText(res)}</span></div>`;
@@ -3149,14 +3119,12 @@ function renderJogos() {
         placarHTML = `<div class="jogo-placar pendente">${jogo.hora} · ${jogo.local}</div>`;
       }
 
-      // Consenso
       const pals = Object.values(jogo.palpites);
       const consV = pals.filter(p=>p==='V').length;
       const consE = pals.filter(p=>p==='E').length;
       const consD = pals.filter(p=>p==='D').length;
       const tot = pals.length;
 
-      // Palpites
       const palItems = Object.entries(jogo.palpites).map(([p, pal]) => {
         const cls = res ? (pal === res ? 'acerto' : 'erro') : '';
         return `<div class="palpite-item ${cls}">
@@ -3198,7 +3166,105 @@ function renderJogos() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// AÇÕES
+// ABA NOVA: LOGICA DE PREENCHIMENTO DO MATA-MATA
+// ═══════════════════════════════════════════════════════════
+function buildUserProfileDropdown() {
+  const select = document.getElementById('user-profile-select');
+  select.innerHTML = '<option value="">-- Clique para selecionar seu nome --</option>';
+  BOLAO.participantes.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p;
+    select.appendChild(opt);
+  });
+}
+
+function loadUserProfileKnockouts() {
+  const pName = document.getElementById('user-profile-select').value;
+  const wrapper = document.getElementById('knockout-games-wrapper');
+  if (!pName) {
+    wrapper.style.display = 'none';
+    return;
+  }
+  wrapper.style.display = 'block';
+  renderKnockoutGamesForm(pName);
+}
+
+function renderKnockoutGamesForm(participante) {
+  const container = document.getElementById('knockout-games-list');
+  container.innerHTML = '';
+
+  const groups = {};
+  JOGOS_FASE_FINAL.forEach(j => {
+    if (!groups[j.fase]) groups[j.fase] = [];
+    groups[j.fase].push(j);
+  });
+
+  Object.entries(groups).forEach(([faseName, jogos]) => {
+    const sec = document.createElement('div');
+    sec.className = 'group-section';
+    sec.innerHTML = `<div class="group-title">${faseName}</div>`;
+
+    jogos.forEach(j => {
+      // Procura se o perfil já tem um palpite salvo para este jogo
+      const saved = cachePalpitesFinais.find(item => item.participante === participante && item.jogo_num === j.jogo);
+      const activePalpite = saved ? saved.palpite : null;
+
+      const card = document.createElement('div');
+      card.className = 'jogo-card';
+      card.style.cursor = 'default';
+      card.innerHTML = `
+        <div class="jogo-header" style="grid-template-columns: 28px 1fr auto 1fr auto">
+          <div class="jogo-num">#${j.jogo}</div>
+          <div class="jogo-mandante">${j.mandante}</div>
+          <div style="display:flex;gap:4px;align-items:center;">
+            <button class="btn-palpite-op ${activePalpite === 'V' ? 'active-V' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'V')">V</button>
+            <button class="btn-palpite-op ${activePalpite === 'E' ? 'active-E' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'E')">E</button>
+            <button class="btn-palpite-op ${activePalpite === 'D' ? 'active-D' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'D')">D</button>
+          </div>
+          <div class="jogo-visitante">${j.visitante}</div>
+          <div style="font-size:11px;color:var(--text3);text-align:right">Mata-Mata</div>
+        </div>
+      `;
+      sec.appendChild(card);
+    });
+    container.appendChild(sec);
+  });
+}
+
+async function submitUserKnockoutGuess(jogoNum, palpiteVal) {
+  const participante = document.getElementById('user-profile-select').value;
+  if (!participante) return;
+
+  jogoNum = parseInt(jogoNum);
+
+  // Atualiza cache local imediatamente
+  const idx = cachePalpitesFinais.findIndex(item => item.participante === participante && item.jogo_num === jogoNum);
+  if (idx !== -1) {
+    cachePalpitesFinais[idx].palpite = palpiteVal;
+  } else {
+    cachePalpitesFinais.push({ participante, jogo_num: jogoNum, palpite: palpiteVal });
+  }
+
+  // Persiste no banco ou localStorage
+  if (!USE_API) {
+    localStorage.setItem('bolao_palpites_finais', JSON.stringify(cachePalpitesFinais));
+  } else {
+    try {
+      await fetch('/api/palpites-finais', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ participante, jogo_num: jogoNum, palpite: palpiteVal })
+      });
+    } catch(e) { console.warn('Erro ao conectar ao servidor', e); }
+  }
+
+  showToast(`Palpite salvo! Jogo #${jogoNum} → ${resultadoToText(palpiteVal)}`);
+  renderKnockoutGamesForm(participante); // Atualiza os botões visuais
+}
+
+// ═══════════════════════════════════════════════════════════
+// AÇÕES ADMIN
 // ═══════════════════════════════════════════════════════════
 function toggleJogo(num) {
   const d = document.getElementById(`detail-${num}`);
@@ -3213,7 +3279,7 @@ function salvarResultado(num) {
     return;
   }
   resultados[String(num)] = val;
-  saveResultados(resultados);
+  saveResultados(num, val);
   renderRanking();
   renderJogos();
   showToast(`✅ Jogo #${num} → ${resultadoToText(val)} salvo!`);
@@ -3221,7 +3287,7 @@ function salvarResultado(num) {
 
 function limparResultado(num) {
   delete resultados[String(num)];
-  saveResultados(resultados);
+  deleteResultadoAPI(num);
   renderRanking();
   renderJogos();
   showToast(`🗑️ Resultado do jogo #${num} removido`);
@@ -3298,14 +3364,13 @@ function renderTabelaAdmin() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// AO VIVO — busca resultados de API pública (AllSportsAPI / TheSportsDB)
+// AO VIVO — busca resultados de API pública
 // ═══════════════════════════════════════════════════════════
 async function fetchLiveScores() {
   const container = document.getElementById('live-games-container');
   container.innerHTML = '<div class="empty-state"><p>Buscando partidas...</p></div>';
 
   try {
-    // TheSportsDB - Copa do Mundo 2026 tem id de liga 15
     const today = new Date().toISOString().split('T')[0];
     const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
     const resp = await fetch(url);
@@ -3314,7 +3379,7 @@ async function fetchLiveScores() {
     const events = (data.events || []).filter(e => 
       (e.strLeague || '').toLowerCase().includes('world cup') ||
       (e.strLeague || '').toLowerCase().includes('copa') ||
-      (e.idLeague === '133604') // World Cup 2026 league id
+      (e.idLeague === '133604')
     );
 
     if (events.length === 0) {
@@ -3344,18 +3409,16 @@ async function fetchLiveScores() {
         </div>`;
       div.appendChild(card);
 
-      // Auto-insert resultado se encerrado e tiver placar
       if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
         const h = parseInt(e.intHomeScore), a = parseInt(e.intAwayScore);
         const res = h > a ? 'V' : h < a ? 'D' : 'E';
-        // Tenta cruzar com jogo pelo nome
         const jogoMatch = BOLAO.jogos.find(j =>
           j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) ||
           e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5))
         );
         if (jogoMatch && !resultados[String(jogoMatch.jogo)]) {
           resultados[String(jogoMatch.jogo)] = res;
-          saveResultados(resultados);
+          saveResultados(jogoMatch.jogo, res);
           renderRanking();
           renderJogos();
           showToast(`🔄 Auto: Jogo #${jogoMatch.jogo} → ${res}`);
@@ -3374,7 +3437,7 @@ async function fetchLiveScores() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ADMIN AUTH (senha verificada no backend)
+// ADMIN AUTH 
 // ═══════════════════════════════════════════════════════════
 const ADMIN_SESSION_KEY = 'bolao_admin_ok';
 let adminAuthorized = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
@@ -3397,13 +3460,11 @@ async function checkAdminPass() {
       document.getElementById('admin-login').style.display = 'none';
       document.getElementById('admin-panel').style.display  = 'block';
       renderTabelaAdmin();
-      // Rerender jogos para mostrar campos de resultado
       renderJogos();
     } else {
       err.style.display = 'block';
     }
   } catch {
-    // fallback para preview sem backend
     if (pass === 'admin123') {
       adminAuthorized = true;
       sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
@@ -3420,7 +3481,7 @@ function adminLogout() {
   document.getElementById('admin-login').style.display = 'block';
   document.getElementById('admin-panel').style.display  = 'none';
   document.getElementById('admin-pass-input').value = '';
-  renderJogos(); // esconde campos de resultado
+  renderJogos();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -3430,7 +3491,6 @@ function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   
-  // Trata a aba ativa no menu visualmente
   const currentTabBtn = event ? event.target : document.querySelector(`.nav-tab[onclick="showTab('${name}')"]`);
   if (currentTabBtn && currentTabBtn.classList && currentTabBtn.classList.contains('nav-tab')) {
     currentTabBtn.classList.add('active');
@@ -3440,7 +3500,6 @@ function showTab(name) {
 
   document.getElementById(`tab-${name}`).classList.add('visible');
   
-  // Lógica de proteção da aba Ao Vivo
   if (name === 'ao-vivo') {
     if (isAdmin()) {
       document.getElementById('ao-vivo-login').style.display = 'none';
@@ -3451,6 +3510,15 @@ function showTab(name) {
       document.getElementById('ao-vivo-content').style.display = 'none';
     }
   }
+
+  if (name === 'proximas-fases') {
+    // Força recarga dos palpites dinâmicos para garantir dados limpos
+    loadPalpitesFinaisServidor().then(data => {
+      cachePalpitesFinais = data;
+      const currentSelected = document.getElementById('user-profile-select').value;
+      if (currentSelected) renderKnockoutGamesForm(currentSelected);
+    });
+  }
   
   if (name === 'admin') {
     if (adminAuthorized) {
@@ -3460,6 +3528,7 @@ function showTab(name) {
     }
   }
 }
+
 // ═══════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════
@@ -3477,7 +3546,6 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════════════════
 function autoRefresh() {
   renderRanking();
-  // Se ao-vivo visível, atualizar também
   if (document.getElementById('tab-ao-vivo').classList.contains('visible')) {
     fetchLiveScores();
   }
@@ -3485,10 +3553,12 @@ function autoRefresh() {
 setInterval(autoRefresh, 3 * 60 * 1000);
 
 // ═══════════════════════════════════════════════════════════
-// INIT — carrega do banco antes de renderizar
+// INIT 
 // ═══════════════════════════════════════════════════════════
 (async () => {
   resultados = await loadResultados();
+  cachePalpitesFinais = await loadPalpitesFinaisServidor();
+  buildUserProfileDropdown();
   renderRanking();
   renderJogos();
 })();
