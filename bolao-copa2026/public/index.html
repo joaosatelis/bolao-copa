@@ -739,10 +739,19 @@ async function checkAdminPass() {
       document.getElementById('admin-login').style.display = 'none';
       document.getElementById('admin-panel').style.display = 'block';
       renderTabelaAdmin(); renderJogos();
+    } else {
+      showToast('❌ Senha incorreta');
     }
   } catch(e) {}
 }
-function adminLogout() { adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); }
+
+function adminLogout() { 
+  adminAuthorized = false; 
+  sessionStorage.removeItem('bolao_admin'); 
+  document.getElementById('admin-login').style.display='block'; 
+  document.getElementById('admin-panel').style.display='none'; 
+  renderJogos(); 
+}
 
 async function salvarResultado(num) {
   const val = document.getElementById(`res-input-${num}`).value;
@@ -768,11 +777,34 @@ function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('visible');
-  event.target.classList.add('active');
+  
+  if (event && event.target) {
+      event.target.classList.add('active');
+  }
   
   if (name === 'meus-palpites') renderMeusPalpites();
-  if (name === 'ao-vivo') fetchLiveScores();
-  if (name === 'admin' && adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); }
+  
+  if (name === 'ao-vivo') {
+    if (isAdmin()) {
+      document.getElementById('ao-vivo-login').style.display = 'none';
+      document.getElementById('ao-vivo-content').style.display = 'block';
+      fetchLiveScores();
+    } else {
+      document.getElementById('ao-vivo-login').style.display = 'block';
+      document.getElementById('ao-vivo-content').style.display = 'none';
+    }
+  }
+  
+  if (name === 'admin') {
+    if (adminAuthorized) {
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+      renderTabelaAdmin();
+    } else {
+      document.getElementById('admin-login').style.display = 'block';
+      document.getElementById('admin-panel').style.display = 'none';
+    }
+  }
 }
 
 let toastTimer;
