@@ -74,8 +74,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 6px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
 .jogo-card:hover { border-color: var(--border2); }
 .jogo-card.encerrado { border-color: rgba(76,175,125,0.2); }
-.jogo-card.ao-vivo { border-color: rgba(245,200,66,0.4); animation: border-glow 2s ease-in-out infinite; }
-@keyframes border-glow { 0%,100%{border-color:rgba(245,200,66,0.4)} 50%{border-color:rgba(245,200,66,0.8)} }
 .jogo-header { display: grid; grid-template-columns: 34px 1fr auto 1fr 40px; align-items: center; padding: 12px 14px; gap: 10px; }
 .jogo-num { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; font-weight:600; display:flex; flex-direction:column; gap:2px; }
 .jogo-grupo-badge { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 500; text-align: center; white-space:nowrap; }
@@ -83,7 +81,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-mandante { font-weight: 600; font-size: 13px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .jogo-visitante { font-weight: 600; font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; text-align: center; border: 1px solid var(--border); border-radius: var(--r-sm); }
+.jogo-placar { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--r-sm); padding: 2px 12px; min-width: 70px; white-space: nowrap; }
+.jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; }
 .jogo-meta { font-size: 11px; color: var(--text3); text-align: right; }
 .jogo-detail { display: none; border-top: 1px solid var(--border); }
 .jogo-detail.open { display: block; }
@@ -104,10 +103,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .cons-e { background: var(--draw); }
 .cons-d { background: var(--loss); }
 
+.resultado-form { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.15); flex-wrap: wrap; }
 .res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase; }
 .res-input:focus { outline: none; border-color: var(--gold); }
-.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
-.btn-primary:hover { background: var(--pitch-mid); }
+.btn-salvar { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; }
+.btn-salvar:hover { background: var(--pitch-mid); }
 .btn-limpar { background: transparent; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; }
 .btn-limpar:hover { color: var(--loss); border-color: var(--loss); }
 .resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
@@ -133,7 +133,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .import-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .import-box p { color: var(--text2); font-size: 13px; margin-bottom: 12px; }
 .import-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'JetBrains Mono',monospace; font-size: 12px; padding: 10px; height: 100px; resize: vertical; }
-
+.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
+.btn-primary:hover { background: var(--pitch-mid); }
 .btn-palpite-op { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s; }
 .btn-palpite-op:hover { border-color: var(--text3); color: var(--text); }
 .btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
@@ -156,6 +157,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   .hero-stats { gap: 12px; }
   .palpites-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   .jogo-mandante, .jogo-visitante { font-size: 12px; }
+  .nav-tab { padding: 14px 12px; font-size: 12px; }
 }
 </style>
 </head>
@@ -228,6 +230,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <button class="nav-tab" onclick="showTab('ranking')">🏅 Ranking</button>
       <button class="nav-tab active" onclick="showTab('meus-palpites')">👤 Meus Palpites</button>
       <button class="nav-tab" onclick="showTab('jogos')">⚽ Palpites da Galera</button>
+      <button class="nav-tab" onclick="showTab('campeao')">🏆 Campeão</button>
       <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
       <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
       <button class="nav-tab" onclick="showTab('admin')">⚙️ Admin</button>
@@ -247,6 +250,21 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
     <div id="tab-jogos" class="section">
       <div id="jogos-list"></div>
+    </div>
+
+    <div id="tab-campeao" class="section">
+      <div class="import-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h3 style="color:var(--gold);font-size:18px;margin-bottom:4px">Palpites do Campeão (+5 pontos)</h3>
+            <p style="color:var(--text2);font-size:13px">Acertar a seleção que levantar a taça rende 5 pontos extras no ranking.</p>
+          </div>
+          <div id="campeao-oficial-badge" style="display:none; background:var(--win-bg); border:1px solid var(--win); color:var(--win); padding:6px 12px; border-radius:6px; font-weight:bold;">
+             Campeão: <span id="campeao-oficial-nome"></span>
+          </div>
+        </div>
+        <div id="campeao-list" style="margin-top:20px; display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px;"></div>
+      </div>
     </div>
 
     <div id="tab-ao-vivo" class="section">
@@ -291,6 +309,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           <button onclick="adminLogout()" style="background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button>
         </div>
 
+        <div class="import-box">
+          <h3>👥 Gerenciar Usuários</h3>
+          <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Controle quem tem acesso, altere senhas esquecidas ou remova contas.</p>
+          <button class="btn-primary" onclick="carregarUsuariosAdmin()" style="margin-bottom:12px">Listar Usuários</button>
+          <div id="admin-usuarios-list" style="overflow-x:auto;"></div>
+        </div>
+
         <div style="display:flex;gap:16px;flex-wrap:wrap">
             <div class="import-box" style="flex:1;min-width:300px">
               <h3>🔒 Prazos do Mata-Mata</h3>
@@ -314,11 +339,22 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
             </div>
         </div>
 
-        <div class="import-box">
-          <h3>📥 Inserir placares manualmente</h3>
-          <p style="color:var(--text2);font-size:12px;margin-bottom:8px">Cole no formato <code>NUM GOLS-GOLS</code>. Ex: <code>1 2-0</code> ou <code>74 1-1</code></p>
-          <textarea class="import-textarea" id="bulk-input" style="height:60px" placeholder="1 2-0"></textarea>
-          <button class="btn-primary" onclick="bulkImport()">Gravar Placares</button>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+            <div class="import-box" style="flex:1;min-width:300px">
+              <h3>🏆 Definir Campeão Oficial</h3>
+              <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Escreva o nome da seleção campeã para dar os 5 pontos aos acertadores.</p>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="admin-campeao" class="res-input" style="flex:1;text-align:left;padding:8px;text-transform:none" placeholder="Ex: Brasil">
+                <button class="btn-primary" style="margin:0" onclick="salvarCampeao()">Salvar</button>
+              </div>
+            </div>
+
+            <div class="import-box" style="flex:1;min-width:300px">
+              <h3>📥 Inserir placares manualmente</h3>
+              <p style="color:var(--text2);font-size:12px;margin-bottom:8px">Cole no formato <code>NUM GOLS-GOLS</code>. Ex: <code>1 2-0</code> ou <code>74 1-1</code></p>
+              <textarea class="import-textarea" id="bulk-input" style="height:60px" placeholder="1 2-0"></textarea>
+              <button class="btn-primary" onclick="bulkImport()">Gravar Placares</button>
+            </div>
         </div>
 
         <div class="import-box">
@@ -356,7 +392,6 @@ let cachePalpitesFinais = [];
 let appConfig = {};
 let customMatchups = {};
 
-// Cria a grade completa de 32 jogos do mata-mata
 const JOGOS_FASE_FINAL = [
   ...Array.from({length: 16}, (_, i) => ({ jogo: 73+i, mandante: `TBD R32`, visitante: `TBD R32`, fase: "Dezesseis-avos", chavePrazo: 'deadline_r32' })),
   ...Array.from({length: 8}, (_, i) => ({ jogo: 89+i, mandante: `TBD Oitavas`, visitante: `TBD Oitavas`, fase: "Oitavas de Final", chavePrazo: 'deadline_r16' })),
@@ -389,13 +424,18 @@ async function init() {
     if(appConfig.deadline_qf) document.getElementById('dl-qf').value = appConfig.deadline_qf;
     if(appConfig.deadline_sf) document.getElementById('dl-sf').value = appConfig.deadline_sf;
     if(appConfig.deadline_final) document.getElementById('dl-final').value = appConfig.deadline_final;
+    if(appConfig.campeao_oficial) document.getElementById('admin-campeao').value = appConfig.campeao_oficial;
 
     let mtText = '';
     Object.entries(customMatchups).forEach(([n, match]) => mtText += `${n} ${match.mandante} x ${match.visitante}\n`);
     document.getElementById('admin-matchups').value = mtText.trim();
 
     document.getElementById('loader-overlay').style.display = 'none';
-    popularSelectsCadastro(); checkUserSession(); renderRanking(); renderJogos();
+    popularSelectsCadastro(); 
+    checkUserSession(); 
+    renderRanking(); 
+    renderJogos();
+    renderCampeoes();
   } catch (e) { document.getElementById('loader-overlay').innerHTML = '<p>Erro ao conectar.</p>'; }
 }
 
@@ -467,7 +507,7 @@ function checkUserSession() {
 function doUserLogout() { sessionStorage.removeItem('bolao_user_perfis'); checkUserSession(); }
 
 // ─── LÓGICA DE PLACARES EXATOS NO HEADER ───
-function formatScoreHeader(res, isDetailed = false) {
+function formatScoreHeader(res) {
   if (!res) return '';
   if (res.includes('-')) {
     const [g1, g2] = res.split('-');
@@ -604,8 +644,10 @@ async function submitKnockoutGuess(jogoNum, palpiteVal) {
 }
 
 function calcRanking() {
-  const pts = {}; const acertos = {}; const total = {};
-  BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; });
+  const pts = {}; const acertos = {}; const total = {}; const bonusCamp = {};
+  BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; bonusCamp[p]=0; });
+  
+  // Pontos normais de jogos
   BOLAO.jogos.forEach(j => {
     const res = resultados[String(j.jogo)];
     const resLetter = getWinnerFromScore(res);
@@ -614,7 +656,22 @@ function calcRanking() {
       if (res && pal === resLetter) { pts[p]+=3; acertos[p]+=1; }
     });
   });
-  return BOLAO.participantes.map(p => ({nome: p, pts: pts[p], acertos: acertos[p], total: total[p]})).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
+
+  // Bônus do Campeão
+  const campeaoOficial = appConfig.campeao_oficial ? appConfig.campeao_oficial.trim().toLowerCase() : null;
+  if (campeaoOficial) {
+     BOLAO.participantes.forEach(p => {
+        const palpiteCamp = BOLAO.palpites_campeao[p];
+        if (palpiteCamp && palpiteCamp.trim().toLowerCase() === campeaoOficial) {
+            pts[p] += 5;
+            bonusCamp[p] = 5;
+        }
+     });
+  }
+
+  return BOLAO.participantes.map(p => ({
+      nome: p, pts: pts[p], acertos: acertos[p], total: total[p], bonus: bonusCamp[p]
+  })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
 }
 
 function renderRanking() {
@@ -631,13 +688,63 @@ function renderRanking() {
   container.innerHTML = '';
   ranking.forEach((r, i) => {
     const pos = i + 1; const pct = Math.round((r.pts / maxPts) * 100); const pctA = r.total > 0 && encerrados > 0 ? Math.round((r.acertos / encerrados) * 100) : 0;
+    
+    let prizeStr = '';
+    if (pos === 1) prizeStr = '<span style="color:#4caf7d; font-weight:600; font-size:12px; margin-left:6px; background:rgba(76,175,125,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 600</span>';
+    else if (pos === 2) prizeStr = '<span style="color:#f5c842; font-weight:600; font-size:12px; margin-left:6px; background:rgba(245,200,66,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 360</span>';
+    else if (pos === 3) prizeStr = '<span style="color:#b0b8c4; font-weight:600; font-size:12px; margin-left:6px; background:rgba(176,184,196,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 240</span>';
+
+    const bonusStr = r.bonus > 0 ? `<span style="color:var(--gold); font-size:10px; margin-left:4px;" title="Acertou o Campeão">(+5 pts)</span>` : '';
+
     container.innerHTML += `
       <div class="rank-card ${pos<=3?`pos-${pos}`:''}">
         <div class="rank-pos">${pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos}</div>
-        <div class="rank-info"><div class="rank-name">${r.nome}</div><div class="rank-sub">${r.acertos} acertos · ${pctA}% aprov.</div></div>
+        <div class="rank-info">
+           <div class="rank-name" style="display:flex; align-items:center;">${r.nome} ${prizeStr}</div>
+           <div class="rank-sub">${r.acertos} acertos · ${pctA}% aprov. ${bonusStr}</div>
+        </div>
         <div class="rank-bar-wrap"><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div></div>
         <div class="rank-pts">${r.pts}<span>pontos</span></div>
       </div>`;
+  });
+}
+
+function renderCampeoes() {
+  const container = document.getElementById('campeao-list');
+  container.innerHTML = '';
+  
+  const campeaoOficial = appConfig.campeao_oficial ? appConfig.campeao_oficial.trim().toLowerCase() : null;
+  if (campeaoOficial) {
+     document.getElementById('campeao-oficial-badge').style.display = 'block';
+     document.getElementById('campeao-oficial-nome').textContent = appConfig.campeao_oficial;
+  } else {
+     document.getElementById('campeao-oficial-badge').style.display = 'none';
+  }
+
+  BOLAO.participantes.forEach(p => {
+    const palpite = BOLAO.palpites_campeao[p] || 'Não definido';
+    let border = 'var(--border)';
+    let bg = 'var(--bg3)';
+    let badge = '';
+    
+    if (campeaoOficial && palpite.toLowerCase() === campeaoOficial) {
+      border = 'var(--win)';
+      bg = 'var(--win-bg)';
+      badge = '<span style="color:var(--win);font-weight:bold;font-size:11px;margin-left:auto">+5 pts</span>';
+    } else if (campeaoOficial) {
+      border = 'var(--loss)';
+      bg = 'var(--loss-bg)';
+    }
+
+    container.innerHTML += `
+      <div style="border:1px solid ${border}; background:${bg}; padding:10px 14px; border-radius:var(--r-sm); display:flex; flex-direction:column; gap:4px">
+        <span style="font-weight:600; font-size:13px; color:var(--text)">${p}</span>
+        <div style="display:flex; align-items:center;">
+           <span style="color:var(--text2); font-size:12px">${palpite}</span>
+           ${badge}
+        </div>
+      </div>
+    `;
   });
 }
 
@@ -687,7 +794,6 @@ function toggleJogo(num) { document.getElementById(`detail-${num}`).classList.to
 async function syncLiveScoresBackground(silent = true) {
   try {
     const d = new Date();
-    // Pega a data local da máquina, ignorando o UTC (evita sumir jogos à noite)
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     
     const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
@@ -699,14 +805,9 @@ async function syncLiveScoresBackground(silent = true) {
 
     events.forEach(e => {
       const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
-      
-      // Salva no banco de dados SOMENTE se acabou (Trava de placar final)
       if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
         const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
-        const jogoMatch = BOLAO.jogos.find(j => 
-            j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) || 
-            e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5))
-        );
+        const jogoMatch = BOLAO.jogos.find(j => j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) || e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5)));
         
         if (jogoMatch && resultados[String(jogoMatch.jogo)] !== placarExato) {
           resultados[String(jogoMatch.jogo)] = placarExato;
@@ -725,7 +826,6 @@ async function syncLiveScoresBackground(silent = true) {
   } catch(e) {}
 }
 
-// ─── RENDERIZADOR DA ABA "AO VIVO" (Para o usuário acompanhar) ───
 async function fetchLiveScores() {
   const container = document.getElementById('live-games-container');
   container.innerHTML = '<div class="empty-state"><p>Buscando partidas...</p></div>';
@@ -748,9 +848,7 @@ async function fetchLiveScores() {
     });
     container.innerHTML = html + '</div>';
     
-    // Aproveita a busca manual para tentar sincronizar o banco
     syncLiveScoresBackground(false);
-
   } catch (e) { container.innerHTML = '<div class="empty-state"><p>⚠️ Erro ao buscar dados ao vivo</p></div>'; }
 }
 
@@ -761,12 +859,84 @@ async function checkAdminPass() {
   const pass = document.getElementById('admin-pass-input').value;
   try {
     const r = await fetch('/api/admin/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({senha:pass}) });
-    if(r.ok) { adminAuthorized = true; sessionStorage.setItem('bolao_admin', '1'); document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); renderJogos(); }
+    if(r.ok) { 
+        adminAuthorized = true; 
+        sessionStorage.setItem('bolao_admin', '1');
+        sessionStorage.setItem('bolao_admin_senha', pass); 
+        document.getElementById('admin-login').style.display = 'none'; 
+        document.getElementById('admin-panel').style.display = 'block'; 
+        carregarUsuariosAdmin();
+        renderTabelaAdmin(); 
+        renderJogos(); 
+    }
     else showToast('❌ Senha incorreta');
   } catch(e) {}
 }
 
-function adminLogout() { adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); }
+function adminLogout() { 
+  adminAuthorized = false; 
+  sessionStorage.removeItem('bolao_admin'); 
+  sessionStorage.removeItem('bolao_admin_senha');
+  document.getElementById('admin-login').style.display='block'; 
+  document.getElementById('admin-panel').style.display='none'; 
+  renderJogos(); 
+}
+
+// ADMIN GERENCIAR USUÁRIOS
+async function carregarUsuariosAdmin() {
+  const pass = document.getElementById('admin-pass-input').value || sessionStorage.getItem('bolao_admin_senha');
+  try {
+    const res = await fetch('/api/admin/usuarios', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ senha: pass })
+    });
+    const data = await res.json();
+    if (data.error) return showToast('⚠️ Erro ao carregar usuários');
+    
+    let html = '<table style="width:100%; border-collapse:collapse; font-size:11px;"><tr><th style="text-align:left;padding:6px;border-bottom:1px solid var(--border)">Usuário</th><th style="text-align:left;padding:6px;border-bottom:1px solid var(--border)">Perfis</th><th style="text-align:right;padding:6px;border-bottom:1px solid var(--border)">Ações</th></tr>';
+    
+    data.forEach(u => {
+      const perfis = [u.perfil1, u.perfil2].filter(Boolean).join(', ');
+      html += `<tr>
+        <td style="padding:6px;border-bottom:1px solid var(--border);color:var(--text)">${u.usuario}</td>
+        <td style="padding:6px;border-bottom:1px solid var(--border);color:var(--text2)">${perfis}</td>
+        <td style="padding:6px;border-bottom:1px solid var(--border);text-align:right">
+          <button onclick="mudarSenhaUsuario('${u.usuario}')" style="background:transparent;border:1px solid var(--border);color:var(--gold);padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px;margin-right:4px">Senha</button>
+          <button onclick="excluirUsuario('${u.usuario}')" style="background:transparent;border:1px solid var(--border);color:var(--loss);padding:2px 6px;border-radius:4px;cursor:pointer;font-size:10px">Excluir</button>
+        </td>
+      </tr>`;
+    });
+    html += '</table>';
+    document.getElementById('admin-usuarios-list').innerHTML = html;
+  } catch(e) { showToast('⚠️ Erro na conexão'); }
+}
+
+async function mudarSenhaUsuario(user) {
+  const novaSenha = prompt(`Digite a nova senha para o usuário: ${user}`);
+  if (!novaSenha) return;
+  const pass = document.getElementById('admin-pass-input').value || sessionStorage.getItem('bolao_admin_senha');
+  try {
+    const res = await fetch('/api/admin/usuarios/senha', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ senhaAdmin: pass, usuarioTarget: user, novaSenha })
+    });
+    if (res.ok) showToast('✅ Senha alterada com sucesso');
+    else showToast('⚠️ Erro ao alterar senha');
+  } catch(e) { showToast('⚠️ Erro na conexão'); }
+}
+
+async function excluirUsuario(user) {
+  if (!confirm(`Tem certeza que deseja excluir a conta de ${user}? Isso não apaga os palpites, apenas o acesso.`)) return;
+  const pass = document.getElementById('admin-pass-input').value || sessionStorage.getItem('bolao_admin_senha');
+  try {
+    const res = await fetch('/api/admin/usuarios/delete', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ senhaAdmin: pass, usuarioTarget: user })
+    });
+    if (res.ok) { showToast('🗑️ Conta excluída'); carregarUsuariosAdmin(); }
+    else showToast('⚠️ Erro ao excluir');
+  } catch(e) { showToast('⚠️ Erro na conexão'); }
+}
 
 async function salvarDeadlines() {
   const chaves = ['dl-r32', 'dl-r16', 'dl-qf', 'dl-sf', 'dl-final'];
@@ -790,6 +960,17 @@ async function salvarMatchups() {
   if(document.getElementById('tab-proximas-fases').classList.contains('visible')) renderKnockoutGamesForm();
 }
 
+async function salvarCampeao() {
+  const val = document.getElementById('admin-campeao').value.trim();
+  try {
+    await fetch('/api/config', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({chave: 'campeao_oficial', valor: val}) });
+    appConfig.campeao_oficial = val;
+    showToast('✅ Campeão salvo! Rank atualizado.');
+    renderRanking();
+    if(document.getElementById('tab-campeao').classList.contains('visible')) renderCampeoes();
+  } catch (e) { showToast('⚠️ Erro ao salvar'); }
+}
+
 async function bulkImport() {
   const lines = document.getElementById('bulk-input').value.trim().split('\n');
   let count = 0;
@@ -797,13 +978,9 @@ async function bulkImport() {
     const [numStr, placar] = line.trim().split(/\s+/);
     const num = parseInt(numStr);
     if (!num || !placar) continue;
-    
     let finalVal = null;
-    if (['V','E','D'].includes(placar.toUpperCase())) {
-      finalVal = placar.toUpperCase();
-    } else if (/^\d+-\d+$/.test(placar)) {
-      finalVal = placar; 
-    }
+    if (['V','E','D'].includes(placar.toUpperCase())) finalVal = placar.toUpperCase();
+    else if (/^\d+-\d+$/.test(placar)) finalVal = placar; 
     
     if (finalVal) { 
       resultados[String(num)] = finalVal; 
@@ -865,6 +1042,7 @@ function showTab(name) {
   if (event && event.target) event.target.classList.add('active');
   
   if (name === 'meus-palpites') renderMeusPalpites();
+  if (name === 'campeao') renderCampeoes();
   
   if (name === 'ao-vivo') {
     if (isAdmin()) {
@@ -881,6 +1059,7 @@ function showTab(name) {
     if (adminAuthorized) { 
       document.getElementById('admin-login').style.display = 'none'; 
       document.getElementById('admin-panel').style.display = 'block'; 
+      carregarUsuariosAdmin();
       renderTabelaAdmin(); 
     } else { 
       document.getElementById('admin-login').style.display = 'block'; 
