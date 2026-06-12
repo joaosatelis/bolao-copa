@@ -230,6 +230,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <button class="nav-tab" onclick="showTab('ranking')">🏅 Ranking</button>
       <button class="nav-tab active" onclick="showTab('meus-palpites')">👤 Meus Palpites</button>
       <button class="nav-tab" onclick="showTab('jogos')">⚽ Palpites da Galera</button>
+      <button class="nav-tab" onclick="showTab('por-pessoa')">🔍 Ver por Pessoa</button>
       <button class="nav-tab" onclick="showTab('campeao')">🏆 Campeão</button>
       <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
       <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
@@ -250,6 +251,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
     <div id="tab-jogos" class="section">
       <div id="jogos-list"></div>
+    </div>
+
+    <div id="tab-por-pessoa" class="section">
+      <div id="por-pessoa-content"></div>
     </div>
 
     <div id="tab-campeao" class="section">
@@ -1035,12 +1040,103 @@ function renderTabelaAdmin() {
   document.getElementById('tabela-completa').innerHTML = html + '</table>';
 }
 
+function renderPorPessoa() {
+  const container = document.getElementById('por-pessoa-content');
+  const participantes = BOLAO.participantes || [];
+  if (!participantes.length) { container.innerHTML = '<p style="color:var(--text2);padding:20px">Nenhum participante encontrado.</p>'; return; }
+
+  const current = container.dataset.pessoa || participantes[0];
+  container.dataset.pessoa = current;
+
+  const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  const encerrados = jogosOrdenados.filter(j => resultados[String(j.jogo)]);
+  const acertos = encerrados.filter(j => {
+    const res = resultados[String(j.jogo)];
+    return j.palpites[current] && j.palpites[current] === getWinnerFromScore(res);
+  });
+  const pct = encerrados.length > 0 ? Math.round((acertos.length / encerrados.length) * 100) : 0;
+  const campeaoPalpite = BOLAO.palpites_campeao ? (BOLAO.palpites_campeao[current] || '—') : '—';
+
+  // Selector options
+  const options = participantes.map(p =>
+    `<option value="${p}" ${p === current ? 'selected' : ''}>${p}</option>`
+  ).join('');
+
+  // Group games by fase
+  const byFase = {};
+  jogosOrdenados.forEach(j => {
+    const f = j.fase;
+    if (!byFase[f]) byFase[f] = [];
+    byFase[f].push(j);
+  });
+
+  let jogosHTML = '';
+  Object.entries(byFase).forEach(([fase, jogos]) => {
+    jogosHTML += `<div class="group-section"><div class="group-title">${fase}</div>`;
+    jogos.forEach(j => {
+      const res = resultados[String(j.jogo)];
+      const pal = j.palpites[current];
+      const resLetter = getWinnerFromScore(res);
+      let cls = '', icon = '';
+      if (res && pal) { cls = pal === resLetter ? 'acerto' : 'erro'; icon = pal === resLetter ? '✅' : '❌'; }
+      else if (!pal) { icon = '—'; }
+      else { icon = '⏳'; }
+      const nomePal = pal === 'V' ? j.mandante : pal === 'E' ? 'Empate' : pal === 'D' ? j.visitante : '—';
+      const placar = res
+        ? `<div class="jogo-placar">${res.home}-${res.away}</div>`
+        : `<div class="jogo-placar pendente">${j.hora || '—'}</div>`;
+
+      jogosHTML += `
+      <div class="jogo-card ${res ? 'encerrado' : ''}" style="cursor:default;">
+        <div class="jogo-header">
+          <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div>
+          <div class="jogo-mandante">${j.mandante}</div>
+          ${placar}
+          <div class="jogo-visitante">${j.visitante}</div>
+          <div class="jogo-meta">${res ? '<span class="badge-done">Enc.</span>' : ''}</div>
+        </div>
+        <div style="padding:8px 14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15);">
+          <span style="font-size:12px; color:var(--text2);">Palpite:</span>
+          <div class="palpite-item ${cls}" style="width:auto; gap:8px; padding:5px 12px; font-size:13px; font-weight:600;">${icon} ${nomePal}</div>
+        </div>
+      </div>`;
+    });
+    jogosHTML += '</div>';
+  });
+
+  container.innerHTML = `
+    <div class="import-box" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:14px 20px; margin-bottom:16px;">
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <span style="color:var(--text2); font-size:13px;">Participante:</span>
+        <select class="res-input" style="width:auto; text-transform:none; font-size:14px; font-weight:600; color:var(--text);"
+          onchange="document.getElementById('por-pessoa-content').dataset.pessoa=this.value; renderPorPessoa();">${options}</select>
+      </div>
+      <div style="display:flex; gap:12px; flex-wrap:wrap;">
+        <div style="text-align:center; padding:6px 14px; background:var(--bg3); border-radius:var(--r-sm);">
+          <div style="font-size:18px; font-weight:700; color:var(--gold); line-height:1;">${acertos.length}<span style="font-size:12px; color:var(--text3); font-weight:400;">/${encerrados.length}</span></div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px;">Acertos</div>
+        </div>
+        <div style="text-align:center; padding:6px 14px; background:var(--bg3); border-radius:var(--r-sm);">
+          <div style="font-size:18px; font-weight:700; color:var(--gold); line-height:1;">${pct}%</div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px;">Aproveit.</div>
+        </div>
+        <div style="text-align:center; padding:6px 14px; background:var(--bg3); border-radius:var(--r-sm);">
+          <div style="font-size:14px; font-weight:600; color:var(--text); line-height:1.3;">${campeaoPalpite}</div>
+          <div style="font-size:11px; color:var(--text3); margin-top:2px;">🏆 Campeão</div>
+        </div>
+      </div>
+    </div>
+    ${jogosHTML}
+  `;
+}
+
 function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('visible');
   if (event && event.target) event.target.classList.add('active');
   
+  if (name === 'por-pessoa') renderPorPessoa();
   if (name === 'meus-palpites') renderMeusPalpites();
   if (name === 'campeao') renderCampeoes();
   
