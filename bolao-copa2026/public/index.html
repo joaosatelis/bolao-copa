@@ -106,13 +106,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .cons-d { background: var(--loss); }
 
 .resultado-form { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.15); flex-wrap: wrap; }
-.res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase; }
+.res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; text-align: center; text-transform: uppercase; }
 .res-input:focus { outline: none; border-color: var(--gold); }
 .btn-salvar { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; }
 .btn-salvar:hover { background: var(--pitch-mid); }
 .btn-limpar { background: transparent; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; }
 .btn-limpar:hover { color: var(--loss); border-color: var(--loss); }
-.resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 14px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
 .resultado-badge.V { background: var(--win-bg); color: var(--win); border: 1px solid rgba(76,175,125,0.3); }
 .resultado-badge.E { background: var(--draw-bg); color: var(--draw); border: 1px solid rgba(245,200,66,0.3); }
 .resultado-badge.D { background: var(--loss-bg); color: var(--loss); border: 1px solid rgba(224,82,82,0.3); }
@@ -164,10 +164,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 </head>
 <body>
 
-<div id="loader-overlay">
-  <div class="spinner"></div>
-  <p style="margin-top:16px;color:var(--text2);font-size:13px">Carregando dados do servidor...</p>
-</div>
+<div id="loader-overlay"><div class="spinner"></div><p style="margin-top:16px;color:var(--text2);font-size:13px">Carregando dados do servidor...</p></div>
 
 <div id="global-auth-screen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding: 20px;">
   <div style="text-align:center; margin-bottom: 40px;">
@@ -182,9 +179,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none" placeholder="Usuário">
       <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none" placeholder="Senha">
       <button class="btn-primary" style="width:100%" onclick="doUserLogin()">Entrar</button>
-      <p style="text-align:center;margin-top:16px;font-size:12px">
-        Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a>
-      </p>
+      <p style="text-align:center;margin-top:16px;font-size:12px">Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a></p>
     </div>
 
     <div id="user-register-form" style="display:none">
@@ -194,12 +189,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none" placeholder="Crie uma senha">
       <label style="font-size:12px;color:var(--text2)">Seu perfil principal:</label>
       <select id="reg-perfil1" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none"></select>
-      <label style="font-size:12px;color:var(--text2)">Perfil secundário (opcional para quem tem 2 contas):</label>
+      <label style="font-size:12px;color:var(--text2)">Perfil secundário (opcional):</label>
       <select id="reg-perfil2" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none"></select>
       <button class="btn-primary" style="width:100%" onclick="doUserRegister()">Cadastrar e Vincular</button>
-      <p style="text-align:center;margin-top:16px;font-size:12px">
-        Já tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Fazer Login</a>
-      </p>
+      <p style="text-align:center;margin-top:16px;font-size:12px">Já tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Fazer Login</a></p>
     </div>
   </div>
 </div>
@@ -207,15 +200,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 <div id="app-content" style="display:none;">
   <div class="hero">
     <div class="hero-inner">
-      <div class="hero-left">
-        <h1>BOLÃO <span>COPA 2026</span></h1>
-        <p>Grupo OSS · 24 participantes · 104 jogos totais</p>
-      </div>
+      <div class="hero-left"><h1>BOLÃO <span>COPA 2026</span></h1><p>Grupo OSS · 24 participantes · 104 jogos totais</p></div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
-        <div class="live-badge">
-          <div class="live-dot"></div>
-          ATUALIZAÇÃO AO VIVO
-        </div>
+        <div class="live-badge"><div class="live-dot"></div>ATUALIZAÇÃO AO VIVO</div>
         <div class="hero-stats">
           <div class="hstat"><div class="hstat-val" id="stat-jogos">0</div><div class="hstat-label">Jogos</div></div>
           <div class="hstat"><div class="hstat-val" id="stat-encerrados">0</div><div class="hstat-label">Encerrados</div></div>
@@ -253,15 +240,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     </div>
 
     <div id="tab-ao-vivo" class="section">
-      <div id="ao-vivo-login" class="import-box" style="max-width:360px;margin:0 auto;display:none;text-align:center;">
-        <h3>🔐 Acesso Restrito</h3>
-        <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
-        <button class="btn-primary" onclick="showTab('admin')">Ir para Login Admin</button>
-      </div>
       <div id="ao-vivo-content">
         <div class="live-section">
-          <div class="live-section-title"><div class="live-dot"></div>Placares ao vivo (TheSportsDB / Todos os jogos)</div>
-          <div id="live-games-container"><div class="empty-state"><p>Buscando partidas ao vivo...</p></div></div>
+          <div class="live-section-title"><div class="live-dot"></div>Jogos de Hoje (Futebol Geral)</div>
+          <div id="live-games-container"><div class="empty-state"><p>Buscando partidas de hoje...</p></div></div>
         </div>
       </div>
     </div>
@@ -298,7 +280,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
             <div class="import-box" style="flex:1;min-width:300px">
               <h3>🔒 Prazos do Mata-Mata</h3>
               <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Defina até quando a galera pode enviar o palpite em cada fase.</p>
-              
               <div style="display:grid;gap:8px">
                   <div style="display:flex;gap:8px;align-items:center"><span style="width:70px;font-size:12px">R32</span><input type="datetime-local" id="dl-r32" class="res-input" style="flex:1;text-align:left;padding:6px;text-transform:none"></div>
                   <div style="display:flex;gap:8px;align-items:center"><span style="width:70px;font-size:12px">Oitavas</span><input type="datetime-local" id="dl-r16" class="res-input" style="flex:1;text-align:left;padding:6px;text-transform:none"></div>
@@ -326,7 +307,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
               <option value="jogo">Por Jogo Específico</option>
             </select>
             <input type="number" id="export-game-num" class="res-input" style="display:none;width:100px;padding:8px" placeholder="Nº Jogo">
-            <button class="btn-primary" style="margin:0;background:var(--pitch-mid)" onclick="exportReportCSV()">📥 Baixar CSV (Abre no Excel)</button>
+            <button class="btn-primary" style="margin:0;background:var(--pitch-mid)" onclick="exportReportCSV()">📥 Baixar CSV</button>
           </div>
         </div>
 
@@ -344,7 +325,6 @@ let cachePalpitesFinais = [];
 let appConfig = {};
 let customMatchups = {};
 
-// Cria a grade completa de 32 jogos do mata-mata
 const JOGOS_FASE_FINAL = [
   ...Array.from({length: 16}, (_, i) => ({ jogo: 73+i, mandante: `TBD R32`, visitante: `TBD R32`, fase: "Dezesseis-avos", chavePrazo: 'deadline_r32' })),
   ...Array.from({length: 8}, (_, i) => ({ jogo: 89+i, mandante: `TBD Oitavas`, visitante: `TBD Oitavas`, fase: "Oitavas de Final", chavePrazo: 'deadline_r16' })),
@@ -471,14 +451,29 @@ function drawMeusPalpitesList(perfil) {
   Object.entries(groups).forEach(([grupo, jogos]) => {
     let html = `<div class="group-section"><div class="group-title">${grupo}</div>`;
     jogos.forEach(j => {
-      const res = resultados[String(j.jogo)];
+      const resObj = resultados[String(j.jogo)];
+      const res = resObj?.resultado;
+      const placar = resObj?.placar || (res ? res : '');
+      const encerrado = resObj?.encerrado;
+      
       const meuPalpite = j.palpites[perfil];
       let palpiteClass = ''; let icon = '⏳';
-      if (res) { if (meuPalpite === res) { palpiteClass = 'acerto'; icon = '✅'; } else { palpiteClass = 'erro'; icon = '❌'; } }
+      
+      if (res && encerrado) {
+        if (meuPalpite === res) { palpiteClass = 'acerto'; icon = '✅'; } 
+        else { palpiteClass = 'erro'; icon = '❌'; }
+      }
+      
       const nomePalpite = meuPalpite === 'V' ? j.mandante : meuPalpite === 'E' ? 'Empate' : j.visitante;
       html += `
-      <div class="jogo-card ${res?'encerrado':''}" style="cursor:default;">
-        <div class="jogo-header"><div class="jogo-num"><span>#${j.jogo}</span></div><div class="jogo-mandante">${j.mandante}</div>${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${res==='V'?'Mandante':res==='E'?'Empate':'Visitante'}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}<div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div></div>
+      <div class="jogo-card ${encerrado ? 'encerrado' : ''}" style="cursor:default;">
+        <div class="jogo-header">
+          <div class="jogo-num"><span>#${j.jogo}</span></div>
+          <div class="jogo-mandante">${j.mandante}</div>
+          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${placar}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div>
+          <div class="jogo-meta">${encerrado ? '<span class="badge-done">Encerrado</span>' : ''}</div>
+        </div>
         <div style="padding: 10px 14px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2);">
           <span style="font-size:12px; color:var(--text2)">Meu Palpite:</span><div class="palpite-item ${palpiteClass}" style="width:auto; gap:10px; padding:6px 12px; font-size:13px; font-weight:bold;">${icon} ${nomePalpite}</div>
         </div>
@@ -504,9 +499,7 @@ function renderKnockoutGamesForm() {
     let html = `<div class="group-section">
       <div class="group-title">
          <span>${fase}</span>
-         <span style="font-size:11px;color:var(--text2);font-family:'Inter',sans-serif;font-weight:normal;background:rgba(255,255,255,0.05);padding:4px 8px;border-radius:4px">
-            Prazo: ${formatDate(limitStr)}
-         </span>
+         <span style="font-size:11px;color:var(--text2);font-family:'Inter',sans-serif;font-weight:normal;background:rgba(255,255,255,0.05);padding:4px 8px;border-radius:4px">Prazo: ${formatDate(limitStr)}</span>
       </div>`;
       
     jogos.forEach(j => {
@@ -533,9 +526,7 @@ function renderKnockoutGamesForm() {
           <div class="jogo-header" style="grid-template-columns: 28px 1fr auto 1fr auto">
             <div class="jogo-num">#${j.jogo}</div>
             <div class="jogo-mandante" style="color:var(--text)">${realMand}</div>
-            <div style="display:flex;gap:4px;align-items:center;justify-content:center;min-width:100px">
-              ${buttonsHtml}
-            </div>
+            <div style="display:flex;gap:4px;align-items:center;justify-content:center;min-width:100px">${buttonsHtml}</div>
             <div class="jogo-visitante" style="color:var(--text)">${realVis}</div>
             <div style="font-size:11px;color:var(--text3);text-align:right">MM</div>
           </div>
@@ -563,17 +554,24 @@ function calcRanking() {
   const pts = {}; const acertos = {}; const total = {};
   BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; });
   BOLAO.jogos.forEach(j => {
-    const res = resultados[String(j.jogo)];
-    Object.entries(j.palpites).forEach(([p, pal]) => { total[p] = (total[p]||0) + 1; if (res && pal === res) { pts[p]+=3; acertos[p]+=1; } });
+    const resObj = resultados[String(j.jogo)];
+    
+    // Contabiliza pontos SÓ SE a partida foi marcada como Encerrada pelo Admin
+    if (resObj && resObj.encerrado && resObj.resultado) {
+      const res = resObj.resultado;
+      Object.entries(j.palpites).forEach(([p, pal]) => {
+        total[p] = (total[p]||0) + 1; 
+        if (pal === res) { pts[p]+=3; acertos[p]+=1; }
+      });
+    }
   });
-  // Adiciona pontos das fases finais (se os resultados fossem registrados - expansão futura)
   return BOLAO.participantes.map(p => ({nome: p, pts: pts[p], acertos: acertos[p], total: total[p]})).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
 }
 
 function renderRanking() {
   const ranking = calcRanking();
   const maxPts = Math.max(...ranking.map(r => r.pts), 1);
-  const encerrados = Object.keys(resultados).length;
+  const encerrados = Object.values(resultados).filter(r => r.encerrado).length;
   document.getElementById('stat-jogos').textContent = BOLAO.jogos.length;
   document.getElementById('stat-encerrados').textContent = encerrados;
   document.getElementById('stat-lider').textContent = ranking[0].pts > 0 ? ranking[0].nome.split(' ')[0] : '—';
@@ -596,25 +594,33 @@ function renderRanking() {
 
 function renderJogos() {
   const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
-  const groups = { "Fase de Grupos (Histórico)": jogosOrdenados };
+  const groups = { "Fase de Grupos": jogosOrdenados };
   const container = document.getElementById('jogos-list');
   container.innerHTML = '';
   
   Object.entries(groups).forEach(([grupo, jogos]) => {
     let html = `<div class="group-section"><div class="group-title">${grupo}</div>`;
     jogos.forEach(j => {
-      const res = resultados[String(j.jogo)];
+      const resObj = resultados[String(j.jogo)];
+      const res = resObj?.resultado;
+      const placar = resObj?.placar || '';
+      const encerrado = resObj?.encerrado;
+      
       const cons = {V:0, E:0, D:0};
       Object.values(j.palpites).forEach(p => cons[p]++);
       const tot = Object.values(j.palpites).length;
       let palsHtml = '';
-      Object.entries(j.palpites).forEach(([p, pal]) => { palsHtml += `<div class="palpite-item ${res?(pal===res?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`; });
+      
+      Object.entries(j.palpites).forEach(([p, pal]) => {
+         palsHtml += `<div class="palpite-item ${res && encerrado ?(pal===res?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`;
+      });
+      
       html += `
-      <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
+      <div class="jogo-card ${encerrado ?'encerrado':''}" id="jogo-card-${j.jogo}">
         <div class="jogo-header" onclick="toggleJogo(${j.jogo})">
           <div class="jogo-num"><span>#${j.jogo}</span></div><div class="jogo-mandante">${j.mandante}</div>
-          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${res==='V'?'Mandante':res==='E'?'Empate':'Visitante'}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
-          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓ Encerrado</span>':''}</div>
+          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${placar || res}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${encerrado?'<span class="badge-done">✓ Fim</span>':''}</div>
         </div>
         <div class="jogo-detail" id="detail-${j.jogo}">
           <div class="consensus-bar">
@@ -625,10 +631,16 @@ function renderJogos() {
           </div>
           <div class="palpites-grid">${palsHtml}</div>
           <div class="resultado-form" style="${!isAdmin()?'display:none':''}">
-            <label>Inserir resultado:</label>
-            <input class="res-input" id="res-input-${j.jogo}" maxlength="1" value="${res||''}" oninput="this.value=this.value.toUpperCase()">
+            <input class="res-input" id="res-placar-${j.jogo}" placeholder="Ex: 2x1" value="${placar}" style="width:70px; text-transform:none;">
+            <select class="res-input" id="res-val-${j.jogo}" style="width:60px">
+              <option value="">--</option>
+              <option value="V" ${res==='V'?'selected':''}>V</option>
+              <option value="E" ${res==='E'?'selected':''}>E</option>
+              <option value="D" ${res==='D'?'selected':''}>D</option>
+            </select>
+            <label style="font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="res-encerrado-${j.jogo}" ${encerrado?'checked':''}> Encerrado?</label>
             <button class="btn-salvar" onclick="salvarResultado(${j.jogo})">Salvar</button>
-            ${res ? `<button class="btn-limpar" onclick="limparResultado(${j.jogo})">Limpar</button>` : ''}
+            ${resObj ? `<button class="btn-limpar" onclick="limparResultado(${j.jogo})">Limpar</button>` : ''}
           </div>
         </div>
       </div>`;
@@ -653,6 +665,27 @@ async function checkAdminPass() {
 
 function adminLogout() { adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); }
 
+async function salvarResultado(num) {
+  const placar = document.getElementById(`res-placar-${num}`).value;
+  const resVal = document.getElementById(`res-val-${num}`).value;
+  const enc = document.getElementById(`res-encerrado-${num}`).checked;
+  if(!resVal && enc) return showToast('⚠️ Escolha V, E ou D.');
+  
+  await fetch(`/api/resultados/${num}`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ resultado: resVal, placar: placar, encerrado: enc })
+  });
+  showToast('✅ Resultado salvo!');
+  init(); 
+}
+
+async function limparResultado(num) {
+  await fetch(`/api/resultados/${num}`, { method: 'DELETE' });
+  showToast('🗑️ Limpo!');
+  init();
+}
+
 async function salvarDeadlines() {
   const chaves = ['dl-r32', 'dl-r16', 'dl-qf', 'dl-sf', 'dl-final'];
   const pms = chaves.map(ch => fetch('/api/config', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({chave: ch.replace('dl-','deadline_'), valor: document.getElementById(ch).value}) }));
@@ -673,6 +706,44 @@ async function salvarMatchups() {
   customMatchups = parsed; appConfig.knockout_matchups = JSON.stringify(parsed);
   showToast('✅ Seleções atualizadas!');
   if(document.getElementById('tab-proximas-fases').classList.contains('visible')) renderKnockoutGamesForm();
+}
+
+async function fetchLiveGames() {
+  const container = document.getElementById('live-games-container');
+  container.innerHTML = '<div class="empty-state"><p>Buscando jogos...</p></div>';
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const res = await fetch(`https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=${today}&s=Soccer`);
+    const data = await res.json();
+    
+    if (!data.events || data.events.length === 0) {
+       container.innerHTML = '<div class="empty-state"><p>Nenhum jogo rolando ou agendado para hoje nesta API.</p></div>';
+       return;
+    }
+    
+    let html = '<div class="live-games">';
+    data.events.forEach(ev => {
+      const status = ev.strStatus === 'Match Finished' ? 'Encerrado' : (ev.strStatus || 'Agendado');
+      const homeScore = ev.intHomeScore || '0';
+      const awayScore = ev.intAwayScore || '0';
+      const isLive = status.toLowerCase().includes('live') || status.toLowerCase().includes('in progress') || status.toLowerCase().includes('halftime');
+      
+      html += `
+        <div class="live-game-card" style="${isLive ? 'border-color:var(--win)' : ''}">
+          <div class="lgc-teams">
+            <div class="lgc-team">${ev.strHomeTeam}</div>
+            <div class="lgc-score">${homeScore} - ${awayScore}</div>
+            <div class="lgc-team right">${ev.strAwayTeam}</div>
+          </div>
+          <div class="lgc-status ${isLive ? 'live' : ''}">${isLive ? '🔴 AO VIVO' : status}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = '<div class="empty-state"><p>Erro ao conectar no banco de dados de jogos.</p></div>';
+  }
 }
 
 function exportReportCSV() {
@@ -710,8 +781,19 @@ function showTab(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('visible');
   if (event && event.target) event.target.classList.add('active');
+  
   if (name === 'meus-palpites') renderMeusPalpites();
-  if (name === 'admin') { if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); } else { document.getElementById('admin-login').style.display = 'block'; document.getElementById('admin-panel').style.display = 'none'; } }
+  if (name === 'ao-vivo') fetchLiveGames();
+  if (name === 'admin') { 
+     if (adminAuthorized) { 
+        document.getElementById('admin-login').style.display = 'none'; 
+        document.getElementById('admin-panel').style.display = 'block'; 
+        renderTabelaAdmin(); 
+     } else { 
+        document.getElementById('admin-login').style.display = 'block'; 
+        document.getElementById('admin-panel').style.display = 'none'; 
+     } 
+  }
 }
 
 let toastTimer;
