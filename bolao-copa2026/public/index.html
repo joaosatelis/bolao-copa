@@ -1057,51 +1057,35 @@ function renderPorPessoa() {
   const pct = encerrados.length > 0 ? Math.round((acertos.length / encerrados.length) * 100) : 0;
   const campeaoPalpite = BOLAO.palpites_campeao ? (BOLAO.palpites_campeao[current] || '—') : '—';
 
-  // Selector options
   const options = participantes.map(p =>
     `<option value="${p}" ${p === current ? 'selected' : ''}>${p}</option>`
   ).join('');
 
-  // Group games by fase
-  const byFase = {};
-  jogosOrdenados.forEach(j => {
-    const f = j.fase;
-    if (!byFase[f]) byFase[f] = [];
-    byFase[f].push(j);
-  });
-
   let jogosHTML = '';
-  Object.entries(byFase).forEach(([fase, jogos]) => {
-    jogosHTML += `<div class="group-section"><div class="group-title">${fase}</div>`;
-    jogos.forEach(j => {
-      const res = resultados[String(j.jogo)];
-      const pal = j.palpites[current];
-      const resLetter = getWinnerFromScore(res);
-      let cls = '', icon = '';
-      if (res && pal) { cls = pal === resLetter ? 'acerto' : 'erro'; icon = pal === resLetter ? '✅' : '❌'; }
-      else if (!pal) { icon = '—'; }
-      else { icon = '⏳'; }
-      const nomePal = pal === 'V' ? j.mandante : pal === 'E' ? 'Empate' : pal === 'D' ? j.visitante : '—';
-      const placar = res
-        ? `<div class="jogo-placar">${res.home}-${res.away}</div>`
-        : `<div class="jogo-placar pendente">${j.hora || '—'}</div>`;
+  jogosOrdenados.forEach(j => {
+    const res = resultados[String(j.jogo)];
+    const pal = j.palpites[current];
+    const resLetter = getWinnerFromScore(res);
+    let cls = '', icon = '';
+    if (res && pal) { cls = pal === resLetter ? 'acerto' : 'erro'; icon = pal === resLetter ? '✅' : '❌'; }
+    else if (!pal) { icon = '—'; }
+    else { icon = '⏳'; }
+    const nomePal = pal === 'V' ? j.mandante : pal === 'E' ? 'Empate' : pal === 'D' ? j.visitante : '—';
 
-      jogosHTML += `
-      <div class="jogo-card ${res ? 'encerrado' : ''}" style="cursor:default;">
-        <div class="jogo-header">
-          <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div>
-          <div class="jogo-mandante">${j.mandante}</div>
-          ${placar}
-          <div class="jogo-visitante">${j.visitante}</div>
-          <div class="jogo-meta">${res ? '<span class="badge-done">Enc.</span>' : ''}</div>
-        </div>
-        <div style="padding:8px 14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15);">
-          <span style="font-size:12px; color:var(--text2);">Palpite:</span>
-          <div class="palpite-item ${cls}" style="width:auto; gap:8px; padding:5px 12px; font-size:13px; font-weight:600;">${icon} ${nomePal}</div>
-        </div>
-      </div>`;
-    });
-    jogosHTML += '</div>';
+    jogosHTML += `
+    <div class="jogo-card ${res ? 'encerrado' : ''}" style="cursor:default;">
+      <div class="jogo-header">
+        <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div>
+        <div class="jogo-mandante">${j.mandante}</div>
+        ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente">${j.hora || '—'}</div>`}
+        <div class="jogo-visitante">${j.visitante}</div>
+        <div class="jogo-meta">${res ? '<span class="badge-done">✓</span>' : ''}</div>
+      </div>
+      <div style="padding:8px 14px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.15);">
+        <span style="font-size:12px; color:var(--text2);">Palpite:</span>
+        <div class="palpite-item ${cls}" style="width:auto; gap:8px; padding:5px 12px; font-size:13px; font-weight:600;">${icon} ${nomePal}</div>
+      </div>
+    </div>`;
   });
 
   container.innerHTML = `
@@ -1126,7 +1110,7 @@ function renderPorPessoa() {
         </div>
       </div>
     </div>
-    ${jogosHTML}
+    <div class="group-section">${jogosHTML}</div>
   `;
 }
 
