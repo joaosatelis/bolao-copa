@@ -7,66 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --pitch: #1a6e3c;
-  --pitch-dark: #0f4526;
-  --pitch-mid: #2d8a52;
-  --gold: #f5c842;
-  --gold-dim: #c9a030;
-  --silver: #b0b8c4;
-  --bronze: #cd7f32;
-  --bg: #0a0f0d;
-  --bg2: #111a14;
-  --bg3: #192219;
-  --card: #141d15;
-  --card2: #1c2a1e;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text: #e8ede9;
-  --text2: #8fa894;
-  --text3: #5a7060;
-  --win: #4caf7d;
-  --draw: #f5c842;
-  --loss: #e05252;
-  --win-bg: rgba(76,175,125,0.12);
-  --draw-bg: rgba(245,200,66,0.12);
-  --loss-bg: rgba(224,82,82,0.12);
-  --r: 10px;
-  --r-sm: 6px;
+  --pitch: #1a6e3c; --pitch-dark: #0f4526; --pitch-mid: #2d8a52;
+  --gold: #f5c842; --silver: #b0b8c4; --bronze: #cd7f32;
+  --bg: #0a0f0d; --bg2: #111a14; --bg3: #192219;
+  --card: #141d15; --card2: #1c2a1e;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --text: #e8ede9; --text2: #8fa894; --text3: #5a7060;
+  --win: #4caf7d; --draw: #f5c842; --loss: #e05252;
+  --win-bg: rgba(76,175,125,0.12); --draw-bg: rgba(245,200,66,0.12); --loss-bg: rgba(224,82,82,0.12);
+  --r: 10px; --r-sm: 6px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
-}
-
-/* ─── HEADER ─── */
-.hero {
-  background: linear-gradient(160deg, var(--pitch-dark) 0%, var(--bg) 100%);
-  border-bottom: 1px solid var(--border2);
-  padding: 32px 24px 24px;
-  position: relative;
-  overflow: hidden;
-}
-.hero::before {
-  content:'';
-  position:absolute; inset:0;
-  background: radial-gradient(ellipse at 70% 0%, rgba(245,200,66,0.08) 0%, transparent 60%);
-  pointer-events:none;
-}
+.hero { background: linear-gradient(160deg, var(--pitch-dark) 0%, var(--bg) 100%); border-bottom: 1px solid var(--border2); padding: 32px 24px 24px; position: relative; overflow: hidden; }
+.hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse at 70% 0%, rgba(245,200,66,0.08) 0%, transparent 60%); pointer-events:none; }
 .hero-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.hero-left h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(32px, 5vw, 52px);
-  letter-spacing: 0.04em;
-  color: var(--text);
-  line-height: 1;
-}
+.hero-left h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 5vw, 52px); letter-spacing: 0.04em; color: var(--text); line-height: 1; }
 .hero-left h1 span { color: var(--gold); }
 .hero-left p { color: var(--text2); margin-top: 6px; font-size: 13px; }
 .hero-stats { display: flex; gap: 20px; flex-wrap: wrap; }
@@ -74,221 +31,92 @@ body {
 .hstat-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); line-height: 1; }
 .hstat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
-.live-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(76,175,125,0.15); border: 1px solid rgba(76,175,125,0.3);
-  color: var(--win); font-size: 11px; font-weight: 600;
-  padding: 4px 10px; border-radius: 20px; letter-spacing: .04em;
-}
+.live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(76,175,125,0.15); border: 1px solid rgba(76,175,125,0.3); color: var(--win); font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; letter-spacing: .04em; }
 .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--win); animation: pulse 1.5s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-/* ─── NAV TABS ─── */
-.nav-bar {
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 100;
-}
+.nav-bar { background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
 .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
 .nav-inner::-webkit-scrollbar { display: none; }
-.nav-tab {
-  padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--text2);
-  border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap;
-  transition: color .2s, border-color .2s; background: none; border-top: none; border-left: none; border-right: none;
-}
+.nav-tab { padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--text2); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: color .2s, border-color .2s; background: none; border-top: none; border-left: none; border-right: none; }
 .nav-tab:hover { color: var(--text); }
 .nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
 
-/* ─── MAIN LAYOUT ─── */
 .main { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
 .section { display: none; }
 .section.visible { display: block; }
 
-/* ─── RANKING ─── */
 .ranking-grid { display: flex; flex-direction: column; gap: 6px; }
-
-.rank-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: 36px 1fr auto auto;
-  align-items: center;
-  gap: 12px;
-  transition: border-color .2s, background .2s;
-  cursor: default;
-}
+.rank-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: grid; grid-template-columns: 36px 1fr auto auto; align-items: center; gap: 12px; transition: border-color .2s, background .2s; cursor: default; }
 .rank-card:hover { border-color: var(--border2); background: var(--card2); }
 .rank-card.pos-1 { border-color: rgba(245,200,66,0.35); background: linear-gradient(90deg, rgba(245,200,66,0.06) 0%, var(--card) 50%); }
 .rank-card.pos-2 { border-color: rgba(176,184,196,0.3); background: linear-gradient(90deg, rgba(176,184,196,0.04) 0%, var(--card) 50%); }
 .rank-card.pos-3 { border-color: rgba(205,127,50,0.3); background: linear-gradient(90deg, rgba(205,127,50,0.04) 0%, var(--card) 50%); }
-.rank-card.highlight { border-color: rgba(76,175,125,0.35); }
-
-.rank-pos {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px; text-align: center; line-height: 1;
-  color: var(--text3);
-}
+.rank-pos { font-family: 'Bebas Neue', sans-serif; font-size: 22px; text-align: center; line-height: 1; color: var(--text3); }
 .rank-card.pos-1 .rank-pos { color: var(--gold); }
 .rank-card.pos-2 .rank-pos { color: var(--silver); }
 .rank-card.pos-3 .rank-pos { color: var(--bronze); }
-
 .rank-info { min-width: 0; }
 .rank-name { font-weight: 600; color: var(--text); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rank-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-
 .rank-bar-wrap { width: 100px; }
 .rank-bar-bg { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
 .rank-bar-fill { height: 100%; border-radius: 2px; background: var(--pitch-mid); transition: width .6s ease; }
 .rank-card.pos-1 .rank-bar-fill { background: var(--gold); }
 .rank-card.pos-2 .rank-bar-fill { background: var(--silver); }
 .rank-card.pos-3 .rank-bar-fill { background: var(--bronze); }
-
-.rank-pts {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 26px; color: var(--text); line-height: 1;
-  white-space: nowrap;
-}
+.rank-pts { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--text); line-height: 1; white-space: nowrap; }
 .rank-pts span { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text3); font-weight: 400; display: block; text-align: right; }
 
-/* ─── JOGOS ─── */
 .group-section { margin-bottom: 28px; }
-.group-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px; letter-spacing: .05em;
-  color: var(--gold); margin-bottom: 12px;
-  display: flex; align-items: center; gap: 10px;
-}
+.group-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .05em; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
 .group-title::after { content:''; flex:1; height:1px; background:var(--border); }
-
-.jogo-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  margin-bottom: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: border-color .15s;
-}
+.jogo-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 6px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
 .jogo-card:hover { border-color: var(--border2); }
 .jogo-card.encerrado { border-color: rgba(76,175,125,0.2); }
 .jogo-card.ao-vivo { border-color: rgba(245,200,66,0.4); animation: border-glow 2s ease-in-out infinite; }
 @keyframes border-glow { 0%,100%{border-color:rgba(245,200,66,0.4)} 50%{border-color:rgba(245,200,66,0.8)} }
-
-.jogo-header {
-  display: grid;
-  grid-template-columns: 28px 1fr auto 1fr 1fr;
-  align-items: center;
-  padding: 12px 14px;
-  gap: 8px;
-}
+.jogo-header { display: grid; grid-template-columns: 28px 1fr auto 1fr 1fr; align-items: center; padding: 12px 14px; gap: 8px; }
 .jogo-num { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
 .jogo-mandante { font-weight: 600; font-size: 13px; }
-.jogo-placar {
-  text-align: center;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 20px;
-  color: var(--gold);
-  background: rgba(245,200,66,0.08);
-  border: 1px solid rgba(245,200,66,0.2);
-  border-radius: var(--r-sm);
-  padding: 2px 12px;
-  min-width: 70px;
-  white-space: nowrap;
-}
+.jogo-placar { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--r-sm); padding: 2px 12px; min-width: 70px; white-space: nowrap; }
 .jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; }
-.jogo-placar.ao-vivo-score { color: var(--gold); animation: score-pulse 1s ease-in-out infinite; }
-@keyframes score-pulse { 0%,100%{opacity:1}50%{opacity:.7} }
 .jogo-visitante { font-weight: 600; font-size: 13px; text-align: right; }
 .jogo-meta { font-size: 11px; color: var(--text3); text-align: right; }
-
 .jogo-detail { display: none; border-top: 1px solid var(--border); }
 .jogo-detail.open { display: block; }
-.palpites-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 4px;
-  padding: 12px 14px;
-}
-.palpite-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 5px 8px; border-radius: var(--r-sm);
-  background: rgba(255,255,255,0.03);
-  font-size: 12px;
-}
+.palpites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 4px; padding: 12px 14px; }
+.palpite-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: var(--r-sm); background: rgba(255,255,255,0.03); font-size: 12px; }
 .palpite-item.acerto { background: var(--win-bg); }
 .palpite-item.erro { background: var(--loss-bg); }
 .palpite-name { color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90px; }
-.palpite-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500; font-size: 12px;
-  padding: 1px 6px; border-radius: 4px;
-  flex-shrink: 0;
-}
+.palpite-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12px; padding: 1px 6px; border-radius: 4px; flex-shrink: 0; }
 .palpite-val.V { background: var(--win-bg); color: var(--win); }
 .palpite-val.E { background: var(--draw-bg); color: var(--draw); }
 .palpite-val.D { background: var(--loss-bg); color: var(--loss); }
 
-.consensus-bar {
-  display: flex; gap: 8px; padding: 8px 14px;
-  border-top: 1px solid var(--border);
-  font-size: 11px; color: var(--text3);
-  background: rgba(0,0,0,0.2);
-}
+.consensus-bar { display: flex; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text3); background: rgba(0,0,0,0.2); }
 .cons-item { display: flex; align-items: center; gap: 4px; }
 .cons-dot { width: 8px; height: 8px; border-radius: 2px; }
 .cons-v { background: var(--win); }
 .cons-e { background: var(--draw); }
 .cons-d { background: var(--loss); }
 
-/* ─── ENTRADA DE RESULTADO ─── */
-.resultado-form {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border-top: 1px solid var(--border);
-  background: rgba(0,0,0,0.15);
-  flex-wrap: wrap;
-}
-.resultado-form label { font-size: 12px; color: var(--text2); }
-.res-input {
-  background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm);
-  color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px;
-  padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase;
-}
+.resultado-form { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.15); flex-wrap: wrap; }
+.res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase; }
 .res-input:focus { outline: none; border-color: var(--gold); }
-.btn-salvar {
-  background: var(--pitch); border: 1px solid var(--pitch-mid);
-  color: var(--text); font-size: 12px; font-weight: 500;
-  padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer;
-  transition: background .15s;
-}
+.btn-salvar { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; }
 .btn-salvar:hover { background: var(--pitch-mid); }
-.btn-limpar {
-  background: transparent; border: 1px solid var(--border2);
-  color: var(--text3); font-size: 12px;
-  padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer;
-}
+.btn-limpar { background: transparent; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; }
 .btn-limpar:hover { color: var(--loss); border-color: var(--loss); }
-.resultado-badge {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; padding: 2px 8px;
-  border-radius: 4px; font-weight: 500;
-}
+.resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
 .resultado-badge.V { background: var(--win-bg); color: var(--win); border: 1px solid rgba(76,175,125,0.3); }
 .resultado-badge.E { background: var(--draw-bg); color: var(--draw); border: 1px solid rgba(245,200,66,0.3); }
 .resultado-badge.D { background: var(--loss-bg); color: var(--loss); border: 1px solid rgba(224,82,82,0.3); }
 
-/* ─── TOAST ─── */
-.toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-  background: var(--card2); border: 1px solid var(--border2);
-  color: var(--text); font-size: 13px; padding: 10px 20px;
-  border-radius: 8px; z-index: 999; transition: transform .3s ease;
-  white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,.5);
-}
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card2); border: 1px solid var(--border2); color: var(--text); font-size: 13px; padding: 10px 20px; border-radius: 8px; z-index: 999; transition: transform .3s ease; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,.5); }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ─── LIVE PLACAR EXTERNO ─── */
 .live-section { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; margin-bottom: 20px; }
 .live-section-title { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .live-games { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
@@ -300,42 +128,27 @@ body {
 .lgc-status { font-size: 11px; color: var(--text3); text-align: center; margin-top: 4px; }
 .lgc-status.live { color: var(--win); }
 
-/* ─── IMPORTAR ─── */
 .import-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 16px; }
 .import-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .import-box p { color: var(--text2); font-size: 13px; margin-bottom: 12px; }
-.import-textarea {
-  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: var(--r-sm); color: var(--text); font-family: 'JetBrains Mono',monospace;
-  font-size: 12px; padding: 10px; height: 100px; resize: vertical;
-}
-.btn-primary {
-  background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text);
-  font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm);
-  cursor: pointer; margin-top: 8px; transition: background .15s;
-}
+.import-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'JetBrains Mono',monospace; font-size: 12px; padding: 10px; height: 100px; resize: vertical; }
+.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
 .btn-primary:hover { background: var(--pitch-mid); }
-
-/* ─── BOTÕES EXCLUSIVOS DO FORMULÁRIO DE PALPITES DINÂMICOS ─── */
-.btn-palpite-op {
-  background: var(--bg3); border: 1px solid var(--border2); color: var(--text2);
-  padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm);
-  cursor: pointer; transition: all 0.15s;
-}
+.btn-palpite-op { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s; }
 .btn-palpite-op:hover { border-color: var(--text3); color: var(--text); }
 .btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
 .btn-palpite-op.active-E { background: var(--draw-bg); color: var(--draw); border-color: var(--draw); }
 .btn-palpite-op.active-D { background: var(--loss-bg); color: var(--loss); border-color: var(--loss); }
 
-/* ─── UTILS ─── */
-.badge-live { background: rgba(245,200,66,.15); color: var(--gold); border: 1px solid rgba(245,200,66,.3); font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; }
 .badge-done { background: var(--win-bg); color: var(--win); border: 1px solid rgba(76,175,125,.3); font-size: 10px; padding: 1px 6px; border-radius: 4px; }
-
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
 .empty-state p { font-size: 13px; }
-
 .update-info { font-size: 11px; color: var(--text3); text-align: right; padding: 4px 0 12px; }
-.update-info span { color: var(--text2); }
+
+/* Loader Central */
+#loader-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+.spinner { width: 40px; height: 40px; border: 4px solid var(--border2); border-top-color: var(--gold); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 640px) {
   .jogo-header { grid-template-columns: 24px 1fr auto 1fr; }
@@ -347,6 +160,11 @@ body {
 </style>
 </head>
 <body>
+
+<div id="loader-overlay">
+  <div class="spinner"></div>
+  <p style="margin-top:16px;color:var(--text2);font-size:13px">Carregando dados do servidor...</p>
+</div>
 
 <div class="hero">
   <div class="hero-inner">
@@ -380,7 +198,6 @@ body {
 </nav>
 
 <div class="main">
-
   <div id="tab-ranking" class="section visible">
     <div class="update-info">Última atualização: <span id="last-update">—</span></div>
     <div class="ranking-grid" id="ranking-list"></div>
@@ -396,12 +213,11 @@ body {
       <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
       <button class="btn-primary" onclick="showTab('admin')">Ir para Login Admin</button>
     </div>
-
     <div id="ao-vivo-content">
       <div class="live-section">
         <div class="live-section-title">
-          <div class="live-dot" style="width:8px;height:8px;border-radius:50%;background:var(--win);animation:pulse 1.5s infinite"></div>
-          Placares ao vivo (API-Football / via proxy)
+          <div class="live-dot"></div>
+          Placares ao vivo (TheSportsDB / Todos os jogos)
         </div>
         <div id="live-games-container">
           <div class="empty-state"><p>Buscando partidas ao vivo...</p></div>
@@ -409,2545 +225,97 @@ body {
       </div>
       <div class="import-box">
         <h3>📥 Inserir resultado manualmente</h3>
-        <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code>, um por linha. Ex: <code>1 2-0</code></p>
-        <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1&#10;3 0-1"></textarea>
+        <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code></p>
+        <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1"></textarea>
         <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
       </div>
     </div>
   </div>
 
   <div id="tab-proximas-fases" class="section">
-    <div class="import-box" style="max-width:460px;margin:0 auto 24px">
-      <h3>👤 Escolha seu Perfil / Nome</h3>
-      <p style="margin-bottom:12px;color:var(--text2)">Selecione seu nome abaixo para registrar ou editar seus palpites do mata-mata.</p>
-      <select id="user-profile-select" class="res-input" style="width:100%;text-align:left;padding:8px 12px;height:auto;text-transform:none" onchange="loadUserProfileKnockouts()">
-        <option value="">-- Clique para selecionar seu nome --</option>
-      </select>
+    
+    <div id="user-auth-section" class="import-box" style="max-width:400px;margin:0 auto">
+      
+      <div id="user-login-form">
+        <h3>👤 Entrar na sua conta</h3>
+        <p style="margin-bottom:16px">Acesse para fazer ou alterar seus palpites de mata-mata.</p>
+        <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Usuário">
+        <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Senha">
+        <button class="btn-primary" style="width:100%" onclick="doUserLogin()">Entrar</button>
+        <p style="text-align:center;margin-top:16px;font-size:12px">
+          Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a>
+        </p>
+      </div>
+
+      <div id="user-register-form" style="display:none">
+        <h3>🆕 Criar Conta</h3>
+        <p style="margin-bottom:16px">Vincule seu nome do bolão a uma senha.</p>
+        <input type="text" id="reg-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Crie um usuário">
+        <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Crie uma senha">
+        
+        <label style="font-size:12px;color:var(--text2)">Seu perfil principal:</label>
+        <select id="reg-perfil1" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none"></select>
+        
+        <label style="font-size:12px;color:var(--text2)">Perfil secundário (opcional se você tiver 2 contas):</label>
+        <select id="reg-perfil2" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none"></select>
+
+        <button class="btn-primary" style="width:100%" onclick="doUserRegister()">Cadastrar e Vincular</button>
+        <p style="text-align:center;margin-top:16px;font-size:12px">
+          Já tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Fazer Login</a>
+        </p>
+      </div>
+
     </div>
-    <div id="knockout-games-wrapper" style="display:none">
+
+    <div id="user-knockout-section" style="display:none">
+      <div class="import-box" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="color:var(--text2);font-size:13px">Lançando palpites como:</span>
+          <select id="active-profile-select" class="res-input" style="width:auto;text-align:left;padding:6px 12px;text-transform:none" onchange="renderKnockoutGamesForm()"></select>
+        </div>
+        <button class="btn-limpar" onclick="doUserLogout()">Sair da conta</button>
+      </div>
+      
       <div class="group-title">⚽ Jogos das Próximas Fases (Mata-Mata)</div>
       <div id="knockout-games-list"></div>
     </div>
+
   </div>
 
   <div id="tab-admin" class="section">
     <div id="admin-login" class="import-box" style="max-width:360px;margin:0 auto">
       <h3>🔐 Área do Administrador</h3>
-      <p style="margin-bottom:16px">Digite a senha para acessar o painel de resultados.</p>
-      <div style="display:flex;gap:8px">
-        <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px 12px"
-          placeholder="Senha do admin" onkeydown="if(event.key==='Enter')checkAdminPass()">
-        <button class="btn-primary" onclick="checkAdminPass()">Entrar</button>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px" placeholder="Senha">
+        <button class="btn-primary" style="margin:0" onclick="checkAdminPass()">Entrar</button>
       </div>
-      <div id="admin-login-err" style="color:var(--loss);font-size:12px;margin-top:8px;display:none">❌ Senha incorreta</div>
     </div>
-
     <div id="admin-panel" style="display:none">
       <div class="import-box">
         <h3>⚙️ Configurações <button onclick="adminLogout()" style="float:right;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button></h3>
-        <p>Use o painel de cada jogo (aba Jogos) para inserir resultados. Os pontos são calculados automaticamente.</p>
         <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-primary" onclick="exportJSON()">💾 Exportar resultados (JSON)</button>
-          <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar todos os resultados</button>
+          <button class="btn-primary" onclick="exportJSON()">💾 Exportar resultados</button>
+          <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar tudo</button>
         </div>
       </div>
       <div class="import-box">
-        <h3>📋 Tabela completa de palpites</h3>
+        <h3>📋 Tabela completa</h3>
         <div id="tabela-completa" style="overflow-x:auto;margin-top:8px"></div>
       </div>
     </div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// DADOS DO BOLÃO (gerados automaticamente)
+// VARIÁVEIS GLOBAIS E INICIALIZAÇÃO
 // ═══════════════════════════════════════════════════════════
-const BOLAO = {
-  "participantes": [
-    "Ivan 1 OSS",
-    "Ivan 2 OSS",
-    "Andre OSS",
-    "Lelis OSS",
-    "Rods 1 OSS",
-    "Rods 2 OSS",
-    "Keller Poços",
-    "Jorge OSS",
-    "Claudia OSS",
-    "China",
-    "Joseney OSS",
-    "Barrinhos OSS",
-    "Marina Trinkaus",
-    "Fabinho Irmão",
-    "Fisher OSS",
-    "Rafael Féra",
-    "Raul FMC",
-    "Juninho",
-    "Lilian OSS",
-    "Wainer OSS",
-    "Satelis OSS",
-    "Ana Claudia",
-    "David OSS",
-    "Carla (Lilian)"
-  ],
-  "jogos": [
-    {
-      "jogo": 1,
-      "mandante": "México",
-      "visitante": "África do Sul",
-      "fase": "Grupo A",
-      "hora": "16h",
-      "local": "Cidade do México",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "E",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 2,
-      "mandante": "Coreia do Sul",
-      "visitante": "Tchéquia",
-      "fase": "Grupo A",
-      "hora": "23h",
-      "local": "Guadalajara",
-      "palpites": {
-        "Ivan 1 OSS": "E",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "E",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "E",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "D",
-        "Satelis OSS": "V",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 25,
-      "mandante": "Tchéquia",
-      "visitante": "África do Sul",
-      "fase": "Grupo A",
-      "hora": "13h",
-      "local": "Atlanta",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "D",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "E",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 28,
-      "mandante": "México",
-      "visitante": "Coreia do Sul",
-      "fase": "Grupo A",
-      "hora": "22h",
-      "local": "Guadalajara",
-      "palpites": {
-        "Ivan 1 OSS": "E",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 53,
-      "mandante": "Tchéquia",
-      "visitante": "México",
-      "fase": "Grupo A",
-      "hora": "22h",
-      "local": "Cidade do México",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "E",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 54,
-      "mandante": "África do Sul",
-      "visitante": "Coreia do Sul",
-      "fase": "Grupo A",
-      "hora": "22h",
-      "local": "Monterrey",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "E",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "E",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 3,
-      "mandante": "Canadá",
-      "visitante": "Bósnia-Herzegovina",
-      "fase": "Grupo B",
-      "hora": "16h",
-      "local": "Toronto",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "D",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "E",
-        "Satelis OSS": "D",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 8,
-      "mandante": "Catar",
-      "visitante": "Suíça",
-      "fase": "Grupo B",
-      "hora": "16h",
-      "local": "São Francisco",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 26,
-      "mandante": "Suíça",
-      "visitante": "Bósnia-Herzegovina",
-      "fase": "Grupo B",
-      "hora": "16h",
-      "local": "Los Angeles",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "E",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 27,
-      "mandante": "Canadá",
-      "visitante": "Catar",
-      "fase": "Grupo B",
-      "hora": "19h",
-      "local": "Vancouver",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "V",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 51,
-      "mandante": "Suíça",
-      "visitante": "Canadá",
-      "fase": "Grupo B",
-      "hora": "16h",
-      "local": "Vancouver",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "D",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "E",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 52,
-      "mandante": "Bósnia-Herzegovina",
-      "visitante": "Catar",
-      "fase": "Grupo B",
-      "hora": "16h",
-      "local": "Seattle",
-      "palpites": {
-        "Ivan 1 OSS": "E",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "E",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 5,
-      "mandante": "Haiti",
-      "visitante": "Escócia",
-      "fase": "Grupo C",
-      "hora": "22h",
-      "local": "Boston",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "E",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 7,
-      "mandante": "Brasil",
-      "visitante": "Marrocos",
-      "fase": "Grupo C",
-      "hora": "19h",
-      "local": "Nova York",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 29,
-      "mandante": "Brasil",
-      "visitante": "Haiti",
-      "fase": "Grupo C",
-      "hora": "22h",
-      "local": "Filadélfia",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 30,
-      "mandante": "Escócia",
-      "visitante": "Marrocos",
-      "fase": "Grupo C",
-      "hora": "19h",
-      "local": "Boston",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "E",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "E",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "E",
-        "Satelis OSS": "D",
-        "Ana Claudia": "E",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 49,
-      "mandante": "Escócia",
-      "visitante": "Brasil",
-      "fase": "Grupo C",
-      "hora": "19h",
-      "local": "Miami",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 50,
-      "mandante": "Marrocos",
-      "visitante": "Haiti",
-      "fase": "Grupo C",
-      "hora": "19h",
-      "local": "Atlanta",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 4,
-      "mandante": "Estados Unidos",
-      "visitante": "Paraguai",
-      "fase": "Grupo D",
-      "hora": "22h",
-      "local": "Los Angeles",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "E",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "D",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 6,
-      "mandante": "Austrália",
-      "visitante": "Turquia",
-      "fase": "Grupo D",
-      "hora": "1h",
-      "local": "Vancouver",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "E",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "E",
-        "Lilian OSS": "D",
-        "Wainer OSS": "E",
-        "Satelis OSS": "E",
-        "Ana Claudia": "E",
-        "David OSS": "D",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 31,
-      "mandante": "Turquia",
-      "visitante": "Paraguai",
-      "fase": "Grupo D",
-      "hora": "1h",
-      "local": "São Francisco",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "E",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 32,
-      "mandante": "Estados Unidos",
-      "visitante": "Austrália",
-      "fase": "Grupo D",
-      "hora": "16h",
-      "local": "Seattle",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "D",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 59,
-      "mandante": "Turquia",
-      "visitante": "Estados Unidos",
-      "fase": "Grupo D",
-      "hora": "23h",
-      "local": "Los Angeles",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "D",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "D",
-        "Lilian OSS": "V",
-        "Wainer OSS": "D",
-        "Satelis OSS": "V",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 60,
-      "mandante": "Paraguai",
-      "visitante": "Austrália",
-      "fase": "Grupo D",
-      "hora": "23h",
-      "local": "São Francisco",
-      "palpites": {
-        "Ivan 1 OSS": "E",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 9,
-      "mandante": "Costa do Marfim",
-      "visitante": "Equador",
-      "fase": "Grupo E",
-      "hora": "20h",
-      "local": "Filadélfia",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "E",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "E",
-        "Satelis OSS": "D",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 10,
-      "mandante": "Alemanha",
-      "visitante": "Curaçao",
-      "fase": "Grupo E",
-      "hora": "14h",
-      "local": "Houston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 33,
-      "mandante": "Alemanha",
-      "visitante": "Costa do Marfim",
-      "fase": "Grupo E",
-      "hora": "17h",
-      "local": "Toronto",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 34,
-      "mandante": "Equador",
-      "visitante": "Curaçao",
-      "fase": "Grupo E",
-      "hora": "21h",
-      "local": "Kansas City",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 55,
-      "mandante": "Curaçao",
-      "visitante": "Costa do Marfim",
-      "fase": "Grupo E",
-      "hora": "17h",
-      "local": "Filadélfia",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 56,
-      "mandante": "Equador",
-      "visitante": "Alemanha",
-      "fase": "Grupo E",
-      "hora": "17h",
-      "local": "Nova York",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "E",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "E",
-        "Ana Claudia": "D",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 11,
-      "mandante": "Países Baixos",
-      "visitante": "Japão",
-      "fase": "Grupo F",
-      "hora": "17h",
-      "local": "Dallas",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 12,
-      "mandante": "Suécia",
-      "visitante": "Tunísia",
-      "fase": "Grupo F",
-      "hora": "23h",
-      "local": "Monterrey",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "E",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 35,
-      "mandante": "Países Baixos",
-      "visitante": "Suécia",
-      "fase": "Grupo F",
-      "hora": "14h",
-      "local": "Houston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "E",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 36,
-      "mandante": "Tunísia",
-      "visitante": "Japão",
-      "fase": "Grupo F",
-      "hora": "1h",
-      "local": "Monterrey",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "E",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 57,
-      "mandante": "Japão",
-      "visitante": "Suécia",
-      "fase": "Grupo F",
-      "hora": "20h",
-      "local": "Dallas",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "V",
-        "Wainer OSS": "E",
-        "Satelis OSS": "V",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 58,
-      "mandante": "Tunísia",
-      "visitante": "Países Baixos",
-      "fase": "Grupo F",
-      "hora": "20h",
-      "local": "Kansas City",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "V",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 15,
-      "mandante": "Irã",
-      "visitante": "Nova Zelândia",
-      "fase": "Grupo G",
-      "hora": "22h",
-      "local": "Los Angeles",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "D",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "D",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "D",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 16,
-      "mandante": "Bélgica",
-      "visitante": "Egito",
-      "fase": "Grupo G",
-      "hora": "16h",
-      "local": "Seattle",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "D",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 39,
-      "mandante": "Bélgica",
-      "visitante": "Irã",
-      "fase": "Grupo G",
-      "hora": "16h",
-      "local": "Los Angeles",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 40,
-      "mandante": "Nova Zelândia",
-      "visitante": "Egito",
-      "fase": "Grupo G",
-      "hora": "22h",
-      "local": "Vancouver",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 63,
-      "mandante": "Egito",
-      "visitante": "Irã",
-      "fase": "Grupo G",
-      "hora": "0h",
-      "local": "Seattle",
-      "palpites": {
-        "Ivan 1 OSS": "E",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "E",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "V",
-        "Wainer OSS": "E",
-        "Satelis OSS": "V",
-        "Ana Claudia": "E",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 64,
-      "mandante": "Nova Zelândia",
-      "visitante": "Bélgica",
-      "fase": "Grupo G",
-      "hora": "0h",
-      "local": "Vancouver",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "V",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 13,
-      "mandante": "Arábia Saudita",
-      "visitante": "Uruguai",
-      "fase": "Grupo H",
-      "hora": "19h",
-      "local": "Miami",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 14,
-      "mandante": "Espanha",
-      "visitante": "Cabo Verde",
-      "fase": "Grupo H",
-      "hora": "13h",
-      "local": "Atlanta",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 37,
-      "mandante": "Uruguai",
-      "visitante": "Cabo Verde",
-      "fase": "Grupo H",
-      "hora": "19h",
-      "local": "Miami",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 38,
-      "mandante": "Espanha",
-      "visitante": "Arábia Saudita",
-      "fase": "Grupo H",
-      "hora": "13h",
-      "local": "Atlanta",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "D",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 65,
-      "mandante": "Cabo Verde",
-      "visitante": "Arábia Saudita",
-      "fase": "Grupo H",
-      "hora": "21h",
-      "local": "Houston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "E",
-        "Raul FMC": "E",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "E",
-        "Satelis OSS": "D",
-        "Ana Claudia": "E",
-        "David OSS": "D",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 66,
-      "mandante": "Uruguai",
-      "visitante": "Espanha",
-      "fase": "Grupo H",
-      "hora": "21h",
-      "local": "Guadalajara",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "E",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "E",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "E",
-        "Rafael Féra": "D",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 17,
-      "mandante": "França",
-      "visitante": "Senegal",
-      "fase": "Grupo I",
-      "hora": "16h",
-      "local": "Nova York",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "E",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 18,
-      "mandante": "Iraque",
-      "visitante": "Noruega",
-      "fase": "Grupo I",
-      "hora": "19h",
-      "local": "Boston",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 41,
-      "mandante": "Noruega",
-      "visitante": "Senegal",
-      "fase": "Grupo I",
-      "hora": "21h",
-      "local": "Nova York",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 42,
-      "mandante": "França",
-      "visitante": "Iraque",
-      "fase": "Grupo I",
-      "hora": "18h",
-      "local": "Filadélfia",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 61,
-      "mandante": "Noruega",
-      "visitante": "França",
-      "fase": "Grupo I",
-      "hora": "16h",
-      "local": "Boston",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "V",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "V",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 62,
-      "mandante": "Senegal",
-      "visitante": "Iraque",
-      "fase": "Grupo I",
-      "hora": "16h",
-      "local": "Toronto",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "V",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 19,
-      "mandante": "Argentina",
-      "visitante": "Argélia",
-      "fase": "Grupo J",
-      "hora": "22h",
-      "local": "Kansas City",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 20,
-      "mandante": "Áustria",
-      "visitante": "Jordânia",
-      "fase": "Grupo J",
-      "hora": "1h",
-      "local": "São Francisco",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "E",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 43,
-      "mandante": "Argentina",
-      "visitante": "Áustria",
-      "fase": "Grupo J",
-      "hora": "14h",
-      "local": "Dallas",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 44,
-      "mandante": "Jordânia",
-      "visitante": "Argélia",
-      "fase": "Grupo J",
-      "hora": "0h",
-      "local": "São Francisco",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "E",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "E",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "E",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "E",
-        "Ana Claudia": "E",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 69,
-      "mandante": "Argélia",
-      "visitante": "Áustria",
-      "fase": "Grupo J",
-      "hora": "23h",
-      "local": "Kansas City",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "E",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "V",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "E",
-        "Raul FMC": "E",
-        "Juninho": "D",
-        "Lilian OSS": "E",
-        "Wainer OSS": "D",
-        "Satelis OSS": "E",
-        "Ana Claudia": "D",
-        "David OSS": "E",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 70,
-      "mandante": "Jordânia",
-      "visitante": "Argentina",
-      "fase": "Grupo J",
-      "hora": "23h",
-      "local": "Dallas",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 23,
-      "mandante": "Portugal",
-      "visitante": "RD Congo",
-      "fase": "Grupo K",
-      "hora": "14h",
-      "local": "Houston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 24,
-      "mandante": "Uzbequistão",
-      "visitante": "Colômbia",
-      "fase": "Grupo K",
-      "hora": "23h",
-      "local": "Cidade do México",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 47,
-      "mandante": "Portugal",
-      "visitante": "Uzbequistão",
-      "fase": "Grupo K",
-      "hora": "14h",
-      "local": "Houston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 48,
-      "mandante": "Colômbia",
-      "visitante": "RD Congo",
-      "fase": "Grupo K",
-      "hora": "23h",
-      "local": "Guadalajara",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 71,
-      "mandante": "Colômbia",
-      "visitante": "Portugal",
-      "fase": "Grupo K",
-      "hora": "20h30",
-      "local": "Miami",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "E",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "E",
-        "Fisher OSS": "D",
-        "Rafael Féra": "E",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "D",
-        "Wainer OSS": "E",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 72,
-      "mandante": "RD Congo",
-      "visitante": "Uzbequistão",
-      "fase": "Grupo K",
-      "hora": "20h30",
-      "local": "Atlanta",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "E",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "E",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "D",
-        "Juninho": "E",
-        "Lilian OSS": "E",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "E",
-        "David OSS": "E",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 21,
-      "mandante": "Gana",
-      "visitante": "Panamá",
-      "fase": "Grupo L",
-      "hora": "20h",
-      "local": "Toronto",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "E",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "E",
-        "Jorge OSS": "E",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "V",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 22,
-      "mandante": "Inglaterra",
-      "visitante": "Croácia",
-      "fase": "Grupo L",
-      "hora": "17h",
-      "local": "Dallas",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "V",
-        "China": "V",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "E",
-        "Marina Trinkaus": "E",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "D",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "E",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "E",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 45,
-      "mandante": "Inglaterra",
-      "visitante": "Gana",
-      "fase": "Grupo L",
-      "hora": "17h",
-      "local": "Boston",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "V",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "V",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "E",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "V",
-        "Raul FMC": "E",
-        "Juninho": "V",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "V",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    },
-    {
-      "jogo": 46,
-      "mandante": "Panamá",
-      "visitante": "Croácia",
-      "fase": "Grupo L",
-      "hora": "20h",
-      "local": "Toronto",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "D",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "E"
-      }
-    },
-    {
-      "jogo": 67,
-      "mandante": "Panamá",
-      "visitante": "Inglaterra",
-      "fase": "Grupo L",
-      "hora": "18h",
-      "local": "Nova York",
-      "palpites": {
-        "Ivan 1 OSS": "D",
-        "Ivan 2 OSS": "D",
-        "Andre OSS": "D",
-        "Lelis OSS": "D",
-        "Rods 1 OSS": "D",
-        "Rods 2 OSS": "D",
-        "Keller Poços": "D",
-        "Jorge OSS": "D",
-        "Claudia OSS": "D",
-        "China": "D",
-        "Joseney OSS": "D",
-        "Barrinhos OSS": "D",
-        "Marina Trinkaus": "D",
-        "Fabinho Irmão": "D",
-        "Fisher OSS": "D",
-        "Rafael Féra": "D",
-        "Raul FMC": "D",
-        "Juninho": "D",
-        "Lilian OSS": "D",
-        "Wainer OSS": "D",
-        "Satelis OSS": "E",
-        "Ana Claudia": "D",
-        "David OSS": "D",
-        "Carla (Lilian)": "D"
-      }
-    },
-    {
-      "jogo": 68,
-      "mandante": "Croácia",
-      "visitante": "Gana",
-      "fase": "Grupo L",
-      "hora": "18h",
-      "local": "Filadélfia",
-      "palpites": {
-        "Ivan 1 OSS": "V",
-        "Ivan 2 OSS": "V",
-        "Andre OSS": "V",
-        "Lelis OSS": "E",
-        "Rods 1 OSS": "V",
-        "Rods 2 OSS": "E",
-        "Keller Poços": "V",
-        "Jorge OSS": "V",
-        "Claudia OSS": "E",
-        "China": "D",
-        "Joseney OSS": "V",
-        "Barrinhos OSS": "V",
-        "Marina Trinkaus": "V",
-        "Fabinho Irmão": "V",
-        "Fisher OSS": "V",
-        "Rafael Féra": "E",
-        "Raul FMC": "V",
-        "Juninho": "E",
-        "Lilian OSS": "V",
-        "Wainer OSS": "V",
-        "Satelis OSS": "E",
-        "Ana Claudia": "V",
-        "David OSS": "V",
-        "Carla (Lilian)": "V"
-      }
-    }
-  ]
-};
+let BOLAO = null;
+let resultados = {}; 
+let cachePalpitesFinais = []; 
 
-// ═══════════════════════════════════════════════════════════
-// ESTRUTURA PARA AS PRÓXIMAS FASES DO MATA-MATA
-// ═══════════════════════════════════════════════════════════
 const JOGOS_FASE_FINAL = [
   { jogo: 73, mandante: "1º Grupo A", visitante: "3º Grupo C/D/E", fase: "Dezesseis-avos (R32)" },
   { jogo: 74, mandante: "2º Grupo A", visitante: "2º Grupo B", fase: "Dezesseis-avos (R32)" },
@@ -2959,609 +327,339 @@ const JOGOS_FASE_FINAL = [
   { jogo: 80, mandante: "1º Grupo F", visitante: "2º Grupo E", fase: "Dezesseis-avos (R32)" }
 ];
 
-let cachePalpitesFinais = []; // Memória dos palpites dinâmicos carregados do servidor
-
-// ═══════════════════════════════════════════════════════════
-// CONEXÃO E PERSISTÊNCIA DE DADOS
-// ═══════════════════════════════════════════════════════════
-const USE_API = window.location.hostname !== '127.0.0.1' && window.location.protocol !== 'about:';
-
-async function loadResultados() {
-  if (!USE_API) {
-    try { return JSON.parse(localStorage.getItem('bolao_copa2026')) || {}; } catch { return {}; }
-  }
+async function init() {
   try {
-    const r = await fetch('/api/resultados');
-    return await r.json();
-  } catch { return {}; }
+    const resBolao = await fetch('/api/dados-bolao');
+    BOLAO = await resBolao.json();
+    
+    const resResults = await fetch('/api/resultados');
+    resultados = await resResults.json();
+    
+    const resFinais = await fetch('/api/palpites-finais');
+    cachePalpitesFinais = await resFinais.json();
+
+    document.getElementById('loader-overlay').style.display = 'none';
+    
+    popularSelectsCadastro();
+    checkUserSession();
+    renderRanking();
+    renderJogos();
+  } catch (e) {
+    document.getElementById('loader-overlay').innerHTML = '<p>Erro ao conectar com o servidor.</p>';
+  }
 }
 
-async function loadPalpitesFinaisServidor() {
-  if (!USE_API) {
-    try { return JSON.parse(localStorage.getItem('bolao_palpites_finais')) || []; } catch { return []; }
+// ═══════════════════════════════════════════════════════════
+// SISTEMA DE USUÁRIO (PARTICIPANTE)
+// ═══════════════════════════════════════════════════════════
+function toggleAuthForm() {
+  const login = document.getElementById('user-login-form');
+  const reg = document.getElementById('user-register-form');
+  if (login.style.display === 'none') {
+    login.style.display = 'block'; reg.style.display = 'none';
+  } else {
+    login.style.display = 'none'; reg.style.display = 'block';
   }
-  try {
-    const r = await fetch('/api/palpites-finais');
-    return await r.json();
-  } catch { return []; }
 }
 
-async function saveResultados(num, val) {
-  if (!USE_API) {
-    localStorage.setItem('bolao_copa2026', JSON.stringify(resultados));
-    return;
-  }
+function popularSelectsCadastro() {
+  const sel1 = document.getElementById('reg-perfil1');
+  const sel2 = document.getElementById('reg-perfil2');
+  let opts = '<option value="">-- Selecione --</option>';
+  BOLAO.participantes.forEach(p => opts += `<option value="${p}">${p}</option>`);
+  sel1.innerHTML = opts;
+  sel2.innerHTML = '<option value="">-- Nenhum (Deixe em branco) --</option>' + opts.replace('<option value="">-- Selecione --</option>','');
+}
+
+async function doUserRegister() {
+  const usuario = document.getElementById('reg-user').value.trim();
+  const senha = document.getElementById('reg-pass').value.trim();
+  const perfil1 = document.getElementById('reg-perfil1').value;
+  const perfil2 = document.getElementById('reg-perfil2').value;
+
+  if (!usuario || !senha || !perfil1) return showToast('⚠️ Preencha usuário, senha e o perfil principal.');
+  if (perfil1 === perfil2) return showToast('⚠️ Você não pode escolher o mesmo perfil duas vezes.');
+
   try {
-    await fetch(`/api/resultados/${num}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ resultado: val })
+    const res = await fetch('/api/auth/register', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ usuario, senha, perfil1, perfil2 })
     });
-  } catch(e) { console.warn('API indisponível', e); }
+    const data = await res.json();
+    if (data.ok) {
+      showToast('✅ Conta criada com sucesso!');
+      saveUserSession(data.perfis);
+    } else {
+      showToast('⚠️ ' + data.error);
+    }
+  } catch(e) { showToast('⚠️ Erro na conexão'); }
 }
 
-async function deleteResultadoAPI(num) {
-  if (!USE_API) { localStorage.setItem('bolao_copa2026', JSON.stringify(resultados)); return; }
-  try { await fetch(`/api/resultados/${num}`, { method: 'DELETE' }); } catch {}
-}
+async function doUserLogin() {
+  const usuario = document.getElementById('login-user').value.trim();
+  const senha = document.getElementById('login-pass').value.trim();
+  if (!usuario || !senha) return;
 
-async function deleteAllAPI() {
-  if (!USE_API) { localStorage.removeItem('bolao_copa2026'); return; }
-  try { await fetch('/api/resultados', { method: 'DELETE' }); } catch {}
-}
-
-let resultados = {}; 
-
-// ═══════════════════════════════════════════════════════════
-// LÓGICA DE PONTUAÇÃO
-// ═══════════════════════════════════════════════════════════
-function calcRanking() {
-  const pts = {};
-  const acertos = {};
-  const total = {};
-  BOLAO.participantes.forEach(p => { pts[p] = 0; acertos[p] = 0; total[p] = 0; });
-
-  BOLAO.jogos.forEach(jogo => {
-    const res = resultados[String(jogo.jogo)];
-    Object.entries(jogo.palpites).forEach(([p, pal]) => {
-      total[p] = (total[p]||0) + 1;
-      if (res) {
-        if (pal === res) { pts[p] = (pts[p]||0) + 3; acertos[p] = (acertos[p]||0) + 1; }
-      }
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ usuario, senha })
     });
-  });
-  return BOLAO.participantes.map(p => ({
-    nome: p, pts: pts[p]||0, acertos: acertos[p]||0, total: total[p]||0
-  })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
+    const data = await res.json();
+    if (data.ok) {
+      saveUserSession(data.perfis);
+    } else {
+      showToast('⚠️ ' + data.error);
+    }
+  } catch(e) { showToast('⚠️ Erro na conexão'); }
 }
 
-// ═══════════════════════════════════════════════════════════
-// RENDER RANKING
-// ═══════════════════════════════════════════════════════════
-function renderRanking() {
-  const ranking = calcRanking();
-  const maxPts = Math.max(...ranking.map(r => r.pts), 1);
-  const encerrados = Object.keys(resultados).length;
-  const lider = ranking[0];
+function saveUserSession(perfis) {
+  sessionStorage.setItem('bolao_user_perfis', JSON.stringify(perfis));
+  checkUserSession();
+}
 
-  document.getElementById('stat-jogos').textContent = BOLAO.jogos.length;
-  document.getElementById('stat-encerrados').textContent = encerrados;
-  document.getElementById('stat-lider').textContent = lider.pts > 0 ? lider.nome.split(' ')[0] : '—';
-  document.getElementById('stat-lider-pts').textContent = lider.pts;
-  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('pt-BR');
+function checkUserSession() {
+  const saved = sessionStorage.getItem('bolao_user_perfis');
+  if (saved) {
+    const perfis = JSON.parse(saved);
+    document.getElementById('user-auth-section').style.display = 'none';
+    document.getElementById('user-knockout-section').style.display = 'block';
+    
+    const sel = document.getElementById('active-profile-select');
+    sel.innerHTML = '';
+    perfis.forEach(p => {
+      const o = document.createElement('option');
+      o.value = p; o.textContent = p; sel.appendChild(o);
+    });
+    renderKnockoutGamesForm();
+  } else {
+    document.getElementById('user-auth-section').style.display = 'block';
+    document.getElementById('user-knockout-section').style.display = 'none';
+  }
+}
 
-  const container = document.getElementById('ranking-list');
+function doUserLogout() {
+  sessionStorage.removeItem('bolao_user_perfis');
+  checkUserSession();
+}
+
+function renderKnockoutGamesForm() {
+  const participante = document.getElementById('active-profile-select').value;
+  if (!participante) return;
+  const container = document.getElementById('knockout-games-list');
   container.innerHTML = '';
 
-  ranking.forEach((r, i) => {
-    const pos = i + 1;
-    const pct = maxPts > 0 ? Math.round((r.pts / maxPts) * 100) : 0;
-    const posClass = pos <= 3 ? `pos-${pos}` : '';
-    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '';
-    const pctAcerto = r.total > 0 && encerrados > 0 
-      ? Math.round((r.acertos / encerrados) * 100) : 0;
-
+  JOGOS_FASE_FINAL.forEach(j => {
+    const saved = cachePalpitesFinais.find(i => i.participante === participante && i.jogo_num === j.jogo);
+    const activePalpite = saved ? saved.palpite : null;
     const card = document.createElement('div');
-    card.className = `rank-card ${posClass}`;
+    card.className = 'jogo-card';
+    card.style.cursor = 'default';
     card.innerHTML = `
-      <div class="rank-pos">${medal || pos}</div>
-      <div class="rank-info">
-        <div class="rank-name">${r.nome}</div>
-        <div class="rank-sub">${r.acertos} acertos · ${pctAcerto}% aproveitamento</div>
-      </div>
-      <div class="rank-bar-wrap">
-        <div class="rank-bar-bg">
-          <div class="rank-bar-fill" style="width:${pct}%"></div>
+      <div class="jogo-header" style="grid-template-columns: 28px 1fr auto 1fr auto">
+        <div class="jogo-num">#${j.jogo}</div>
+        <div class="jogo-mandante">${j.mandante}</div>
+        <div style="display:flex;gap:4px;align-items:center;">
+          <button class="btn-palpite-op ${activePalpite === 'V' ? 'active-V' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'V')">V</button>
+          <button class="btn-palpite-op ${activePalpite === 'E' ? 'active-E' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'E')">E</button>
+          <button class="btn-palpite-op ${activePalpite === 'D' ? 'active-D' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'D')">D</button>
         </div>
-      </div>
-      <div class="rank-pts">${r.pts}<span>pontos</span></div>`;
+        <div class="jogo-visitante">${j.visitante}</div>
+        <div style="font-size:11px;color:var(--text3);text-align:right">R32</div>
+      </div>`;
     container.appendChild(card);
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// RENDER JOGOS
-// ═══════════════════════════════════════════════════════════
-function getResultado(jogoNum) { return resultados[String(jogoNum)] || null; }
+async function submitKnockoutGuess(jogoNum, palpiteVal) {
+  const participante = document.getElementById('active-profile-select').value;
+  jogoNum = parseInt(jogoNum);
+  
+  const idx = cachePalpitesFinais.findIndex(i => i.participante === participante && i.jogo_num === jogoNum);
+  if (idx !== -1) cachePalpitesFinais[idx].palpite = palpiteVal;
+  else cachePalpitesFinais.push({ participante, jogo_num: jogoNum, palpite: palpiteVal });
 
-function resultadoToText(res) {
-  if (res === 'V') return 'Mandante vence';
-  if (res === 'E') return 'Empate';
-  if (res === 'D') return 'Visitante vence';
-  return '—';
+  try {
+    await fetch('/api/palpites-finais', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ participante, jogo_num: jogoNum, palpite: palpiteVal })
+    });
+    showToast(`Palpite salvo! Jogo #${jogoNum} → ${palpiteVal}`);
+    renderKnockoutGamesForm();
+  } catch(e) { showToast('⚠️ Erro ao salvar'); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RANKING E JOGOS
+// ═══════════════════════════════════════════════════════════
+function calcRanking() {
+  const pts = {}; const acertos = {}; const total = {};
+  BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; });
+  BOLAO.jogos.forEach(j => {
+    const res = resultados[String(j.jogo)];
+    Object.entries(j.palpites).forEach(([p, pal]) => {
+      total[p] = (total[p]||0) + 1;
+      if (res && pal === res) { pts[p]+=3; acertos[p]+=1; }
+    });
+  });
+  return BOLAO.participantes.map(p => ({nome: p, pts: pts[p], acertos: acertos[p], total: total[p]})).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
+}
+
+function renderRanking() {
+  const ranking = calcRanking();
+  const maxPts = Math.max(...ranking.map(r => r.pts), 1);
+  const encerrados = Object.keys(resultados).length;
+  document.getElementById('stat-jogos').textContent = BOLAO.jogos.length;
+  document.getElementById('stat-encerrados').textContent = encerrados;
+  document.getElementById('stat-lider').textContent = ranking[0].pts > 0 ? ranking[0].nome.split(' ')[0] : '—';
+  document.getElementById('stat-lider-pts').textContent = ranking[0].pts;
+  document.getElementById('last-update').textContent = new Date().toLocaleTimeString('pt-BR');
+  
+  const container = document.getElementById('ranking-list');
+  container.innerHTML = '';
+  ranking.forEach((r, i) => {
+    const pos = i + 1;
+    const pct = Math.round((r.pts / maxPts) * 100);
+    const pctA = r.total > 0 && encerrados > 0 ? Math.round((r.acertos / encerrados) * 100) : 0;
+    container.innerHTML += `
+      <div class="rank-card ${pos<=3?`pos-${pos}`:''}">
+        <div class="rank-pos">${pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos}</div>
+        <div class="rank-info"><div class="rank-name">${r.nome}</div><div class="rank-sub">${r.acertos} acertos · ${pctA}% aprov.</div></div>
+        <div class="rank-bar-wrap"><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div></div>
+        <div class="rank-pts">${r.pts}<span>pontos</span></div>
+      </div>`;
+  });
 }
 
 function renderJogos() {
   const groups = {};
-  BOLAO.jogos.forEach(j => {
-    if (!groups[j.fase]) groups[j.fase] = [];
-    groups[j.fase].push(j);
-  });
-
+  BOLAO.jogos.forEach(j => { if(!groups[j.fase]) groups[j.fase]=[]; groups[j.fase].push(j); });
   const container = document.getElementById('jogos-list');
   container.innerHTML = '';
-
+  
   Object.entries(groups).forEach(([grupo, jogos]) => {
-    const sec = document.createElement('div');
-    sec.className = 'group-section';
-    sec.innerHTML = `<div class="group-title">${grupo}</div>`;
-
-    jogos.forEach(jogo => {
-      const res = getResultado(jogo.jogo);
-      const card = document.createElement('div');
-      card.className = `jogo-card ${res ? 'encerrado' : ''}`;
-      card.id = `jogo-card-${jogo.jogo}`;
-
-      let placarHTML = '';
-      if (res) {
-        placarHTML = `<div class="jogo-placar"><span class="resultado-badge ${res}">${resultadoToText(res)}</span></div>`;
-      } else {
-        placarHTML = `<div class="jogo-placar pendente">${jogo.hora} · ${jogo.local}</div>`;
-      }
-
-      const pals = Object.values(jogo.palpites);
-      const consV = pals.filter(p=>p==='V').length;
-      const consE = pals.filter(p=>p==='E').length;
-      const consD = pals.filter(p=>p==='D').length;
-      const tot = pals.length;
-
-      const palItems = Object.entries(jogo.palpites).map(([p, pal]) => {
-        const cls = res ? (pal === res ? 'acerto' : 'erro') : '';
-        return `<div class="palpite-item ${cls}">
-          <span class="palpite-name">${p}</span>
-          <span class="palpite-val ${pal}">${pal}</span>
-        </div>`;
-      }).join('');
-
-      card.innerHTML = `
-        <div class="jogo-header" onclick="toggleJogo(${jogo.jogo})">
-          <div class="jogo-num">#${jogo.jogo}</div>
-          <div class="jogo-mandante">${jogo.mandante}</div>
-          ${placarHTML}
-          <div class="jogo-visitante">${jogo.visitante}</div>
-          <div class="jogo-meta">${res ? `<span class="badge-done">✓ Encerrado</span>` : `<span style="font-size:11px;color:var(--text3)">${jogo.hora}</span>`}</div>
-        </div>
-        <div class="jogo-detail" id="detail-${jogo.jogo}">
-          <div class="consensus-bar">
-            <span style="font-size:11px;color:var(--text3);margin-right:4px">Consenso:</span>
-            <span class="cons-item"><span class="cons-dot cons-v"></span> V ${consV} (${Math.round(consV/tot*100)}%)</span>
-            <span class="cons-item"><span class="cons-dot cons-e"></span> E ${consE} (${Math.round(consE/tot*100)}%)</span>
-            <span class="cons-item"><span class="cons-dot cons-d"></span> D ${consD} (${Math.round(consD/tot*100)}%)</span>
-          </div>
-          <div class="palpites-grid">${palItems}</div>
-          <div class="resultado-form" style="${!isAdmin() ? 'display:none' : ''}">
-            <label>Inserir resultado:</label>
-            <input class="res-input" id="res-input-${jogo.jogo}" maxlength="1" placeholder="V/E/D"
-              value="${res || ''}" oninput="this.value=this.value.toUpperCase()">
-            <button class="btn-salvar" onclick="salvarResultado(${jogo.jogo})">Salvar</button>
-            ${res ? `<button class="btn-limpar" onclick="limparResultado(${jogo.jogo})">Limpar</button>` : ''}
-          </div>
-        </div>`;
-
-      sec.appendChild(card);
-    });
-
-    container.appendChild(sec);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-// ABA NOVA: LOGICA DE PREENCHIMENTO DO MATA-MATA
-// ═══════════════════════════════════════════════════════════
-function buildUserProfileDropdown() {
-  const select = document.getElementById('user-profile-select');
-  select.innerHTML = '<option value="">-- Clique para selecionar seu nome --</option>';
-  BOLAO.participantes.forEach(p => {
-    const opt = document.createElement('option');
-    opt.value = p;
-    opt.textContent = p;
-    select.appendChild(opt);
-  });
-}
-
-function loadUserProfileKnockouts() {
-  const pName = document.getElementById('user-profile-select').value;
-  const wrapper = document.getElementById('knockout-games-wrapper');
-  if (!pName) {
-    wrapper.style.display = 'none';
-    return;
-  }
-  wrapper.style.display = 'block';
-  renderKnockoutGamesForm(pName);
-}
-
-function renderKnockoutGamesForm(participante) {
-  const container = document.getElementById('knockout-games-list');
-  container.innerHTML = '';
-
-  const groups = {};
-  JOGOS_FASE_FINAL.forEach(j => {
-    if (!groups[j.fase]) groups[j.fase] = [];
-    groups[j.fase].push(j);
-  });
-
-  Object.entries(groups).forEach(([faseName, jogos]) => {
-    const sec = document.createElement('div');
-    sec.className = 'group-section';
-    sec.innerHTML = `<div class="group-title">${faseName}</div>`;
-
+    let html = `<div class="group-section"><div class="group-title">${grupo}</div>`;
     jogos.forEach(j => {
-      // Procura se o perfil já tem um palpite salvo para este jogo
-      const saved = cachePalpitesFinais.find(item => item.participante === participante && item.jogo_num === j.jogo);
-      const activePalpite = saved ? saved.palpite : null;
-
-      const card = document.createElement('div');
-      card.className = 'jogo-card';
-      card.style.cursor = 'default';
-      card.innerHTML = `
-        <div class="jogo-header" style="grid-template-columns: 28px 1fr auto 1fr auto">
-          <div class="jogo-num">#${j.jogo}</div>
-          <div class="jogo-mandante">${j.mandante}</div>
-          <div style="display:flex;gap:4px;align-items:center;">
-            <button class="btn-palpite-op ${activePalpite === 'V' ? 'active-V' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'V')">V</button>
-            <button class="btn-palpite-op ${activePalpite === 'E' ? 'active-E' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'E')">E</button>
-            <button class="btn-palpite-op ${activePalpite === 'D' ? 'active-D' : ''}" onclick="submitUserKnockoutGuess('${j.jogo}', 'D')">D</button>
-          </div>
-          <div class="jogo-visitante">${j.visitante}</div>
-          <div style="font-size:11px;color:var(--text3);text-align:right">Mata-Mata</div>
-        </div>
-      `;
-      sec.appendChild(card);
-    });
-    container.appendChild(sec);
-  });
-}
-
-async function submitUserKnockoutGuess(jogoNum, palpiteVal) {
-  const participante = document.getElementById('user-profile-select').value;
-  if (!participante) return;
-
-  jogoNum = parseInt(jogoNum);
-
-  // Atualiza cache local imediatamente
-  const idx = cachePalpitesFinais.findIndex(item => item.participante === participante && item.jogo_num === jogoNum);
-  if (idx !== -1) {
-    cachePalpitesFinais[idx].palpite = palpiteVal;
-  } else {
-    cachePalpitesFinais.push({ participante, jogo_num: jogoNum, palpite: palpiteVal });
-  }
-
-  // Persiste no banco ou localStorage
-  if (!USE_API) {
-    localStorage.setItem('bolao_palpites_finais', JSON.stringify(cachePalpitesFinais));
-  } else {
-    try {
-      await fetch('/api/palpites-finais', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ participante, jogo_num: jogoNum, palpite: palpiteVal })
+      const res = resultados[String(j.jogo)];
+      const cons = {V:0, E:0, D:0};
+      Object.values(j.palpites).forEach(p => cons[p]++);
+      const tot = Object.values(j.palpites).length;
+      
+      let palsHtml = '';
+      Object.entries(j.palpites).forEach(([p, pal]) => {
+        palsHtml += `<div class="palpite-item ${res?(pal===res?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`;
       });
-    } catch(e) { console.warn('Erro ao conectar ao servidor', e); }
-  }
 
-  showToast(`Palpite salvo! Jogo #${jogoNum} → ${resultadoToText(palpiteVal)}`);
-  renderKnockoutGamesForm(participante); // Atualiza os botões visuais
-}
-
-// ═══════════════════════════════════════════════════════════
-// AÇÕES ADMIN
-// ═══════════════════════════════════════════════════════════
-function toggleJogo(num) {
-  const d = document.getElementById(`detail-${num}`);
-  if (d) d.classList.toggle('open');
-}
-
-function salvarResultado(num) {
-  const input = document.getElementById(`res-input-${num}`);
-  const val = input ? input.value.trim().toUpperCase() : '';
-  if (!['V','E','D'].includes(val)) {
-    showToast('⚠️ Use V (mandante), E (empate) ou D (visitante)');
-    return;
-  }
-  resultados[String(num)] = val;
-  saveResultados(num, val);
-  renderRanking();
-  renderJogos();
-  showToast(`✅ Jogo #${num} → ${resultadoToText(val)} salvo!`);
-}
-
-function limparResultado(num) {
-  delete resultados[String(num)];
-  deleteResultadoAPI(num);
-  renderRanking();
-  renderJogos();
-  showToast(`🗑️ Resultado do jogo #${num} removido`);
-}
-
-async function bulkImport() {
-  const lines = document.getElementById('bulk-input').value.trim().split('\n');
-  let count = 0;
-  for (const line of lines) {
-    const [numStr, placar] = line.trim().split(/\s+/);
-    const num = parseInt(numStr);
-    if (!num || !placar) continue;
-    let res = null;
-    if (['V','E','D'].includes(placar.toUpperCase())) {
-      res = placar.toUpperCase();
-    } else if (placar.includes('-')) {
-      const [g1, g2] = placar.split('-').map(Number);
-      if (!isNaN(g1) && !isNaN(g2)) res = g1 > g2 ? 'V' : g1 < g2 ? 'D' : 'E';
-    }
-    if (res) { resultados[String(num)] = res; await saveResultados(num, res); count++; }
-  }
-  if (count > 0) {
-    renderRanking(); renderJogos();
-    showToast(`✅ ${count} resultado(s) importado(s)!`);
-    document.getElementById('bulk-input').value = '';
-  } else {
-    showToast('⚠️ Nenhum resultado válido encontrado');
-  }
-}
-
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(resultados, null, 2)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'bolao_resultados.json';
-  a.click();
-}
-
-async function resetAll() {
-  if (!confirm('Limpar TODOS os resultados? Essa ação não pode ser desfeita.')) return;
-  resultados = {};
-  await deleteAllAPI();
-  renderRanking(); renderJogos();
-  showToast('🗑️ Todos os resultados removidos');
-}
-
-// ═══════════════════════════════════════════════════════════
-// TABELA ADMIN
-// ═══════════════════════════════════════════════════════════
-function renderTabelaAdmin() {
-  const container = document.getElementById('tabela-completa');
-  const ranking = calcRanking();
-  
-  let html = '<table style="border-collapse:collapse;font-size:11px;min-width:600px">';
-  html += '<tr><th style="padding:6px 8px;text-align:left;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap">#</th>';
-  html += '<th style="padding:6px 8px;text-align:left;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap">Participante</th>';
-  html += '<th style="padding:6px 8px;text-align:right;color:var(--text2);border-bottom:1px solid var(--border)">Pts</th>';
-  html += '<th style="padding:6px 8px;text-align:right;color:var(--text2);border-bottom:1px solid var(--border)">Acertos</th>';
-  html += '<th style="padding:6px 8px;text-align:right;color:var(--text2);border-bottom:1px solid var(--border)">%</th></tr>';
-  
-  ranking.forEach((r, i) => {
-    const enc = Object.keys(resultados).length;
-    const pct = enc > 0 ? Math.round((r.acertos / enc) * 100) : 0;
-    html += `<tr>
-      <td style="padding:5px 8px;color:var(--text3)">${i+1}</td>
-      <td style="padding:5px 8px;color:var(--text)">${r.nome}</td>
-      <td style="padding:5px 8px;text-align:right;font-weight:600;color:var(--gold)">${r.pts}</td>
-      <td style="padding:5px 8px;text-align:right;color:var(--win)">${r.acertos}</td>
-      <td style="padding:5px 8px;text-align:right;color:var(--text2)">${pct}%</td>
-    </tr>`;
+      html += `
+      <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
+        <div class="jogo-header" onclick="toggleJogo(${j.jogo})">
+          <div class="jogo-num">#${j.jogo}</div><div class="jogo-mandante">${j.mandante}</div>
+          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${res==='V'?'Mandante':res==='E'?'Empate':'Visitante'}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓</span>':''}</div>
+        </div>
+        <div class="jogo-detail" id="detail-${j.jogo}">
+          <div class="consensus-bar">
+            <span>Consenso:</span>
+            <span class="cons-item"><span class="cons-dot cons-v"></span> V (${Math.round(cons.V/tot*100)}%)</span>
+            <span class="cons-item"><span class="cons-dot cons-e"></span> E (${Math.round(cons.E/tot*100)}%)</span>
+            <span class="cons-item"><span class="cons-dot cons-d"></span> D (${Math.round(cons.D/tot*100)}%)</span>
+          </div>
+          <div class="palpites-grid">${palsHtml}</div>
+          <div class="resultado-form" style="${!isAdmin()?'display:none':''}">
+            <label>Inserir resultado:</label>
+            <input class="res-input" id="res-input-${j.jogo}" maxlength="1" value="${res||''}" oninput="this.value=this.value.toUpperCase()">
+            <button class="btn-salvar" onclick="salvarResultado(${j.jogo})">Salvar</button>
+            ${res ? `<button class="btn-limpar" onclick="limparResultado(${j.jogo})">Limpar</button>` : ''}
+          </div>
+        </div>
+      </div>`;
+    });
+    container.innerHTML += html + '</div>';
   });
-  html += '</table>';
-  container.innerHTML = html;
 }
 
+function toggleJogo(num) { document.getElementById(`detail-${num}`).classList.toggle('open'); }
+
 // ═══════════════════════════════════════════════════════════
-// AO VIVO — busca resultados de API pública
+// AO VIVO E ADMIN
 // ═══════════════════════════════════════════════════════════
 async function fetchLiveScores() {
   const container = document.getElementById('live-games-container');
   container.innerHTML = '<div class="empty-state"><p>Buscando partidas...</p></div>';
-
   try {
     const today = new Date().toISOString().split('T')[0];
     const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
-    const resp = await fetch(url);
-    const data = await resp.json();
+    const res = await fetch(url);
+    const data = await res.json();
+    const events = data.events || [];
     
-    const events = (data.events || []).filter(e => 
-      (e.strLeague || '').toLowerCase().includes('world cup') ||
-      (e.strLeague || '').toLowerCase().includes('copa') ||
-      (e.idLeague === '133604')
-    );
-
-    if (events.length === 0) {
-      container.innerHTML = `<div class="empty-state">
-        <p>⚽ Nenhuma partida da Copa encontrada hoje</p>
-        <p style="margin-top:8px;font-size:12px">Os jogos começam em 11 de junho de 2026</p>
-      </div>`;
-      return;
-    }
-
-    const div = document.createElement('div');
-    div.className = 'live-games';
+    if (events.length === 0) return container.innerHTML = `<div class="empty-state"><p>Nenhuma partida encontrada hoje</p></div>`;
+    
+    let html = '<div class="live-games">';
     events.forEach(e => {
-      const status = e.strStatus || '';
-      const isLive = status.match(/^\d+$/) || status === 'HT';
-      const isFinished = status === 'FT' || status === 'AET';
-      const card = document.createElement('div');
-      card.className = 'live-game-card';
-      card.innerHTML = `
-        <div class="lgc-teams">
-          <div class="lgc-team">${e.strHomeTeam}</div>
-          <div class="lgc-score">${e.intHomeScore ?? '–'}:${e.intAwayScore ?? '–'}</div>
-          <div class="lgc-team right">${e.strAwayTeam}</div>
-        </div>
-        <div class="lgc-status ${isLive ? 'live' : ''}">
-          ${isLive ? `⏱ ${status}'` : isFinished ? '✓ Encerrado' : e.strTime || 'Aguardando'}
-        </div>`;
-      div.appendChild(card);
-
-      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
-        const h = parseInt(e.intHomeScore), a = parseInt(e.intAwayScore);
-        const res = h > a ? 'V' : h < a ? 'D' : 'E';
-        const jogoMatch = BOLAO.jogos.find(j =>
-          j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) ||
-          e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5))
-        );
-        if (jogoMatch && !resultados[String(jogoMatch.jogo)]) {
-          resultados[String(jogoMatch.jogo)] = res;
-          saveResultados(jogoMatch.jogo, res);
-          renderRanking();
-          renderJogos();
-          showToast(`🔄 Auto: Jogo #${jogoMatch.jogo} → ${res}`);
-        }
-      }
+      const live = e.strStatus.match(/^\d+$/) || e.strStatus === 'HT';
+      html += `<div class="live-game-card"><div class="lgc-teams"><div class="lgc-team">${e.strHomeTeam}</div><div class="lgc-score">${e.intHomeScore??'–'}:${e.intAwayScore??'–'}</div><div class="lgc-team right">${e.strAwayTeam}</div></div><div class="lgc-status ${live?'live':''}">${live?`⏱ ${e.strStatus}'`:e.strStatus==='FT'?'✓ Encerrado':e.strTime}</div></div>`;
     });
-    container.innerHTML = '';
-    container.appendChild(div);
-
-  } catch (err) {
-    container.innerHTML = `<div class="empty-state">
-      <p>⚠️ Não foi possível buscar dados ao vivo</p>
-      <p style="font-size:11px;margin-top:4px;color:var(--text3)">Use a aba Admin para inserir manualmente</p>
-    </div>`;
-  }
+    container.innerHTML = html + '</div>';
+  } catch (e) { container.innerHTML = '<div class="empty-state"><p>⚠️ Erro ao buscar dados ao vivo</p></div>'; }
 }
 
-// ═══════════════════════════════════════════════════════════
-// ADMIN AUTH 
-// ═══════════════════════════════════════════════════════════
-const ADMIN_SESSION_KEY = 'bolao_admin_ok';
-let adminAuthorized = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
-
+let adminAuthorized = sessionStorage.getItem('bolao_admin') === '1';
 function isAdmin() { return adminAuthorized; }
 
 async function checkAdminPass() {
   const pass = document.getElementById('admin-pass-input').value;
-  const err  = document.getElementById('admin-login-err');
-  err.style.display = 'none';
   try {
-    const r = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ senha: pass })
-    });
-    if (r.ok) {
-      adminAuthorized = true;
-      sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+    const r = await fetch('/api/admin/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({senha:pass}) });
+    if(r.ok) {
+      adminAuthorized = true; sessionStorage.setItem('bolao_admin', '1');
       document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').style.display  = 'block';
-      renderTabelaAdmin();
-      renderJogos();
-    } else {
-      err.style.display = 'block';
-    }
-  } catch {
-    if (pass === 'admin123') {
-      adminAuthorized = true;
-      sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').style.display  = 'block';
+      document.getElementById('admin-panel').style.display = 'block';
       renderTabelaAdmin(); renderJogos();
-    } else { err.style.display = 'block'; }
-  }
+    }
+  } catch(e) { /* fallback local ignorado para manter código limpo */ }
+}
+function adminLogout() { adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); }
+
+async function salvarResultado(num) {
+  const val = document.getElementById(`res-input-${num}`).value;
+  if (!['V','E','D'].includes(val)) return showToast('⚠️ Use V, E ou D');
+  resultados[String(num)] = val;
+  await fetch(`/api/resultados/${num}`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({resultado:val}) });
+  renderRanking(); renderJogos(); showToast('✅ Salvo!');
+}
+async function limparResultado(num) {
+  delete resultados[String(num)];
+  await fetch(`/api/resultados/${num}`, { method: 'DELETE' });
+  renderRanking(); renderJogos(); showToast('🗑️ Removido');
 }
 
-function adminLogout() {
-  adminAuthorized = false;
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  document.getElementById('admin-login').style.display = 'block';
-  document.getElementById('admin-panel').style.display  = 'none';
-  document.getElementById('admin-pass-input').value = '';
-  renderJogos();
+function renderTabelaAdmin() {
+  const ranking = calcRanking();
+  let html = '<table style="border-collapse:collapse;font-size:11px;min-width:600px;width:100%"><tr><th style="text-align:left;padding:8px">Participante</th><th style="text-align:right">Pts</th><th style="text-align:right">Acertos</th></tr>';
+  ranking.forEach(r => html += `<tr><td style="padding:8px;border-bottom:1px solid var(--border)">${r.nome}</td><td style="text-align:right;border-bottom:1px solid var(--border);color:var(--gold)">${r.pts}</td><td style="text-align:right;border-bottom:1px solid var(--border)">${r.acertos}</td></tr>`);
+  document.getElementById('tabela-completa').innerHTML = html + '</table>';
 }
 
-// ═══════════════════════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════════════════════
 function showTab(name) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  
-  const currentTabBtn = event ? event.target : document.querySelector(`.nav-tab[onclick="showTab('${name}')"]`);
-  if (currentTabBtn && currentTabBtn.classList && currentTabBtn.classList.contains('nav-tab')) {
-    currentTabBtn.classList.add('active');
-  } else {
-    document.querySelector(`.nav-tab[onclick="showTab('${name}')"]`).classList.add('active');
-  }
-
   document.getElementById(`tab-${name}`).classList.add('visible');
-  
-  if (name === 'ao-vivo') {
-    if (isAdmin()) {
-      document.getElementById('ao-vivo-login').style.display = 'none';
-      document.getElementById('ao-vivo-content').style.display = 'block';
-      fetchLiveScores();
-    } else {
-      document.getElementById('ao-vivo-login').style.display = 'block';
-      document.getElementById('ao-vivo-content').style.display = 'none';
-    }
-  }
-
-  if (name === 'proximas-fases') {
-    // Força recarga dos palpites dinâmicos para garantir dados limpos
-    loadPalpitesFinaisServidor().then(data => {
-      cachePalpitesFinais = data;
-      const currentSelected = document.getElementById('user-profile-select').value;
-      if (currentSelected) renderKnockoutGamesForm(currentSelected);
-    });
-  }
-  
-  if (name === 'admin') {
-    if (adminAuthorized) {
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').style.display  = 'block';
-      renderTabelaAdmin();
-    }
-  }
+  event.target.classList.add('active');
+  if (name === 'ao-vivo') fetchLiveScores();
+  if (name === 'admin' && adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); }
 }
 
-// ═══════════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════════
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
 }
+setInterval(() => { renderRanking(); if(document.getElementById('tab-ao-vivo').classList.contains('visible')) fetchLiveScores(); }, 180000);
 
-// ═══════════════════════════════════════════════════════════
-// AUTO-REFRESH a cada 3 minutos
-// ═══════════════════════════════════════════════════════════
-function autoRefresh() {
-  renderRanking();
-  if (document.getElementById('tab-ao-vivo').classList.contains('visible')) {
-    fetchLiveScores();
-  }
-}
-setInterval(autoRefresh, 3 * 60 * 1000);
-
-// ═══════════════════════════════════════════════════════════
-// INIT 
-// ═══════════════════════════════════════════════════════════
-(async () => {
-  resultados = await loadResultados();
-  cachePalpitesFinais = await loadPalpitesFinaisServidor();
-  buildUserProfileDropdown();
-  renderRanking();
-  renderJogos();
-})();
+// Dispara inicialização
+init();
 </script>
 </body>
 </html>
