@@ -76,8 +76,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-card.encerrado { border-color: rgba(76,175,125,0.2); }
 .jogo-card.ao-vivo { border-color: rgba(245,200,66,0.4); animation: border-glow 2s ease-in-out infinite; }
 @keyframes border-glow { 0%,100%{border-color:rgba(245,200,66,0.4)} 50%{border-color:rgba(245,200,66,0.8)} }
-.jogo-header { display: grid; grid-template-columns: 28px 1fr auto 1fr 1fr; align-items: center; padding: 12px 14px; gap: 8px; }
-.jogo-num { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.jogo-header { display: grid; grid-template-columns: 34px 1fr auto 1fr 1fr; align-items: center; padding: 12px 14px; gap: 8px; }
+.jogo-num { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; font-weight:600; display:flex; flex-direction:column; gap:2px; }
+.jogo-grupo-badge { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 500; text-align: center; }
 .jogo-mandante { font-weight: 600; font-size: 13px; }
 .jogo-placar { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--r-sm); padding: 2px 12px; min-width: 70px; white-space: nowrap; }
 .jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; }
@@ -151,7 +152,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 640px) {
-  .jogo-header { grid-template-columns: 24px 1fr auto 1fr; }
+  .jogo-header { grid-template-columns: 32px 1fr auto 1fr; }
   .jogo-meta { display: none; }
   .rank-bar-wrap { display: none; }
   .hero-stats { gap: 12px; }
@@ -166,141 +167,146 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   <p style="margin-top:16px;color:var(--text2);font-size:13px">Carregando dados do servidor...</p>
 </div>
 
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-left">
-      <h1>BOLÃO <span>COPA 2026</span></h1>
-      <p>Grupo OSS · 24 participantes · 72 jogos na fase de grupos</p>
+<div id="global-auth-screen" style="display:none; min-height:100vh; flex-direction:column; align-items:center; justify-content:center; padding: 20px;">
+  <div style="text-align:center; margin-bottom: 40px;">
+    <h1 style="font-family:'Bebas Neue',sans-serif; font-size:48px; letter-spacing:0.04em; color:var(--text); line-height:1;">BOLÃO <span style="color:var(--gold)">COPA 2026</span></h1>
+    <p style="color:var(--text2); font-size:14px; margin-top:8px;">Acesso restrito aos participantes do grupo OSS</p>
+  </div>
+  
+  <div id="user-auth-section" class="import-box" style="width:100%; max-width:400px; margin:0;">
+    <div id="user-login-form">
+      <h3>👤 Entrar na sua conta</h3>
+      <p style="margin-bottom:16px">Acesse para acompanhar o ranking e fazer seus palpites.</p>
+      <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Usuário">
+      <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Senha">
+      <button class="btn-primary" style="width:100%" onclick="doUserLogin()">Entrar</button>
+      <p style="text-align:center;margin-top:16px;font-size:12px">
+        Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a>
+      </p>
     </div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        ATUALIZAÇÃO AO VIVO
-      </div>
-      <div class="hero-stats">
-        <div class="hstat"><div class="hstat-val" id="stat-jogos">0</div><div class="hstat-label">Jogos</div></div>
-        <div class="hstat"><div class="hstat-val" id="stat-encerrados">0</div><div class="hstat-label">Encerrados</div></div>
-        <div class="hstat"><div class="hstat-val" id="stat-lider">—</div><div class="hstat-label">Líder</div></div>
-        <div class="hstat"><div class="hstat-val" id="stat-lider-pts">0</div><div class="hstat-label">Pontos</div></div>
-      </div>
+
+    <div id="user-register-form" style="display:none">
+      <h3>🆕 Criar Conta</h3>
+      <p style="margin-bottom:16px">Vincule seu nome do bolão a uma senha.</p>
+      <input type="text" id="reg-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Crie um usuário">
+      <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Crie uma senha">
+      
+      <label style="font-size:12px;color:var(--text2)">Seu perfil principal:</label>
+      <select id="reg-perfil1" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none"></select>
+      
+      <label style="font-size:12px;color:var(--text2)">Perfil secundário (opcional para quem tem 2 contas):</label>
+      <select id="reg-perfil2" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none"></select>
+
+      <button class="btn-primary" style="width:100%" onclick="doUserRegister()">Cadastrar e Vincular</button>
+      <p style="text-align:center;margin-top:16px;font-size:12px">
+        Já tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Fazer Login</a>
+      </p>
     </div>
   </div>
 </div>
 
-<nav class="nav-bar">
-  <div class="nav-inner">
-    <button class="nav-tab active" onclick="showTab('ranking')">🏅 Ranking</button>
-    <button class="nav-tab" onclick="showTab('jogos')">⚽ Jogos</button>
-    <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
-    <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
-    <button class="nav-tab" onclick="showTab('admin')">⚙️ Admin</button>
-  </div>
-</nav>
-
-<div class="main">
-  <div id="tab-ranking" class="section visible">
-    <div class="update-info">Última atualização: <span id="last-update">—</span></div>
-    <div class="ranking-grid" id="ranking-list"></div>
-  </div>
-
-  <div id="tab-jogos" class="section">
-    <div id="jogos-list"></div>
-  </div>
-
-  <div id="tab-ao-vivo" class="section">
-    <div id="ao-vivo-login" class="import-box" style="max-width:360px;margin:0 auto;display:none;text-align:center;">
-      <h3>🔐 Acesso Restrito</h3>
-      <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
-      <button class="btn-primary" onclick="showTab('admin')">Ir para Login Admin</button>
-    </div>
-    <div id="ao-vivo-content">
-      <div class="live-section">
-        <div class="live-section-title">
+<div id="app-content" style="display:none;">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <h1>BOLÃO <span>COPA 2026</span></h1>
+        <p>Grupo OSS · 24 participantes · 72 jogos na fase de grupos</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+        <div class="live-badge">
           <div class="live-dot"></div>
-          Placares ao vivo (TheSportsDB / Todos os jogos)
+          ATUALIZAÇÃO AO VIVO
         </div>
-        <div id="live-games-container">
-          <div class="empty-state"><p>Buscando partidas ao vivo...</p></div>
+        <div class="hero-stats">
+          <div class="hstat"><div class="hstat-val" id="stat-jogos">0</div><div class="hstat-label">Jogos</div></div>
+          <div class="hstat"><div class="hstat-val" id="stat-encerrados">0</div><div class="hstat-label">Encerrados</div></div>
+          <div class="hstat"><div class="hstat-val" id="stat-lider">—</div><div class="hstat-label">Líder</div></div>
+          <div class="hstat"><div class="hstat-val" id="stat-lider-pts">0</div><div class="hstat-label">Pontos</div></div>
         </div>
-      </div>
-      <div class="import-box">
-        <h3>📥 Inserir resultado manualmente</h3>
-        <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code></p>
-        <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1"></textarea>
-        <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
       </div>
     </div>
   </div>
 
-  <div id="tab-proximas-fases" class="section">
-    
-    <div id="user-auth-section" class="import-box" style="max-width:400px;margin:0 auto">
-      
-      <div id="user-login-form">
-        <h3>👤 Entrar na sua conta</h3>
-        <p style="margin-bottom:16px">Acesse para fazer ou alterar seus palpites de mata-mata.</p>
-        <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Usuário">
-        <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Senha">
-        <button class="btn-primary" style="width:100%" onclick="doUserLogin()">Entrar</button>
-        <p style="text-align:center;margin-top:16px;font-size:12px">
-          Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a>
-        </p>
-      </div>
+  <nav class="nav-bar">
+    <div class="nav-inner">
+      <button class="nav-tab active" onclick="showTab('ranking')">🏅 Ranking</button>
+      <button class="nav-tab" onclick="showTab('jogos')">⚽ Jogos</button>
+      <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
+      <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
+      <button class="nav-tab" onclick="showTab('admin')">⚙️ Admin</button>
+    </div>
+  </nav>
 
-      <div id="user-register-form" style="display:none">
-        <h3>🆕 Criar Conta</h3>
-        <p style="margin-bottom:16px">Vincule seu nome do bolão a uma senha.</p>
-        <input type="text" id="reg-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Crie um usuário">
-        <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Crie uma senha">
-        
-        <label style="font-size:12px;color:var(--text2)">Seu perfil principal:</label>
-        <select id="reg-perfil1" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none"></select>
-        
-        <label style="font-size:12px;color:var(--text2)">Perfil secundário (opcional se você tiver 2 contas):</label>
-        <select id="reg-perfil2" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none"></select>
-
-        <button class="btn-primary" style="width:100%" onclick="doUserRegister()">Cadastrar e Vincular</button>
-        <p style="text-align:center;margin-top:16px;font-size:12px">
-          Já tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Fazer Login</a>
-        </p>
-      </div>
-
+  <div class="main">
+    <div id="tab-ranking" class="section visible">
+      <div class="update-info">Última atualização: <span id="last-update">—</span></div>
+      <div class="ranking-grid" id="ranking-list"></div>
     </div>
 
-    <div id="user-knockout-section" style="display:none">
-      <div class="import-box" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:12px">
-          <span style="color:var(--text2);font-size:13px">Lançando palpites como:</span>
-          <select id="active-profile-select" class="res-input" style="width:auto;text-align:left;padding:6px 12px;text-transform:none" onchange="renderKnockoutGamesForm()"></select>
+    <div id="tab-jogos" class="section">
+      <div id="jogos-list"></div>
+    </div>
+
+    <div id="tab-ao-vivo" class="section">
+      <div id="ao-vivo-login" class="import-box" style="max-width:360px;margin:0 auto;display:none;text-align:center;">
+        <h3>🔐 Acesso Restrito</h3>
+        <p style="margin-bottom:16px">Esta aba usa a mesma autenticação do Administrador.</p>
+        <button class="btn-primary" onclick="showTab('admin')">Ir para Login Admin</button>
+      </div>
+      <div id="ao-vivo-content">
+        <div class="live-section">
+          <div class="live-section-title">
+            <div class="live-dot"></div>
+            Placares ao vivo (TheSportsDB / Todos os jogos)
+          </div>
+          <div id="live-games-container">
+            <div class="empty-state"><p>Buscando partidas ao vivo...</p></div>
+          </div>
         </div>
-        <button class="btn-limpar" onclick="doUserLogout()">Sair da conta</button>
-      </div>
-      
-      <div class="group-title">⚽ Jogos das Próximas Fases (Mata-Mata)</div>
-      <div id="knockout-games-list"></div>
-    </div>
-
-  </div>
-
-  <div id="tab-admin" class="section">
-    <div id="admin-login" class="import-box" style="max-width:360px;margin:0 auto">
-      <h3>🔐 Área do Administrador</h3>
-      <div style="display:flex;gap:8px;margin-top:16px">
-        <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px" placeholder="Senha">
-        <button class="btn-primary" style="margin:0" onclick="checkAdminPass()">Entrar</button>
-      </div>
-    </div>
-    <div id="admin-panel" style="display:none">
-      <div class="import-box">
-        <h3>⚙️ Configurações <button onclick="adminLogout()" style="float:right;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button></h3>
-        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-          <button class="btn-primary" onclick="exportJSON()">💾 Exportar resultados</button>
-          <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar tudo</button>
+        <div class="import-box">
+          <h3>📥 Inserir resultado manualmente</h3>
+          <p>Cole um placar no formato <code>JOGO_NUM GOLS_MANDANTE-GOLS_VISITANTE</code></p>
+          <textarea class="import-textarea" id="bulk-input" placeholder="1 2-0&#10;2 1-1"></textarea>
+          <button class="btn-primary" onclick="bulkImport()">Importar resultados</button>
         </div>
       </div>
-      <div class="import-box">
-        <h3>📋 Tabela completa</h3>
-        <div id="tabela-completa" style="overflow-x:auto;margin-top:8px"></div>
+    </div>
+
+    <div id="tab-proximas-fases" class="section">
+      <div id="user-knockout-section">
+        <div class="import-box" style="display:flex;justify-content:space-between;align-items:center;padding:12px 20px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="color:var(--text2);font-size:13px">Lançando palpites como:</span>
+            <select id="active-profile-select" class="res-input" style="width:auto;text-align:left;padding:6px 12px;text-transform:none" onchange="renderKnockoutGamesForm()"></select>
+          </div>
+          <button class="btn-limpar" onclick="doUserLogout()">Sair da conta</button>
+        </div>
+        
+        <div class="group-title">⚽ Jogos das Próximas Fases (Mata-Mata)</div>
+        <div id="knockout-games-list"></div>
+      </div>
+    </div>
+
+    <div id="tab-admin" class="section">
+      <div id="admin-login" class="import-box" style="max-width:360px;margin:0 auto">
+        <h3>🔐 Área do Administrador</h3>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px" placeholder="Senha">
+          <button class="btn-primary" style="margin:0" onclick="checkAdminPass()">Entrar</button>
+        </div>
+      </div>
+      <div id="admin-panel" style="display:none">
+        <div class="import-box">
+          <h3>⚙️ Configurações <button onclick="adminLogout()" style="float:right;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button></h3>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn-primary" onclick="exportJSON()">💾 Exportar resultados</button>
+            <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar tudo</button>
+          </div>
+        </div>
+        <div class="import-box">
+          <h3>📋 Tabela completa</h3>
+          <div id="tabela-completa" style="overflow-x:auto;margin-top:8px"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -423,19 +429,26 @@ function checkUserSession() {
   const saved = sessionStorage.getItem('bolao_user_perfis');
   if (saved) {
     const perfis = JSON.parse(saved);
-    document.getElementById('user-auth-section').style.display = 'none';
-    document.getElementById('user-knockout-section').style.display = 'block';
+    document.getElementById('global-auth-screen').style.display = 'none';
+    document.getElementById('app-content').style.display = 'block';
     
     const sel = document.getElementById('active-profile-select');
-    sel.innerHTML = '';
-    perfis.forEach(p => {
-      const o = document.createElement('option');
-      o.value = p; o.textContent = p; sel.appendChild(o);
-    });
-    renderKnockoutGamesForm();
+    if(sel) {
+      sel.innerHTML = '';
+      perfis.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p; o.textContent = p; sel.appendChild(o);
+      });
+      renderKnockoutGamesForm();
+    }
+    
+    // Mostra o ranking por padrão na primeira entrada
+    if (!document.querySelector('.section.visible')) {
+       showTab('ranking');
+    }
   } else {
-    document.getElementById('user-auth-section').style.display = 'block';
-    document.getElementById('user-knockout-section').style.display = 'none';
+    document.getElementById('global-auth-screen').style.display = 'flex';
+    document.getElementById('app-content').style.display = 'none';
   }
 }
 
@@ -533,8 +546,18 @@ function renderRanking() {
 }
 
 function renderJogos() {
-  const groups = {};
-  BOLAO.jogos.forEach(j => { if(!groups[j.fase]) groups[j.fase]=[]; groups[j.fase].push(j); });
+  // Ordena os jogos estritamente pela sequência de partidas
+  const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  
+  // Agrupa blocos de jogos para não gerar uma lista infinita
+  const groups = { "Rodada 1 (Estreias)": [], "Rodada 2": [], "Rodada 3 (Decisões)": [] };
+  
+  jogosOrdenados.forEach(j => {
+    if (j.jogo <= 24) groups["Rodada 1 (Estreias)"].push(j);
+    else if (j.jogo <= 48) groups["Rodada 2"].push(j);
+    else groups["Rodada 3 (Decisões)"].push(j);
+  });
+
   const container = document.getElementById('jogos-list');
   container.innerHTML = '';
   
@@ -554,9 +577,14 @@ function renderJogos() {
       html += `
       <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
         <div class="jogo-header" onclick="toggleJogo(${j.jogo})">
-          <div class="jogo-num">#${j.jogo}</div><div class="jogo-mandante">${j.mandante}</div>
+          <div class="jogo-num">
+            <span>#${j.jogo}</span>
+            <span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span>
+          </div>
+          <div class="jogo-mandante">${j.mandante}</div>
           ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${res==='V'?'Mandante':res==='E'?'Empate':'Visitante'}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
-          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓</span>':''}</div>
+          <div class="jogo-visitante">${j.visitante}</div>
+          <div class="jogo-meta">${res?'<span class="badge-done">✓ Encerrado</span>':''}</div>
         </div>
         <div class="jogo-detail" id="detail-${j.jogo}">
           <div class="consensus-bar">
@@ -618,7 +646,7 @@ async function checkAdminPass() {
       document.getElementById('admin-panel').style.display = 'block';
       renderTabelaAdmin(); renderJogos();
     }
-  } catch(e) { /* fallback local ignorado para manter código limpo */ }
+  } catch(e) {}
 }
 function adminLogout() { adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); }
 
