@@ -42,7 +42,6 @@ async function init() {
     )
   `);
 
-  // Nova tabela para configurações globais (ex: trava de data limite)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS configuracoes (
       chave TEXT PRIMARY KEY,
@@ -243,17 +242,29 @@ app.get('/api/palpites-finais', async (req, res) => {
   res.json(rows);
 });
 
+// Lógica para mapear os jogos às suas respectivas chaves de deadline no BD
+const getFaseDeadlineKey = (num) => {
+  if (num >= 73 && num <= 88) return 'deadline_r32';
+  if (num >= 89 && num <= 96) return 'deadline_r16';
+  if (num >= 97 && num <= 100) return 'deadline_qf';
+  if (num >= 101 && num <= 102) return 'deadline_sf';
+  if (num >= 103 && num <= 104) return 'deadline_final';
+  return null;
+};
+
 app.post('/api/palpites-finais', async (req, res) => {
   const { participante, jogo_num, palpite } = req.body;
   if (!participante || !jogo_num || !['V','E','D'].includes(palpite)) {
     return res.status(400).json({ error: 'Dados incompletos ou inválidos' });
   }
   
-  // VERIFICAÇÃO DE PRAZO (Trava no Backend)
-  const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', ['deadline_matamata']);
-  if (confRow.rows.length > 0 && confRow.rows[0].valor) {
-    if (new Date() > new Date(confRow.rows[0].valor)) {
-      return res.status(403).json({ error: 'O prazo para envio de palpites está encerrado.' });
+  const dKey = getFaseDeadlineKey(parseInt(jogo_num));
+  if (dKey) {
+    const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
+    if (confRow.rows.length > 0 && confRow.rows[0].valor) {
+      if (new Date() > new Date(confRow.rows[0].valor)) {
+        return res.status(403).json({ error: 'O prazo para os palpites desta fase já encerrou.' });
+      }
     }
   }
 
