@@ -80,7 +80,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-num { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; font-weight:600; display:flex; flex-direction:column; gap:2px; }
 .jogo-grupo-badge { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 500; text-align: center; }
 
-/* AJUSTE DE ALINHAMENTO DAS EQUIPES */
 .jogo-mandante { font-weight: 600; font-size: 13px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .jogo-visitante { font-weight: 600; font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -143,6 +142,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
 .btn-palpite-op.active-E { background: var(--draw-bg); color: var(--draw); border-color: var(--draw); }
 .btn-palpite-op.active-D { background: var(--loss-bg); color: var(--loss); border-color: var(--loss); }
+.btn-palpite-op:disabled { opacity: 0.5; cursor: not-allowed; border-color: var(--border); color: var(--text3); background: transparent; }
 
 .badge-done { background: var(--win-bg); color: var(--win); border: 1px solid rgba(76,175,125,.3); font-size: 10px; padding: 1px 6px; border-radius: 4px; }
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
@@ -306,17 +306,43 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
           <button class="btn-primary" style="margin:0" onclick="checkAdminPass()">Entrar</button>
         </div>
       </div>
+      
       <div id="admin-panel" style="display:none">
+        <div class="import-box" style="display:flex;justify-content:space-between;align-items:center">
+          <h3>⚙️ Painel de Controle</h3>
+          <button onclick="adminLogout()" style="background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button>
+        </div>
+
         <div class="import-box">
-          <h3>⚙️ Configurações <button onclick="adminLogout()" style="float:right;background:transparent;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:4px;cursor:pointer">Sair</button></h3>
-          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="btn-primary" onclick="exportJSON()">💾 Exportar resultados</button>
-            <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar tudo</button>
+          <h3>🔒 Controle de Prazos</h3>
+          <p style="color:var(--text2);font-size:12px">Defina a data e hora limite para a galera preencher o mata-mata.</p>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <input type="datetime-local" id="admin-deadline" class="res-input" style="width:100%;text-align:left;padding:8px;text-transform:none">
+            <button class="btn-primary" style="margin:0" onclick="salvarDeadline()">Salvar Limite</button>
           </div>
         </div>
+
+        <div class="import-box">
+          <h3>📊 Exportar Relatórios (Excel/CSV)</h3>
+          <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Escolha o escopo de dados e baixe a planilha com todos os palpites.</p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <select id="export-type" class="res-input" style="flex:1;text-align:left;padding:8px;text-transform:none" onchange="document.getElementById('export-game-num').style.display = this.value === 'jogo' ? 'block' : 'none'">
+              <option value="grupos">Fase de Grupos (Completa)</option>
+              <option value="matamata">Mata-Mata (Completo)</option>
+              <option value="jogo">Por Jogo Específico</option>
+            </select>
+            <input type="number" id="export-game-num" class="res-input" style="display:none;width:100px;padding:8px" placeholder="Nº Jogo">
+            <button class="btn-primary" style="margin:0;background:var(--pitch-mid)" onclick="exportReportCSV()">📥 Baixar Relatório</button>
+          </div>
+        </div>
+
         <div class="import-box">
           <h3>📋 Tabela completa</h3>
           <div id="tabela-completa" style="overflow-x:auto;margin-top:8px"></div>
+          
+          <div style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px">
+            <button class="btn-primary" onclick="resetAll()" style="background:rgba(224,82,82,.2);border-color:rgba(224,82,82,.4)">🗑️ Limpar todos os placares</button>
+          </div>
         </div>
       </div>
     </div>
@@ -332,6 +358,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 let BOLAO = null;
 let resultados = {}; 
 let cachePalpitesFinais = []; 
+let appConfig = {};
 
 const JOGOS_FASE_FINAL = [
   { jogo: 73, mandante: "1º Grupo A", visitante: "3º Grupo C/D/E", fase: "Dezesseis-avos (R32)" },
@@ -354,6 +381,14 @@ async function init() {
     
     const resFinais = await fetch('/api/palpites-finais');
     cachePalpitesFinais = await resFinais.json();
+
+    const resConfig = await fetch('/api/config');
+    appConfig = await resConfig.json();
+    
+    // Alimenta o campo de deadline no admin
+    if(appConfig.deadline_matamata) {
+       document.getElementById('admin-deadline').value = appConfig.deadline_matamata;
+    }
 
     document.getElementById('loader-overlay').style.display = 'none';
     
@@ -454,7 +489,6 @@ function checkUserSession() {
       renderKnockoutGamesForm();
     }
     
-    // Mostra "Meus Palpites" por padrão
     if (!document.querySelector('.section.visible') || document.querySelector('.section.visible').id === 'tab-ranking') {
        showTab('meus-palpites');
     } else {
@@ -552,7 +586,7 @@ function drawMeusPalpitesList(perfil) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ABA: PRÓXIMAS FASES
+// ABA: PRÓXIMAS FASES E CONTROLE DE PRAZO
 // ═══════════════════════════════════════════════════════════
 function renderKnockoutGamesForm() {
   const participante = document.getElementById('active-profile-select').value;
@@ -560,9 +594,25 @@ function renderKnockoutGamesForm() {
   const container = document.getElementById('knockout-games-list');
   container.innerHTML = '';
 
+  // Verifica se o prazo já passou
+  const isLocked = appConfig.deadline_matamata && new Date() > new Date(appConfig.deadline_matamata);
+
   JOGOS_FASE_FINAL.forEach(j => {
     const saved = cachePalpitesFinais.find(i => i.participante === participante && i.jogo_num === j.jogo);
     const activePalpite = saved ? saved.palpite : null;
+    
+    let buttonsHtml = '';
+    if (isLocked) {
+      const pText = activePalpite ? (activePalpite === 'V' ? 'Mandante' : activePalpite === 'E' ? 'Empate' : 'Visitante') : 'Não enviado';
+      buttonsHtml = `<div style="font-size:12px;color:var(--gold);font-weight:bold">${pText}</div>`;
+    } else {
+      buttonsHtml = `
+        <button class="btn-palpite-op ${activePalpite === 'V' ? 'active-V' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'V')">V</button>
+        <button class="btn-palpite-op ${activePalpite === 'E' ? 'active-E' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'E')">E</button>
+        <button class="btn-palpite-op ${activePalpite === 'D' ? 'active-D' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'D')">D</button>
+      `;
+    }
+
     const card = document.createElement('div');
     card.className = 'jogo-card';
     card.style.cursor = 'default';
@@ -571,18 +621,22 @@ function renderKnockoutGamesForm() {
         <div class="jogo-num">#${j.jogo}</div>
         <div class="jogo-mandante">${j.mandante}</div>
         <div style="display:flex;gap:4px;align-items:center;">
-          <button class="btn-palpite-op ${activePalpite === 'V' ? 'active-V' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'V')">V</button>
-          <button class="btn-palpite-op ${activePalpite === 'E' ? 'active-E' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'E')">E</button>
-          <button class="btn-palpite-op ${activePalpite === 'D' ? 'active-D' : ''}" onclick="submitKnockoutGuess('${j.jogo}', 'D')">D</button>
+          ${buttonsHtml}
         </div>
         <div class="jogo-visitante">${j.visitante}</div>
         <div style="font-size:11px;color:var(--text3);text-align:right">R32</div>
-      </div>`;
+      </div>
+      ${isLocked ? '<div style="background:rgba(0,0,0,0.2);font-size:11px;color:var(--text3);text-align:center;padding:4px">🔒 Prazo encerrado</div>' : ''}
+    `;
     container.appendChild(card);
   });
 }
 
 async function submitKnockoutGuess(jogoNum, palpiteVal) {
+  if (appConfig.deadline_matamata && new Date() > new Date(appConfig.deadline_matamata)) {
+    return showToast('🔒 O prazo para palpites está encerrado.');
+  }
+
   const participante = document.getElementById('active-profile-select').value;
   jogoNum = parseInt(jogoNum);
   
@@ -591,13 +645,19 @@ async function submitKnockoutGuess(jogoNum, palpiteVal) {
   else cachePalpitesFinais.push({ participante, jogo_num: jogoNum, palpite: palpiteVal });
 
   try {
-    await fetch('/api/palpites-finais', {
+    const res = await fetch('/api/palpites-finais', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ participante, jogo_num: jogoNum, palpite: palpiteVal })
     });
-    showToast(`Palpite salvo! Jogo #${jogoNum} → ${palpiteVal}`);
-    renderKnockoutGamesForm();
-  } catch(e) { showToast('⚠️ Erro ao salvar'); }
+    
+    if (res.ok) {
+       showToast(`Palpite salvo! Jogo #${jogoNum} → ${palpiteVal}`);
+       renderKnockoutGamesForm();
+    } else {
+       const data = await res.json();
+       showToast('⚠️ ' + data.error);
+    }
+  } catch(e) { showToast('⚠️ Erro ao conectar com servidor'); }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -751,6 +811,63 @@ function adminLogout() {
   document.getElementById('admin-login').style.display='block'; 
   document.getElementById('admin-panel').style.display='none'; 
   renderJogos(); 
+}
+
+// SALVAR DATA LIMITE (ADMIN)
+async function salvarDeadline() {
+  const data = document.getElementById('admin-deadline').value;
+  try {
+    await fetch('/api/config', { 
+       method: 'POST', 
+       headers: {'Content-Type':'application/json'}, 
+       body: JSON.stringify({chave: 'deadline_matamata', valor: data}) 
+    });
+    appConfig.deadline_matamata = data;
+    showToast('✅ Prazo salvo com sucesso!');
+    renderKnockoutGamesForm(); // Atualiza a tela se estiver com o prazo fechado agora
+  } catch (e) { showToast('⚠️ Erro ao salvar prazo'); }
+}
+
+// EXPORTAR RELATÓRIOS PARA CSV
+function exportReportCSV() {
+  const type = document.getElementById('export-type').value;
+  const specificGame = parseInt(document.getElementById('export-game-num').value);
+
+  // O \uFEFF força o Excel a entender a codificação de acentos UTF-8
+  let csv = '\uFEFFJogo;Fase;Mandante;Visitante;Participante;Palpite\n';
+  let linesCount = 0;
+
+  if (type === 'grupos' || type === 'jogo') {
+     BOLAO.jogos.forEach(j => {
+        if (type === 'jogo' && j.jogo !== specificGame) return;
+        Object.entries(j.palpites).forEach(([pName, pal]) => {
+            csv += `${j.jogo};${j.fase};${j.mandante};${j.visitante};${pName};${pal}\n`;
+            linesCount++;
+        });
+     });
+  }
+
+  if (type === 'matamata' || type === 'jogo') {
+     JOGOS_FASE_FINAL.forEach(j => {
+        if (type === 'jogo' && j.jogo !== specificGame) return;
+        const palpitesJogo = cachePalpitesFinais.filter(p => p.jogo_num === j.jogo);
+        palpitesJogo.forEach(p => {
+            csv += `${j.jogo};${j.fase};${j.mandante};${j.visitante};${p.participante};${p.palpite}\n`;
+            linesCount++;
+        });
+     });
+  }
+
+  if (linesCount === 0) {
+     return showToast('⚠️ Nenhum dado encontrado para exportar.');
+  }
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `relatorio_bolao_${Date.now()}.csv`;
+  a.click();
+  showToast('📥 Download iniciado!');
 }
 
 async function salvarResultado(num) {

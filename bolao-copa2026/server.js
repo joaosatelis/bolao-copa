@@ -33,7 +33,6 @@ async function init() {
     )
   `);
 
-  // Nova tabela para login e vínculo de contas
   await pool.query(`
     CREATE TABLE IF NOT EXISTS usuarios (
       usuario TEXT PRIMARY KEY,
@@ -42,13 +41,21 @@ async function init() {
       perfil2 TEXT
     )
   `);
+
+  // Nova tabela para configurações globais (ex: trava de data limite)
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS configuracoes (
+      chave TEXT PRIMARY KEY,
+      valor TEXT
+    )
+  `);
+  
   console.log('✅ Banco de dados pronto');
 }
 init();
 
 // ═══════════════════════════════════════════════════════════
 // BASE DE DADOS FIXA (FASE DE GRUPOS)
-// Fica no backend para deixar o site mais rápido
 // ═══════════════════════════════════════════════════════════
 const DADOS_BOLAO = {
   participantes: [
@@ -134,10 +141,30 @@ const DADOS_BOLAO = {
   ]
 };
 
-// Rota para o frontend buscar o pacote de dados fixos
 app.get('/api/dados-bolao', (req, res) => {
   res.json(DADOS_BOLAO);
 });
+
+// ═══════════════════════════════════════════════════════════
+// ROTAS DE CONFIGURAÇÕES GLOBAIS
+// ═══════════════════════════════════════════════════════════
+app.get('/api/config', async (req, res) => {
+  const { rows } = await pool.query('SELECT chave, valor FROM configuracoes');
+  const conf = {};
+  rows.forEach(r => conf[r.chave] = r.valor);
+  res.json(conf);
+});
+
+app.post('/api/config', async (req, res) => {
+  const { chave, valor } = req.body;
+  await pool.query(`
+    INSERT INTO configuracoes (chave, valor)
+    VALUES ($1, $2)
+    ON CONFLICT (chave) DO UPDATE SET valor=$2
+  `, [chave, valor]);
+  res.json({ ok: true });
+});
+
 
 // ═══════════════════════════════════════════════════════════
 // ROTAS DE AUTENTICAÇÃO (SISTEMA DE CONTAS)
@@ -148,7 +175,6 @@ app.post('/api/auth/register', async (req, res) => {
     return res.status(400).json({ error: 'Usuário, senha e perfil 1 são obrigatórios.' });
   }
 
-  // Verifica se um dos perfis já foi vinculado por outra pessoa
   const check = await pool.query(
     'SELECT usuario FROM usuarios WHERE perfil1=$1 OR perfil1=$2 OR perfil2=$1 OR perfil2=$2',
     [perfil1, perfil2 || '']
@@ -183,8 +209,6 @@ app.post('/api/auth/login', async (req, res) => {
 // ═══════════════════════════════════════════════════════════
 // ROTAS DO BOLÃO
 // ═══════════════════════════════════════════════════════════
-
-// Resultados oficiais
 app.get('/api/resultados', async (req, res) => {
   const { rows } = await pool.query('SELECT jogo_num, resultado FROM resultados');
   const obj = {};
@@ -214,7 +238,6 @@ app.delete('/api/resultados', async (req, res) => {
   res.json({ ok: true });
 });
 
-// Palpites Fases Finais
 app.get('/api/palpites-finais', async (req, res) => {
   const { rows } = await pool.query('SELECT participante, jogo_num, palpite FROM palpites_fase_final');
   res.json(rows);
@@ -225,6 +248,15 @@ app.post('/api/palpites-finais', async (req, res) => {
   if (!participante || !jogo_num || !['V','E','D'].includes(palpite)) {
     return res.status(400).json({ error: 'Dados incompletos ou inválidos' });
   }
+  
+  // VERIFICAÇÃO DE PRAZO (Trava no Backend)
+  const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', ['deadline_matamata']);
+  if (confRow.rows.length > 0 && confRow.rows[0].valor) {
+    if (new Date() > new Date(confRow.rows[0].valor)) {
+      return res.status(403).json({ error: 'O prazo para envio de palpites está encerrado.' });
+    }
+  }
+
   await pool.query(`
     INSERT INTO palpites_fase_final (participante, jogo_num, palpite)
     VALUES ($1, $2, $3)
