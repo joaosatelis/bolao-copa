@@ -76,20 +76,23 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-card.encerrado { border-color: rgba(76,175,125,0.2); }
 .jogo-card.ao-vivo { border-color: rgba(245,200,66,0.4); animation: border-glow 2s ease-in-out infinite; }
 @keyframes border-glow { 0%,100%{border-color:rgba(245,200,66,0.4)} 50%{border-color:rgba(245,200,66,0.8)} }
-.jogo-header { display: grid; grid-template-columns: 34px 1fr auto 1fr 1fr; align-items: center; padding: 12px 14px; gap: 8px; }
+.jogo-header { display: grid; grid-template-columns: 34px 1fr auto 1fr 40px; align-items: center; padding: 12px 14px; gap: 10px; }
 .jogo-num { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; font-weight:600; display:flex; flex-direction:column; gap:2px; }
 .jogo-grupo-badge { font-size: 9px; background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px; font-family: 'Inter', sans-serif; font-weight: 500; text-align: center; }
-.jogo-mandante { font-weight: 600; font-size: 13px; }
+
+/* AJUSTE DE ALINHAMENTO DAS EQUIPES */
+.jogo-mandante { font-weight: 600; font-size: 13px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jogo-visitante { font-weight: 600; font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 .jogo-placar { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--r-sm); padding: 2px 12px; min-width: 70px; white-space: nowrap; }
 .jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; }
-.jogo-visitante { font-weight: 600; font-size: 13px; text-align: right; }
 .jogo-meta { font-size: 11px; color: var(--text3); text-align: right; }
 .jogo-detail { display: none; border-top: 1px solid var(--border); }
 .jogo-detail.open { display: block; }
 .palpites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 4px; padding: 12px 14px; }
 .palpite-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: var(--r-sm); background: rgba(255,255,255,0.03); font-size: 12px; }
-.palpite-item.acerto { background: var(--win-bg); }
-.palpite-item.erro { background: var(--loss-bg); }
+.palpite-item.acerto { background: var(--win-bg); border: 1px solid rgba(76,175,125,0.3); color: var(--win); }
+.palpite-item.erro { background: var(--loss-bg); border: 1px solid rgba(224,82,82,0.3); color: var(--loss); }
 .palpite-name { color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90px; }
 .palpite-val { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 12px; padding: 1px 6px; border-radius: 4px; flex-shrink: 0; }
 .palpite-val.V { background: var(--win-bg); color: var(--win); }
@@ -152,11 +155,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 640px) {
-  .jogo-header { grid-template-columns: 32px 1fr auto 1fr; }
+  .jogo-header { grid-template-columns: 34px 1fr auto 1fr; gap: 6px; }
   .jogo-meta { display: none; }
   .rank-bar-wrap { display: none; }
   .hero-stats { gap: 12px; }
   .palpites-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  .jogo-mandante, .jogo-visitante { font-size: 12px; }
 }
 </style>
 </head>
@@ -177,8 +181,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     <div id="user-login-form">
       <h3>👤 Entrar na sua conta</h3>
       <p style="margin-bottom:16px">Acesse para acompanhar o ranking e fazer seus palpites.</p>
-      <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Usuário">
-      <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Senha">
+      <input type="text" id="login-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none" placeholder="Usuário">
+      <input type="password" id="login-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none" placeholder="Senha">
       <button class="btn-primary" style="width:100%" onclick="doUserLogin()">Entrar</button>
       <p style="text-align:center;margin-top:16px;font-size:12px">
         Ainda não tem conta? <a href="#" onclick="toggleAuthForm()" style="color:var(--gold)">Crie agora</a>
@@ -188,8 +192,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
     <div id="user-register-form" style="display:none">
       <h3>🆕 Criar Conta</h3>
       <p style="margin-bottom:16px">Vincule seu nome do bolão a uma senha.</p>
-      <input type="text" id="reg-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px" placeholder="Crie um usuário">
-      <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px" placeholder="Crie uma senha">
+      <input type="text" id="reg-user" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none" placeholder="Crie um usuário">
+      <input type="password" id="reg-pass" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:16px;text-transform:none" placeholder="Crie uma senha">
       
       <label style="font-size:12px;color:var(--text2)">Seu perfil principal:</label>
       <select id="reg-perfil1" class="res-input" style="width:100%;text-align:left;padding:8px;margin-bottom:8px;text-transform:none"></select>
@@ -229,8 +233,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 
   <nav class="nav-bar">
     <div class="nav-inner">
-      <button class="nav-tab active" onclick="showTab('ranking')">🏅 Ranking</button>
-      <button class="nav-tab" onclick="showTab('jogos')">⚽ Jogos</button>
+      <button class="nav-tab" onclick="showTab('ranking')">🏅 Ranking</button>
+      <button class="nav-tab active" onclick="showTab('meus-palpites')">👤 Meus Palpites</button>
+      <button class="nav-tab" onclick="showTab('jogos')">⚽ Palpites da Galera</button>
       <button class="nav-tab" onclick="showTab('ao-vivo')">📡 Ao Vivo</button>
       <button class="nav-tab" onclick="showTab('proximas-fases')">🔮 Próximas Fases</button>
       <button class="nav-tab" onclick="showTab('admin')">⚙️ Admin</button>
@@ -238,9 +243,15 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   </nav>
 
   <div class="main">
-    <div id="tab-ranking" class="section visible">
+    
+    <div id="tab-ranking" class="section">
       <div class="update-info">Última atualização: <span id="last-update">—</span></div>
       <div class="ranking-grid" id="ranking-list"></div>
+    </div>
+
+    <div id="tab-meus-palpites" class="section visible">
+      <div id="meus-palpites-header"></div>
+      <div id="meus-palpites-list"></div>
     </div>
 
     <div id="tab-jogos" class="section">
@@ -291,7 +302,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
       <div id="admin-login" class="import-box" style="max-width:360px;margin:0 auto">
         <h3>🔐 Área do Administrador</h3>
         <div style="display:flex;gap:8px;margin-top:16px">
-          <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px" placeholder="Senha">
+          <input type="password" id="admin-pass-input" class="res-input" style="width:100%;text-align:left;padding:8px;text-transform:none" placeholder="Senha">
           <button class="btn-primary" style="margin:0" onclick="checkAdminPass()">Entrar</button>
         </div>
       </div>
@@ -432,6 +443,7 @@ function checkUserSession() {
     document.getElementById('global-auth-screen').style.display = 'none';
     document.getElementById('app-content').style.display = 'block';
     
+    // Atualiza o select de proximas fases
     const sel = document.getElementById('active-profile-select');
     if(sel) {
       sel.innerHTML = '';
@@ -442,9 +454,11 @@ function checkUserSession() {
       renderKnockoutGamesForm();
     }
     
-    // Mostra o ranking por padrão na primeira entrada
-    if (!document.querySelector('.section.visible')) {
-       showTab('ranking');
+    // Mostra "Meus Palpites" por padrão
+    if (!document.querySelector('.section.visible') || document.querySelector('.section.visible').id === 'tab-ranking') {
+       showTab('meus-palpites');
+    } else {
+       renderMeusPalpites();
     }
   } else {
     document.getElementById('global-auth-screen').style.display = 'flex';
@@ -457,6 +471,89 @@ function doUserLogout() {
   checkUserSession();
 }
 
+// ═══════════════════════════════════════════════════════════
+// ABA: MEUS PALPITES
+// ═══════════════════════════════════════════════════════════
+function renderMeusPalpites() {
+  const perfis = JSON.parse(sessionStorage.getItem('bolao_user_perfis') || '[]');
+  if (perfis.length === 0) return;
+
+  let profileSelector = '';
+  if (perfis.length > 1) {
+     profileSelector = `<select class="res-input" style="width:auto; text-transform:none;" onchange="drawMeusPalpitesList(this.value)">
+       <option value="${perfis[0]}">${perfis[0]}</option>
+       <option value="${perfis[1]}">${perfis[1]}</option>
+     </select>`;
+  } else {
+     profileSelector = `<span style="font-weight:bold;color:var(--gold)">${perfis[0]}</span>`;
+  }
+
+  document.getElementById('meus-palpites-header').innerHTML = `
+    <div class="import-box" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; margin-bottom:20px;">
+      <div style="display:flex; align-items:center; gap:12px">
+        <span style="color:var(--text2); font-size:13px">Visualizando palpites de:</span>
+        ${profileSelector}
+      </div>
+    </div>
+  `;
+  drawMeusPalpitesList(perfis[0]);
+}
+
+function drawMeusPalpitesList(perfil) {
+  const container = document.getElementById('meus-palpites-list');
+  container.innerHTML = '';
+  
+  const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  const groups = { "Rodada 1 (Estreias)": [], "Rodada 2": [], "Rodada 3 (Decisões)": [] };
+  
+  jogosOrdenados.forEach(j => {
+    if (j.jogo <= 24) groups["Rodada 1 (Estreias)"].push(j);
+    else if (j.jogo <= 48) groups["Rodada 2"].push(j);
+    else groups["Rodada 3 (Decisões)"].push(j);
+  });
+
+  Object.entries(groups).forEach(([grupo, jogos]) => {
+    let html = `<div class="group-section"><div class="group-title">${grupo}</div>`;
+    jogos.forEach(j => {
+      const res = resultados[String(j.jogo)];
+      const meuPalpite = j.palpites[perfil];
+
+      let palpiteClass = '';
+      let icon = '⏳';
+      if (res) {
+        if (meuPalpite === res) { palpiteClass = 'acerto'; icon = '✅'; }
+        else { palpiteClass = 'erro'; icon = '❌'; }
+      }
+
+      const nomePalpite = meuPalpite === 'V' ? j.mandante : meuPalpite === 'E' ? 'Empate' : j.visitante;
+
+      html += `
+      <div class="jogo-card ${res?'encerrado':''}" style="cursor:default;">
+        <div class="jogo-header">
+          <div class="jogo-num">
+            <span>#${j.jogo}</span>
+            <span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span>
+          </div>
+          <div class="jogo-mandante">${j.mandante}</div>
+          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${res}">${res==='V'?'Mandante':res==='E'?'Empate':'Visitante'}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div>
+          <div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div>
+        </div>
+        <div style="padding: 10px 14px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2);">
+          <span style="font-size:12px; color:var(--text2)">Meu Palpite:</span>
+          <div class="palpite-item ${palpiteClass}" style="width:auto; gap:10px; padding:6px 12px; font-size:13px; font-weight:bold;">
+             ${icon} ${nomePalpite}
+          </div>
+        </div>
+      </div>`;
+    });
+    container.innerHTML += html + '</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// ABA: PRÓXIMAS FASES
+// ═══════════════════════════════════════════════════════════
 function renderKnockoutGamesForm() {
   const participante = document.getElementById('active-profile-select').value;
   if (!participante) return;
@@ -504,7 +601,7 @@ async function submitKnockoutGuess(jogoNum, palpiteVal) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// RANKING E JOGOS
+// RANKING E JOGOS DA GALERA
 // ═══════════════════════════════════════════════════════════
 function calcRanking() {
   const pts = {}; const acertos = {}; const total = {};
@@ -546,10 +643,7 @@ function renderRanking() {
 }
 
 function renderJogos() {
-  // Ordena os jogos estritamente pela sequência de partidas
   const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
-  
-  // Agrupa blocos de jogos para não gerar uma lista infinita
   const groups = { "Rodada 1 (Estreias)": [], "Rodada 2": [], "Rodada 3 (Decisões)": [] };
   
   jogosOrdenados.forEach(j => {
@@ -675,6 +769,8 @@ function showTab(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('visible');
   event.target.classList.add('active');
+  
+  if (name === 'meus-palpites') renderMeusPalpites();
   if (name === 'ao-vivo') fetchLiveScores();
   if (name === 'admin' && adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); }
 }
