@@ -13,22 +13,15 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
+// Inicialização do Banco
 async function init() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS resultados (
       jogo_num INTEGER PRIMARY KEY,
-      resultado CHAR(1),
-      placar VARCHAR(10),
-      encerrado BOOLEAN DEFAULT FALSE,
+      resultado CHAR(1) NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
-
-  // Garante que bancos antigos recebam as novas colunas sem precisar resetar
-  try {
-    await pool.query('ALTER TABLE resultados ADD COLUMN placar VARCHAR(10)');
-    await pool.query('ALTER TABLE resultados ADD COLUMN encerrado BOOLEAN DEFAULT FALSE');
-  } catch(e) { }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS palpites_fase_final (
@@ -60,7 +53,9 @@ async function init() {
 }
 init();
 
-// BASE DE DADOS FIXA (Mantida igual ao seu arquivo original)
+// ═══════════════════════════════════════════════════════════
+// BASE DE DADOS FIXA (FASE DE GRUPOS)
+// ═══════════════════════════════════════════════════════════
 const DADOS_BOLAO = {
   participantes: [
     "Ivan 1 OSS", "Ivan 2 OSS", "Andre OSS", "Lelis OSS", "Rods 1 OSS", "Rods 2 OSS",
@@ -149,7 +144,9 @@ app.get('/api/dados-bolao', (req, res) => {
   res.json(DADOS_BOLAO);
 });
 
-// CONFIGURACOES GLOBAIS
+// ═══════════════════════════════════════════════════════════
+// ROTAS DE CONFIGURAÇÕES GLOBAIS
+// ═══════════════════════════════════════════════════════════
 app.get('/api/config', async (req, res) => {
   const { rows } = await pool.query('SELECT chave, valor FROM configuracoes');
   const conf = {};
@@ -167,18 +164,33 @@ app.post('/api/config', async (req, res) => {
   res.json({ ok: true });
 });
 
-// AUTENTICACAO
+
+// ═══════════════════════════════════════════════════════════
+// ROTAS DE AUTENTICAÇÃO (SISTEMA DE CONTAS)
+// ═══════════════════════════════════════════════════════════
 app.post('/api/auth/register', async (req, res) => {
   const { usuario, senha, perfil1, perfil2 } = req.body;
-  if (!usuario || !senha || !perfil1) return res.status(400).json({ error: 'Usuário, senha e perfil 1 são obrigatórios.' });
+  if (!usuario || !senha || !perfil1) {
+    return res.status(400).json({ error: 'Usuário, senha e perfil 1 são obrigatórios.' });
+  }
 
-  const check = await pool.query('SELECT usuario FROM usuarios WHERE perfil1=$1 OR perfil1=$2 OR perfil2=$1 OR perfil2=$2', [perfil1, perfil2 || '']);
-  if (check.rows.length > 0) return res.status(400).json({ error: 'Um dos perfis escolhidos já foi vinculado a outra conta.' });
+  const check = await pool.query(
+    'SELECT usuario FROM usuarios WHERE perfil1=$1 OR perfil1=$2 OR perfil2=$1 OR perfil2=$2',
+    [perfil1, perfil2 || '']
+  );
+  if (check.rows.length > 0) {
+    return res.status(400).json({ error: 'Um dos perfis escolhidos já foi vinculado a outra conta.' });
+  }
 
   try {
-    await pool.query('INSERT INTO usuarios (usuario, senha, perfil1, perfil2) VALUES ($1, $2, $3, $4)', [usuario, senha, perfil1, perfil2 || null]);
+    await pool.query(
+      'INSERT INTO usuarios (usuario, senha, perfil1, perfil2) VALUES ($1, $2, $3, $4)',
+      [usuario, senha, perfil1, perfil2 || null]
+    );
     res.json({ ok: true, perfis: [perfil1, perfil2].filter(Boolean) });
-  } catch (err) { res.status(400).json({ error: 'Nome de usuário já existe.' }); }
+  } catch (err) {
+    res.status(400).json({ error: 'Nome de usuário já existe.' });
+  }
 });
 
 app.post('/api/auth/login', async (req, res) => {
@@ -188,27 +200,30 @@ app.post('/api/auth/login', async (req, res) => {
   if (rows.length > 0) {
     const perfis = [rows[0].perfil1, rows[0].perfil2].filter(Boolean);
     res.json({ ok: true, perfis });
-  } else { res.status(401).json({ error: 'Usuário ou senha incorretos.' }); }
+  } else {
+    res.status(401).json({ error: 'Usuário ou senha incorretos.' });
+  }
 });
 
-// BOLAO E RESULTADOS
+// ═══════════════════════════════════════════════════════════
+// ROTAS DO BOLÃO
+// ═══════════════════════════════════════════════════════════
 app.get('/api/resultados', async (req, res) => {
-  const { rows } = await pool.query('SELECT jogo_num, resultado, placar, encerrado FROM resultados');
+  const { rows } = await pool.query('SELECT jogo_num, resultado FROM resultados');
   const obj = {};
-  rows.forEach(r => obj[r.jogo_num] = { resultado: r.resultado, placar: r.placar, encerrado: r.encerrado });
+  rows.forEach(r => obj[r.jogo_num] = r.resultado);
   res.json(obj);
 });
 
 app.post('/api/resultados/:num', async (req, res) => {
   const num = parseInt(req.params.num);
-  const { resultado, placar, encerrado } = req.body;
-  
+  const { resultado } = req.body;
+  if (!['V','E','D'].includes(resultado)) return res.status(400).json({ error: 'Inválido' });
   await pool.query(`
-    INSERT INTO resultados (jogo_num, resultado, placar, encerrado)
-    VALUES ($1, $2, $3, $4)
-    ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, placar=$3, encerrado=$4, updated_at=NOW()
-  `, [num, resultado || null, placar || '', encerrado || false]);
-  
+    INSERT INTO resultados (jogo_num, resultado)
+    VALUES ($1, $2)
+    ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
+  `, [num, resultado]);
   res.json({ ok: true });
 });
 
@@ -217,11 +232,17 @@ app.delete('/api/resultados/:num', async (req, res) => {
   res.json({ ok: true });
 });
 
+app.delete('/api/resultados', async (req, res) => {
+  await pool.query('DELETE FROM resultados');
+  res.json({ ok: true });
+});
+
 app.get('/api/palpites-finais', async (req, res) => {
   const { rows } = await pool.query('SELECT participante, jogo_num, palpite FROM palpites_fase_final');
   res.json(rows);
 });
 
+// Lógica para mapear os jogos às suas respectivas chaves de deadline no BD
 const getFaseDeadlineKey = (num) => {
   if (num >= 73 && num <= 88) return 'deadline_r32';
   if (num >= 89 && num <= 96) return 'deadline_r16';
@@ -233,13 +254,17 @@ const getFaseDeadlineKey = (num) => {
 
 app.post('/api/palpites-finais', async (req, res) => {
   const { participante, jogo_num, palpite } = req.body;
-  if (!participante || !jogo_num || !['V','E','D'].includes(palpite)) return res.status(400).json({ error: 'Dados incompletos ou inválidos' });
+  if (!participante || !jogo_num || !['V','E','D'].includes(palpite)) {
+    return res.status(400).json({ error: 'Dados incompletos ou inválidos' });
+  }
   
   const dKey = getFaseDeadlineKey(parseInt(jogo_num));
   if (dKey) {
     const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
     if (confRow.rows.length > 0 && confRow.rows[0].valor) {
-      if (new Date() > new Date(confRow.rows[0].valor)) return res.status(403).json({ error: 'O prazo para os palpites desta fase já encerrou.' });
+      if (new Date() > new Date(confRow.rows[0].valor)) {
+        return res.status(403).json({ error: 'O prazo para os palpites desta fase já encerrou.' });
+      }
     }
   }
 
@@ -252,8 +277,13 @@ app.post('/api/palpites-finais', async (req, res) => {
 });
 
 app.post('/api/admin/login', (req, res) => {
+  const { senha } = req.body;
   const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
-  if (req.body.senha === ADMIN_SENHA) res.json({ ok: true }); else res.status(401).json({ error: 'Não autorizado' });
+  if (senha === ADMIN_SENHA) {
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: 'Não autorizado' });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
