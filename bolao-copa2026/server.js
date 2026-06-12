@@ -23,12 +23,9 @@ async function init() {
     )
   `);
 
-  // Garante que o banco aceite placares exatos caso a tabela antiga seja CHAR(1)
   try {
     await pool.query('ALTER TABLE resultados ALTER COLUMN resultado TYPE VARCHAR(10)');
-  } catch(e) {
-    // Ignora erro se já estiver atualizado
-  }
+  } catch(e) {}
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS palpites_fase_final (
@@ -61,7 +58,7 @@ async function init() {
 init();
 
 // ═══════════════════════════════════════════════════════════
-// BASE DE DADOS FIXA (FASE DE GRUPOS)
+// BASE DE DADOS FIXA (FASE DE GRUPOS E CAMPEÃO)
 // ═══════════════════════════════════════════════════════════
 const DADOS_BOLAO = {
   participantes: [
@@ -71,6 +68,32 @@ const DADOS_BOLAO = {
     "Juninho", "Lilian OSS", "Wainer OSS", "Satelis OSS", "Ana Claudia", "David OSS",
     "Carla (Lilian)"
   ],
+  palpites_campeao: {
+    "Ivan 1 OSS": "França",
+    "Ivan 2 OSS": "Espanha",
+    "Andre OSS": "Espanha",
+    "Lelis OSS": "França",
+    "Rods 1 OSS": "França",
+    "Rods 2 OSS": "Espanha",
+    "Keller Poços": "Brasil",
+    "Jorge OSS": "Portugal",
+    "Claudia OSS": "Portugal",
+    "China": "Brasil",
+    "Joseney OSS": "França",
+    "Barrinhos OSS": "França",
+    "Marina Trinkaus": "Brasil",
+    "Fabinho Irmão": "França",
+    "Fisher OSS": "França",
+    "Rafael Féra": "França",
+    "Raul FMC": "Brasil",
+    "Juninho": "Holanda",
+    "Lilian OSS": "Espanha",
+    "Wainer OSS": "Espanha",
+    "Satelis OSS": "Brasil",
+    "Ana Claudia": "Inglaterra",
+    "David OSS": "França",
+    "Carla (Lilian)": "Argentina"
+  },
   jogos: [
     { jogo: 1, mandante: "México", visitante: "África do Sul", fase: "Grupo A", hora: "16h", local: "Cidade do México", palpites: {"Ivan 1 OSS":"V","Ivan 2 OSS":"V","Andre OSS":"V","Lelis OSS":"V","Rods 1 OSS":"V","Rods 2 OSS":"E","Keller Poços":"E","Jorge OSS":"V","Claudia OSS":"V","China":"V","Joseney OSS":"V","Barrinhos OSS":"V","Marina Trinkaus":"V","Fabinho Irmão":"V","Fisher OSS":"V","Rafael Féra":"V","Raul FMC":"V","Juninho":"V","Lilian OSS":"V","Wainer OSS":"V","Satelis OSS":"V","Ana Claudia":"V","David OSS":"V","Carla (Lilian)":"E"} },
     { jogo: 2, mandante: "Coreia do Sul", visitante: "Tchéquia", fase: "Grupo A", hora: "23h", local: "Guadalajara", palpites: {"Ivan 1 OSS":"E","Ivan 2 OSS":"V","Andre OSS":"E","Lelis OSS":"E","Rods 1 OSS":"E","Rods 2 OSS":"E","Keller Poços":"V","Jorge OSS":"E","Claudia OSS":"E","China":"D","Joseney OSS":"E","Barrinhos OSS":"E","Marina Trinkaus":"D","Fabinho Irmão":"E","Fisher OSS":"V","Rafael Féra":"E","Raul FMC":"E","Juninho":"E","Lilian OSS":"E","Wainer OSS":"D","Satelis OSS":"V","Ana Claudia":"E","David OSS":"E","Carla (Lilian)":"D"} },
@@ -152,7 +175,7 @@ app.get('/api/dados-bolao', (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// ROTAS DE CONFIGURAÇÕES GLOBAIS
+// ROTAS DE CONFIGURAÇÕES GLOBAIS E ADMIN
 // ═══════════════════════════════════════════════════════════
 app.get('/api/config', async (req, res) => {
   const { rows } = await pool.query('SELECT chave, valor FROM configuracoes');
@@ -168,6 +191,33 @@ app.post('/api/config', async (req, res) => {
     VALUES ($1, $2)
     ON CONFLICT (chave) DO UPDATE SET valor=$2
   `, [chave, valor]);
+  res.json({ ok: true });
+});
+
+// Rota: Listar usuários para o Admin
+app.post('/api/admin/usuarios', async (req, res) => {
+  const { senha } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senha !== ADMIN_SENHA) return res.status(401).json({ error: 'Não autorizado' });
+  const { rows } = await pool.query('SELECT usuario, perfil1, perfil2 FROM usuarios ORDER BY usuario');
+  res.json(rows);
+});
+
+// Rota: Mudar senha de usuário pelo Admin
+app.post('/api/admin/usuarios/senha', async (req, res) => {
+  const { senhaAdmin, usuarioTarget, novaSenha } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senhaAdmin !== ADMIN_SENHA) return res.status(401).json({ error: 'Não autorizado' });
+  await pool.query('UPDATE usuarios SET senha=$1 WHERE usuario=$2', [novaSenha, usuarioTarget]);
+  res.json({ ok: true });
+});
+
+// Rota: Excluir usuário pelo Admin
+app.post('/api/admin/usuarios/delete', async (req, res) => {
+  const { senhaAdmin, usuarioTarget } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senhaAdmin !== ADMIN_SENHA) return res.status(401).json({ error: 'Não autorizado' });
+  await pool.query('DELETE FROM usuarios WHERE usuario=$1', [usuarioTarget]);
   res.json({ ok: true });
 });
 
