@@ -69,7 +69,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .rank-pts span { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text3); font-weight: 400; display: block; text-align: right; }
 
 .group-section { margin-bottom: 28px; }
-.group-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .05em; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.group-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .05em; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .group-title::after { content:''; flex:1; height:1px; background:var(--border); }
 .jogo-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 6px; overflow: hidden; cursor: pointer; transition: border-color .15s; }
 .jogo-card:hover { border-color: var(--border2); }
@@ -83,8 +83,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .jogo-mandante { font-weight: 600; font-size: 13px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .jogo-visitante { font-weight: 600; font-size: 13px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.jogo-placar { text-align: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); background: rgba(245,200,66,0.08); border: 1px solid rgba(245,200,66,0.2); border-radius: var(--r-sm); padding: 2px 12px; min-width: 70px; white-space: nowrap; }
-.jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; }
+.jogo-placar.pendente { color: var(--text3); background: transparent; border-color: var(--border); font-size: 12px; font-family: 'Inter',sans-serif; font-weight: 400; padding: 4px 10px; text-align: center; border: 1px solid var(--border); border-radius: var(--r-sm); }
 .jogo-meta { font-size: 11px; color: var(--text3); text-align: right; }
 .jogo-detail { display: none; border-top: 1px solid var(--border); }
 .jogo-detail.open { display: block; }
@@ -105,11 +104,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .cons-e { background: var(--draw); }
 .cons-d { background: var(--loss); }
 
-.resultado-form { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.15); flex-wrap: wrap; }
 .res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase; }
 .res-input:focus { outline: none; border-color: var(--gold); }
-.btn-salvar { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; }
-.btn-salvar:hover { background: var(--pitch-mid); }
+.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
+.btn-primary:hover { background: var(--pitch-mid); }
 .btn-limpar { background: transparent; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; }
 .btn-limpar:hover { color: var(--loss); border-color: var(--loss); }
 .resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
@@ -135,8 +133,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .import-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .import-box p { color: var(--text2); font-size: 13px; margin-bottom: 12px; }
 .import-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'JetBrains Mono',monospace; font-size: 12px; padding: 10px; height: 100px; resize: vertical; }
-.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
-.btn-primary:hover { background: var(--pitch-mid); }
+
 .btn-palpite-op { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s; }
 .btn-palpite-op:hover { border-color: var(--text3); color: var(--text); }
 .btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
@@ -318,8 +315,8 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
         </div>
 
         <div class="import-box">
-          <h3>📥 Inserir resultado manually</h3>
-          <p style="color:var(--text2);font-size:12px;margin-bottom:8px">Cole <code>NUM GOLS-GOLS</code>. Ex: <code>1 2-0</code> ou <code>74 1-1</code></p>
+          <h3>📥 Inserir placares manualmente</h3>
+          <p style="color:var(--text2);font-size:12px;margin-bottom:8px">Cole no formato <code>NUM GOLS-GOLS</code>. Ex: <code>1 2-0</code> ou <code>74 1-1</code></p>
           <textarea class="import-textarea" id="bulk-input" style="height:60px" placeholder="1 2-0"></textarea>
           <button class="btn-primary" onclick="bulkImport()">Gravar Placares</button>
         </div>
@@ -359,6 +356,7 @@ let cachePalpitesFinais = [];
 let appConfig = {};
 let customMatchups = {};
 
+// Cria a grade completa de 32 jogos do mata-mata
 const JOGOS_FASE_FINAL = [
   ...Array.from({length: 16}, (_, i) => ({ jogo: 73+i, mandante: `TBD R32`, visitante: `TBD R32`, fase: "Dezesseis-avos", chavePrazo: 'deadline_r32' })),
   ...Array.from({length: 8}, (_, i) => ({ jogo: 89+i, mandante: `TBD Oitavas`, visitante: `TBD Oitavas`, fase: "Oitavas de Final", chavePrazo: 'deadline_r16' })),
@@ -468,6 +466,30 @@ function checkUserSession() {
 
 function doUserLogout() { sessionStorage.removeItem('bolao_user_perfis'); checkUserSession(); }
 
+// ─── LÓGICA DE PLACARES EXATOS NO HEADER ───
+function formatScoreHeader(res, isDetailed = false) {
+  if (!res) return '';
+  if (res.includes('-')) {
+    const [g1, g2] = res.split('-');
+    return `<div class="jogo-placar" style="background:transparent; border:none; padding:0;">
+              <span style="font-size:22px; color:var(--text); font-family:'Bebas Neue',sans-serif;">${g1}</span>
+              <span style="font-size:12px; color:var(--text3); margin:0 6px; font-family:'Inter',sans-serif;">X</span>
+              <span style="font-size:22px; color:var(--text); font-family:'Bebas Neue',sans-serif;">${g2}</span>
+            </div>`;
+  }
+  const badgeText = res === 'V' ? 'Mandante' : res === 'E' ? 'Empate' : 'Visitante';
+  return `<div class="jogo-placar"><span class="resultado-badge ${res}">${badgeText}</span></div>`;
+}
+
+function getWinnerFromScore(res) {
+  if (!res) return null;
+  if (res.includes('-')) {
+    const [g1, g2] = res.split('-').map(Number);
+    return g1 > g2 ? 'V' : g1 < g2 ? 'D' : 'E';
+  }
+  return res;
+}
+
 function renderMeusPalpites() {
   const perfis = JSON.parse(sessionStorage.getItem('bolao_user_perfis') || '[]');
   if (perfis.length === 0) return;
@@ -487,26 +509,20 @@ function drawMeusPalpitesList(perfil) {
     jogos.forEach(j => {
       const res = resultados[String(j.jogo)];
       const meuPalpite = j.palpites[perfil];
+      const resLetter = getWinnerFromScore(res);
 
       let palpiteClass = ''; let icon = '⏳';
-      let resLetra = res; let displayScore = res;
-      
-      if (res) {
-        if (res.includes('-')) {
-           const [g1, g2] = res.split('-').map(Number);
-           resLetra = g1 > g2 ? 'V' : g1 < g2 ? 'D' : 'E';
-        } else {
-           displayScore = res === 'V' ? 'Mandante' : res === 'E' ? 'Empate' : 'Visitante';
-        }
-        if (meuPalpite === resLetra) { palpiteClass = 'acerto'; icon = '✅'; }
-        else { palpiteClass = 'erro'; icon = '❌'; }
-      }
-
+      if (res) { if (meuPalpite === resLetter) { palpiteClass = 'acerto'; icon = '✅'; } else { palpiteClass = 'erro'; icon = '❌'; } }
       const nomePalpite = meuPalpite === 'V' ? j.mandante : meuPalpite === 'E' ? 'Empate' : j.visitante;
       
       html += `
       <div class="jogo-card ${res?'encerrado':''}" style="cursor:default;">
-        <div class="jogo-header"><div class="jogo-num"><span>#${j.jogo}</span></div><div class="jogo-mandante">${j.mandante}</div>${res ? `<div class="jogo-placar"><span class="resultado-badge ${resLetra}">${displayScore}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}<div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div></div>
+        <div class="jogo-header">
+          <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div>
+          <div class="jogo-mandante">${j.mandante}</div>
+          ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div>
+        </div>
         <div style="padding: 10px 14px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2);">
           <span style="font-size:12px; color:var(--text2)">Meu Palpite:</span><div class="palpite-item ${palpiteClass}" style="width:auto; gap:10px; padding:6px 12px; font-size:13px; font-weight:bold;">${icon} ${nomePalpite}</div>
         </div>
@@ -592,16 +608,10 @@ function calcRanking() {
   BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; });
   BOLAO.jogos.forEach(j => {
     const res = resultados[String(j.jogo)];
+    const resLetter = getWinnerFromScore(res);
     Object.entries(j.palpites).forEach(([p, pal]) => {
       total[p] = (total[p]||0) + 1;
-      if (res) {
-        let resLetra = res;
-        if (res.includes('-')) {
-           const [g1, g2] = res.split('-').map(Number);
-           resLetra = g1 > g2 ? 'V' : g1 < g2 ? 'D' : 'E';
-        }
-        if (pal === resLetra) { pts[p]+=3; acertos[p]+=1; }
-      }
+      if (res && pal === resLetter) { pts[p]+=3; acertos[p]+=1; }
     });
   });
   return BOLAO.participantes.map(p => ({nome: p, pts: pts[p], acertos: acertos[p], total: total[p]})).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
@@ -641,26 +651,20 @@ function renderJogos() {
     let html = `<div class="group-section"><div class="group-title">${grupo}</div>`;
     jogos.forEach(j => {
       const res = resultados[String(j.jogo)];
+      const resLetter = getWinnerFromScore(res);
       const cons = {V:0, E:0, D:0};
       Object.values(j.palpites).forEach(p => cons[p]++);
       const tot = Object.values(j.palpites).length;
       
-      let resLetra = res; let displayScore = res;
-      if (res && res.includes('-')) {
-         const [g1, g2] = res.split('-').map(Number);
-         resLetra = g1 > g2 ? 'V' : g1 < g2 ? 'D' : 'E';
-      } else if (res) {
-         displayScore = res === 'V' ? 'Mandante' : res === 'E' ? 'Empate' : 'Visitante';
-      }
-
       let palsHtml = '';
-      Object.entries(j.palpites).forEach(([p, pal]) => { palsHtml += `<div class="palpite-item ${resLetra?(pal===resLetra?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`; });
+      Object.entries(j.palpites).forEach(([p, pal]) => { palsHtml += `<div class="palpite-item ${resLetter?(pal===resLetter?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`; });
+      
       html += `
       <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
         <div class="jogo-header" onclick="toggleJogo(${j.jogo})">
-          <div class="jogo-num"><span>#${j.jogo}</span></div><div class="jogo-mandante">${j.mandante}</div>
-          ${res ? `<div class="jogo-placar"><span class="resultado-badge ${resLetra}">${displayScore}</span></div>` : `<div class="jogo-placar pendente">${j.hora}</div>`}
-          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓ Encerrado</span>':''}</div>
+          <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div><div class="jogo-mandante">${j.mandante}</div>
+          ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente">${j.hora}</div>`}
+          <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓</span>':''}</div>
         </div>
         <div class="jogo-detail" id="detail-${j.jogo}">
           <div class="consensus-bar">
@@ -670,12 +674,6 @@ function renderJogos() {
             <span class="cons-item"><span class="cons-dot cons-d"></span> D (${Math.round(cons.D/tot*100)}%)</span>
           </div>
           <div class="palpites-grid">${palsHtml}</div>
-          <div class="resultado-form" style="${!isAdmin()?'display:none':''}">
-            <label>Inserir resultado:</label>
-            <input class="res-input" id="res-input-${j.jogo}" maxlength="5" placeholder="Ex: 2-1" value="${res||''}" oninput="this.value=this.value.toUpperCase()">
-            <button class="btn-salvar" onclick="salvarResultado(${j.jogo})">Salvar</button>
-            ${res ? `<button class="btn-limpar" onclick="limparResultado(${j.jogo})">Limpar</button>` : ''}
-          </div>
         </div>
       </div>`;
     });
@@ -685,12 +683,56 @@ function renderJogos() {
 
 function toggleJogo(num) { document.getElementById(`detail-${num}`).classList.toggle('open'); }
 
+// ─── ROBÔ INVISÍVEL: BUSCA AUTOMÁTICA EM SEGUNDO PLANO ───
+async function syncLiveScoresBackground(silent = true) {
+  try {
+    const d = new Date();
+    // Pega a data local da máquina, ignorando o UTC (evita sumir jogos à noite)
+    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    
+    const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const events = data.events || [];
+    
+    let dbUpdated = false;
+
+    events.forEach(e => {
+      const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
+      
+      // Salva no banco de dados SOMENTE se acabou (Trava de placar final)
+      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
+        const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
+        const jogoMatch = BOLAO.jogos.find(j => 
+            j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) || 
+            e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5))
+        );
+        
+        if (jogoMatch && resultados[String(jogoMatch.jogo)] !== placarExato) {
+          resultados[String(jogoMatch.jogo)] = placarExato;
+          fetch(`/api/resultados/${jogoMatch.jogo}`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({resultado:placarExato}) });
+          if (!silent) showToast(`🔄 Auto: Jogo #${jogoMatch.jogo} encerrado em ${placarExato}`);
+          dbUpdated = true;
+        }
+      }
+    });
+
+    if (dbUpdated) {
+      renderRanking();
+      if (document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
+      if (document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+    }
+  } catch(e) {}
+}
+
+// ─── RENDERIZADOR DA ABA "AO VIVO" (Para o usuário acompanhar) ───
 async function fetchLiveScores() {
   const container = document.getElementById('live-games-container');
   container.innerHTML = '<div class="empty-state"><p>Buscando partidas...</p></div>';
   try {
     const d = new Date();
     const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    
     const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
     const res = await fetch(url);
     const data = await res.json();
@@ -703,19 +745,12 @@ async function fetchLiveScores() {
       const live = e.strStatus.match(/^\d+$/) || e.strStatus === 'HT';
       const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
       html += `<div class="live-game-card"><div class="lgc-teams"><div class="lgc-team">${e.strHomeTeam}</div><div class="lgc-score">${e.intHomeScore??'–'}:${e.intAwayScore??'–'}</div><div class="lgc-team right">${e.strAwayTeam}</div></div><div class="lgc-status ${live?'live':''}">${live?`⏱ ${e.strStatus}'`:isFinished?'✓ Encerrado':e.strTime}</div></div>`;
-      
-      // Auto save final da partida usando o placar exato
-      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
-        const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
-        const jogoMatch = BOLAO.jogos.find(j => j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) || e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5)));
-        if (jogoMatch && !resultados[String(jogoMatch.jogo)]) {
-          resultados[String(jogoMatch.jogo)] = placarExato;
-          fetch(`/api/resultados/${jogoMatch.jogo}`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({resultado:placarExato}) });
-          renderRanking(); renderJogos(); showToast(`🔄 Auto: Jogo #${jogoMatch.jogo} → ${placarExato}`);
-        }
-      }
     });
     container.innerHTML = html + '</div>';
+    
+    // Aproveita a busca manual para tentar sincronizar o banco
+    syncLiveScoresBackground(false);
+
   } catch (e) { container.innerHTML = '<div class="empty-state"><p>⚠️ Erro ao buscar dados ao vivo</p></div>'; }
 }
 
@@ -767,7 +802,7 @@ async function bulkImport() {
     if (['V','E','D'].includes(placar.toUpperCase())) {
       finalVal = placar.toUpperCase();
     } else if (/^\d+-\d+$/.test(placar)) {
-      finalVal = placar; // Aceita placar direto
+      finalVal = placar; 
     }
     
     if (finalVal) { 
@@ -778,28 +813,19 @@ async function bulkImport() {
   }
   if (count > 0) {
     renderRanking(); renderJogos();
+    if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
     showToast(`✅ ${count} resultado(s) importado(s)!`);
     document.getElementById('bulk-input').value = '';
   } else { showToast('⚠️ Nenhum formato válido'); }
 }
 
-async function salvarResultado(num) {
-  const val = document.getElementById(`res-input-${num}`).value.trim().toUpperCase();
-  if (!val) return;
-  
-  let ehPlacar = /^\d+\s*-\s*\d+$/.test(val);
-  if (!['V','E','D'].includes(val) && !ehPlacar) return showToast('⚠️ Use V, E, D ou um placar (ex: 2-1)');
-  
-  const finalVal = ehPlacar ? val.replace(/\s+/g, '') : val;
-  resultados[String(num)] = finalVal;
-  await fetch(`/api/resultados/${num}`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({resultado:finalVal}) });
-  renderRanking(); renderJogos(); showToast('✅ Salvo!');
-}
-
-async function limparResultado(num) {
-  delete resultados[String(num)];
-  await fetch(`/api/resultados/${num}`, { method: 'DELETE' });
-  renderRanking(); renderJogos(); showToast('🗑️ Removido');
+async function resetAll() {
+  if (!confirm('Limpar TODOS os resultados do banco de dados?')) return;
+  resultados = {};
+  await fetch('/api/resultados', { method: 'DELETE' });
+  renderRanking(); renderJogos();
+  if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+  showToast('🗑️ Banco limpo');
 }
 
 function exportReportCSV() {
@@ -837,13 +863,38 @@ function showTab(name) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${name}`).classList.add('visible');
   if (event && event.target) event.target.classList.add('active');
+  
   if (name === 'meus-palpites') renderMeusPalpites();
-  if (name === 'admin') { if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; renderTabelaAdmin(); } else { document.getElementById('admin-login').style.display = 'block'; document.getElementById('admin-panel').style.display = 'none'; } }
+  
+  if (name === 'ao-vivo') {
+    if (isAdmin()) {
+      document.getElementById('ao-vivo-login').style.display = 'none';
+      document.getElementById('ao-vivo-content').style.display = 'block';
+      fetchLiveScores();
+    } else {
+      document.getElementById('ao-vivo-login').style.display = 'block';
+      document.getElementById('ao-vivo-content').style.display = 'none';
+    }
+  }
+  
+  if (name === 'admin') { 
+    if (adminAuthorized) { 
+      document.getElementById('admin-login').style.display = 'none'; 
+      document.getElementById('admin-panel').style.display = 'block'; 
+      renderTabelaAdmin(); 
+    } else { 
+      document.getElementById('admin-login').style.display = 'block'; 
+      document.getElementById('admin-panel').style.display = 'none'; 
+    } 
+  }
 }
 
 let toastTimer;
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); }
-setInterval(() => { renderRanking(); if(document.getElementById('tab-ao-vivo').classList.contains('visible')) fetchLiveScores(); }, 180000);
+
+// Roda o robô invisível a cada 1 minuto (60000ms) para auto-salvar os placares sem o usuário precisar clicar em nada
+setInterval(() => syncLiveScoresBackground(true), 60000);
+
 init();
 </script>
 </body>
