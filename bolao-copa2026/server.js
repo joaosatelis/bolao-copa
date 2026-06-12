@@ -18,10 +18,17 @@ async function init() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS resultados (
       jogo_num INTEGER PRIMARY KEY,
-      resultado CHAR(1) NOT NULL,
+      resultado VARCHAR(10) NOT NULL,
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
+
+  // Garante que o banco aceite placares exatos caso a tabela antiga seja CHAR(1)
+  try {
+    await pool.query('ALTER TABLE resultados ALTER COLUMN resultado TYPE VARCHAR(10)');
+  } catch(e) {
+    // Ignora erro se já estiver atualizado
+  }
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS palpites_fase_final (
@@ -218,7 +225,7 @@ app.get('/api/resultados', async (req, res) => {
 app.post('/api/resultados/:num', async (req, res) => {
   const num = parseInt(req.params.num);
   const { resultado } = req.body;
-  if (!['V','E','D'].includes(resultado)) return res.status(400).json({ error: 'Inválido' });
+  if (!resultado) return res.status(400).json({ error: 'Inválido' });
   await pool.query(`
     INSERT INTO resultados (jogo_num, resultado)
     VALUES ($1, $2)
@@ -242,7 +249,6 @@ app.get('/api/palpites-finais', async (req, res) => {
   res.json(rows);
 });
 
-// Lógica para mapear os jogos às suas respectivas chaves de deadline no BD
 const getFaseDeadlineKey = (num) => {
   if (num >= 73 && num <= 88) return 'deadline_r32';
   if (num >= 89 && num <= 96) return 'deadline_r16';
