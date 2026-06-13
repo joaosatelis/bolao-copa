@@ -411,7 +411,7 @@ const TEAM_DICTIONARY = {
 function normalizeTeamName(name) {
   if (!name) return '';
   let translated = TEAM_DICTIONARY[name] || name;
-  return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return translated.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
 }
 
 const JOGOS_FASE_FINAL = [
@@ -449,7 +449,7 @@ async function init() {
     if(appConfig.campeao_oficial) document.getElementById('admin-campeao').value = appConfig.campeao_oficial;
 
     let mtText = '';
-    Object.entries(customMatchups).forEach(([n, match]) => mtText += `${n} ${match.mandante} x ${match.visitante}\n`);
+    Object.entries(customMatchups).forEach(([n, match]) => mtText += `${n} ${match.mandante} x ${match.visitante}\\n`);
     document.getElementById('admin-matchups').value = mtText.trim();
 
     document.getElementById('loader-overlay').style.display = 'none';
@@ -528,6 +528,7 @@ function checkUserSession() {
 
 function doUserLogout() { sessionStorage.removeItem('bolao_user_perfis'); checkUserSession(); }
 
+// ─── LÓGICA DE PLACARES EXATOS NO HEADER ───
 function formatScoreHeader(res) {
   if (!res) return '';
   if (res.includes('-')) {
@@ -690,9 +691,52 @@ function calcRanking() {
      });
   }
 
-  return BOLAO.participantes.map(p => ({
+  let ranking = BOLAO.participantes.map(p => ({
       nome: p, pts: pts[p], acertos: acertos[p], total: total[p], bonus: bonusCamp[p]
   })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
+  
+  // LÓGICA DE DIVISÃO DE PRÊMIOS E EMPATES
+  const prizes = [600, 360, 240];
+  let prizeIndex = 0;
+  let currentPos = 1;
+  let groups = [];
+  let currentGroup = [];
+  
+  for (let i = 0; i < ranking.length; i++) {
+    let r = ranking[i];
+    if (currentGroup.length === 0) {
+       currentGroup.push(r);
+    } else {
+       let last = currentGroup[0];
+       if (r.pts === last.pts && r.acertos === last.acertos) {
+           currentGroup.push(r);
+       } else {
+           groups.push(currentGroup);
+           currentGroup = [r];
+       }
+    }
+  }
+  if (currentGroup.length > 0) groups.push(currentGroup);
+  
+  for (let group of groups) {
+      let groupSize = group.length;
+      let groupPrizeSum = 0;
+      for (let i = 0; i < groupSize; i++) {
+         if (prizeIndex < prizes.length) {
+             groupPrizeSum += prizes[prizeIndex];
+             prizeIndex++;
+         }
+      }
+      let prizePerPerson = groupSize > 0 && groupPrizeSum > 0 ? (groupPrizeSum / groupSize) : 0;
+      
+      for (let r of group) {
+          r.posicao = currentPos;
+          r.premio = prizePerPerson;
+      }
+      currentPos += groupSize;
+  }
+  
+  return ranking;
 }
 
 function renderRanking() {
@@ -708,20 +752,27 @@ function renderRanking() {
   const container = document.getElementById('ranking-list');
   container.innerHTML = '';
   ranking.forEach((r, i) => {
-    const pos = i + 1; const pct = Math.round((r.pts / maxPts) * 100); const pctA = r.total > 0 && encerrados > 0 ? Math.round((r.acertos / encerrados) * 100) : 0;
+    const pos = r.posicao; 
+    const pct = Math.round((r.pts / maxPts) * 100) || 0; 
+    const pctA = r.total > 0 && encerrados > 0 ? Math.round((r.acertos / encerrados) * 100) : 0;
     
     let prizeStr = '';
-    if (pos === 1) prizeStr = '<span style="color:#4caf7d; font-weight:600; font-size:12px; margin-left:6px; background:rgba(76,175,125,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 600</span>';
-    else if (pos === 2) prizeStr = '<span style="color:#f5c842; font-weight:600; font-size:12px; margin-left:6px; background:rgba(245,200,66,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 360</span>';
-    else if (pos === 3) prizeStr = '<span style="color:#b0b8c4; font-weight:600; font-size:12px; margin-left:6px; background:rgba(176,184,196,0.15); padding:2px 6px; border-radius:4px;">💰 R$ 240</span>';
+    // Só mostra o prêmio financeiro se o bolão já estiver valendo (1 ou mais jogos encerrados)
+    if (r.premio > 0 && encerrados > 0) {
+        let color = pos === 1 ? '#4caf7d' : pos === 2 ? '#f5c842' : '#b0b8c4';
+        let bg = pos === 1 ? 'rgba(76,175,125,0.15)' : pos === 2 ? 'rgba(245,200,66,0.15)' : 'rgba(176,184,196,0.15)';
+        if (pos > 3) { color = '#b0b8c4'; bg = 'rgba(176,184,196,0.15)'; } // Fallback visual
+        prizeStr = `<span style="color:${color}; font-weight:600; font-size:12px; margin-left:6px; background:${bg}; padding:2px 6px; border-radius:4px; white-space:nowrap">💰 R$ ${r.premio.toFixed(2).replace('.',',')}</span>`;
+    }
 
     const bonusStr = r.bonus > 0 ? `<span style="color:var(--gold); font-size:10px; margin-left:4px;" title="Acertou o Campeão">(+5 pts)</span>` : '';
+    let medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
 
     container.innerHTML += `
       <div class="rank-card ${pos<=3?`pos-${pos}`:''}">
-        <div class="rank-pos">${pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':pos}</div>
+        <div class="rank-pos">${medal}</div>
         <div class="rank-info">
-           <div class="rank-name" style="display:flex; align-items:center;">${r.nome} ${prizeStr}</div>
+           <div class="rank-name" style="display:flex; align-items:center; flex-wrap:wrap;">${r.nome} ${prizeStr}</div>
            <div class="rank-sub">${r.acertos} acertos · ${pctA}% aprov. ${bonusStr}</div>
         </div>
         <div class="rank-bar-wrap"><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div></div>
@@ -1072,8 +1123,12 @@ function exportReportCSV() {
 
 function renderTabelaAdmin() {
   const ranking = calcRanking();
-  let html = '<table style="border-collapse:collapse;font-size:11px;min-width:600px;width:100%"><tr><th style="text-align:left;padding:8px">Participante</th><th style="text-align:right">Pts</th><th style="text-align:right">Acertos</th></tr>';
-  ranking.forEach(r => html += `<tr><td style="padding:8px;border-bottom:1px solid var(--border)">${r.nome}</td><td style="text-align:right;border-bottom:1px solid var(--border);color:var(--gold)">${r.pts}</td><td style="text-align:right;border-bottom:1px solid var(--border)">${r.acertos}</td></tr>`);
+  const encerrados = Object.keys(resultados).length;
+  let html = '<table style="border-collapse:collapse;font-size:11px;min-width:600px;width:100%"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border)">Pos</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border)">Participante</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Pts</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Acertos</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Prêmio Estimado</th></tr>';
+  ranking.forEach(r => {
+    let pText = (r.premio > 0 && encerrados > 0) ? `R$ ${r.premio.toFixed(2).replace('.',',')}` : '—';
+    html += `<tr><td style="padding:8px;border-bottom:1px solid var(--border)">${r.posicao}º</td><td style="padding:8px;border-bottom:1px solid var(--border)">${r.nome}</td><td style="text-align:right;border-bottom:1px solid var(--border);color:var(--gold);font-weight:bold">${r.pts}</td><td style="text-align:right;border-bottom:1px solid var(--border)">${r.acertos}</td><td style="text-align:right;border-bottom:1px solid var(--border);color:var(--win);font-weight:bold">${pText}</td></tr>`;
+  });
   document.getElementById('tabela-completa').innerHTML = html + '</table>';
 }
 
