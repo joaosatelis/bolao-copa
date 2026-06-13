@@ -103,11 +103,10 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .cons-e { background: var(--draw); }
 .cons-d { background: var(--loss); }
 
-.resultado-form { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.15); flex-wrap: wrap; }
 .res-input { background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'Inter',sans-serif; font-size: 12px; padding: 5px 8px; width: 54px; text-align: center; text-transform: uppercase; }
 .res-input:focus { outline: none; border-color: var(--gold); }
-.btn-salvar { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: var(--r-sm); cursor: pointer; transition: background .15s; }
-.btn-salvar:hover { background: var(--pitch-mid); }
+.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
+.btn-primary:hover { background: var(--pitch-mid); }
 .btn-limpar { background: transparent; border: 1px solid var(--border2); color: var(--text3); font-size: 12px; padding: 5px 10px; border-radius: var(--r-sm); cursor: pointer; }
 .btn-limpar:hover { color: var(--loss); border-color: var(--loss); }
 .resultado-badge { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
@@ -133,8 +132,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .import-box h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
 .import-box p { color: var(--text2); font-size: 13px; margin-bottom: 12px; }
 .import-textarea { width: 100%; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--r-sm); color: var(--text); font-family: 'JetBrains Mono',monospace; font-size: 12px; padding: 10px; height: 100px; resize: vertical; }
-.btn-primary { background: var(--pitch); border: 1px solid var(--pitch-mid); color: var(--text); font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--r-sm); cursor: pointer; margin-top: 8px; transition: background .15s; }
-.btn-primary:hover { background: var(--pitch-mid); }
+
 .btn-palpite-op { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 6px 16px; font-size: 12px; font-weight: 500; border-radius: var(--r-sm); cursor: pointer; transition: all 0.15s; }
 .btn-palpite-op:hover { border-color: var(--text3); color: var(--text); }
 .btn-palpite-op.active-V { background: var(--win-bg); color: var(--win); border-color: var(--win); }
@@ -397,6 +395,25 @@ let cachePalpitesFinais = [];
 let appConfig = {};
 let customMatchups = {};
 
+// Dicionário de tradução para API (Inglês -> Português do Brasil)
+const TEAM_DICTIONARY = {
+  "South Africa": "África do Sul", "South Korea": "Coreia do Sul", "Czech Republic": "Tchéquia", "Spain": "Espanha",
+  "Germany": "Alemanha", "Netherlands": "Países Baixos", "England": "Inglaterra", "France": "França",
+  "Croatia": "Croácia", "Belgium": "Bélgica", "Switzerland": "Suíça", "Cameroon": "Camarões", "Japan": "Japão",
+  "Morocco": "Marrocos", "USA": "Estados Unidos", "United States": "Estados Unidos", "Turkey": "Turquia",
+  "Ivory Coast": "Costa do Marfim", "Cote d'Ivoire": "Costa do Marfim", "Sweden": "Suécia", "New Zealand": "Nova Zelândia",
+  "Egypt": "Egito", "Saudi Arabia": "Arábia Saudita", "Cape Verde": "Cabo Verde", "Senegal": "Senegal",
+  "Iraq": "Iraque", "Norway": "Noruega", "Algeria": "Argélia", "Austria": "Áustria", "Jordan": "Jordânia",
+  "Colombia": "Colômbia", "DR Congo": "RD Congo", "Uzbekistan": "Uzbequistão", "Mexico": "México",
+  "Canada": "Canadá", "Brazil": "Brasil", "Qatar": "Catar"
+};
+
+function normalizeTeamName(name) {
+  if (!name) return '';
+  let translated = TEAM_DICTIONARY[name] || name;
+  return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
 const JOGOS_FASE_FINAL = [
   ...Array.from({length: 16}, (_, i) => ({ jogo: 73+i, mandante: `TBD R32`, visitante: `TBD R32`, fase: "Dezesseis-avos", chavePrazo: 'deadline_r32' })),
   ...Array.from({length: 8}, (_, i) => ({ jogo: 89+i, mandante: `TBD Oitavas`, visitante: `TBD Oitavas`, fase: "Oitavas de Final", chavePrazo: 'deadline_r16' })),
@@ -511,7 +528,6 @@ function checkUserSession() {
 
 function doUserLogout() { sessionStorage.removeItem('bolao_user_perfis'); checkUserSession(); }
 
-// ─── LÓGICA DE PLACARES EXATOS NO HEADER ───
 function formatScoreHeader(res) {
   if (!res) return '';
   if (res.includes('-')) {
@@ -799,20 +815,38 @@ function toggleJogo(num) { document.getElementById(`detail-${num}`).classList.to
 async function syncLiveScoresBackground(silent = true) {
   try {
     const d = new Date();
-    const today = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    const dates = [];
+    dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
     
-    const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${today}&s=Soccer`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const events = data.events || [];
+    const dYest = new Date(d);
+    dYest.setDate(dYest.getDate() - 1);
+    dates.push(dYest.getFullYear() + '-' + String(dYest.getMonth() + 1).padStart(2, '0') + '-' + String(dYest.getDate()).padStart(2, '0'));
+    
+    let allEvents = [];
+    for (let dateStr of dates) {
+       const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${dateStr}&s=Soccer`;
+       const res = await fetch(url);
+       const data = await res.json();
+       if (data.events) allEvents = allEvents.concat(data.events);
+    }
     
     let dbUpdated = false;
 
-    events.forEach(e => {
+    allEvents.forEach(e => {
       const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
       if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
         const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
-        const jogoMatch = BOLAO.jogos.find(j => j.mandante.toLowerCase().includes(e.strHomeTeam.toLowerCase().slice(0,5)) || e.strHomeTeam.toLowerCase().includes(j.mandante.toLowerCase().slice(0,5)));
+        
+        const apiHome = normalizeTeamName(e.strHomeTeam);
+        const apiAway = normalizeTeamName(e.strAwayTeam);
+
+        const jogoMatch = BOLAO.jogos.find(j => {
+            const localMand = normalizeTeamName(j.mandante);
+            const localVis = normalizeTeamName(j.visitante);
+            const matchMand = localMand.includes(apiHome.slice(0,5)) || apiHome.includes(localMand.slice(0,5));
+            const matchVis = localVis.includes(apiAway.slice(0,5)) || apiAway.includes(localVis.slice(0,5));
+            return matchMand && matchVis;
+        });
         
         if (jogoMatch && resultados[String(jogoMatch.jogo)] !== placarExato) {
           resultados[String(jogoMatch.jogo)] = placarExato;
@@ -827,6 +861,7 @@ async function syncLiveScoresBackground(silent = true) {
       renderRanking();
       if (document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
       if (document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+      if (document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
     }
   } catch(e) {}
 }
@@ -996,6 +1031,7 @@ async function bulkImport() {
   if (count > 0) {
     renderRanking(); renderJogos();
     if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+    if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
     showToast(`✅ ${count} resultado(s) importado(s)!`);
     document.getElementById('bulk-input').value = '';
   } else { showToast('⚠️ Nenhum formato válido'); }
@@ -1007,6 +1043,7 @@ async function resetAll() {
   await fetch('/api/resultados', { method: 'DELETE' });
   renderRanking(); renderJogos();
   if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+  if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
   showToast('🗑️ Banco limpo');
 }
 
@@ -1151,7 +1188,6 @@ function showTab(name) {
 let toastTimer;
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); }
 
-// Roda o robô invisível a cada 1 minuto (60000ms) para auto-salvar os placares sem o usuário precisar clicar em nada
 setInterval(() => syncLiveScoresBackground(true), 60000);
 
 init();
