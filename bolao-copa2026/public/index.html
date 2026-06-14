@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bolão Copa do Mundo 2026 — OSS</title>
-<link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
 <style>
 :root {
   --pitch: #1a6e3c; --pitch-dark: #0f4526; --pitch-mid: #2d8a52;
@@ -450,7 +450,7 @@ async function init() {
     if(appConfig.campeao_oficial) document.getElementById('admin-campeao').value = appConfig.campeao_oficial;
 
     let mtText = '';
-    Object.entries(customMatchups).forEach(([n, match]) => mtText += `${n} ${match.mandante} x ${match.visitante}\\n`);
+    Object.entries(customMatchups).forEach(([n, match]) => mtText += `${n} ${match.mandante} x ${match.visitante}\n`);
     document.getElementById('admin-matchups').value = mtText.trim();
 
     document.getElementById('loader-overlay').style.display = 'none';
@@ -694,7 +694,7 @@ function calcRanking() {
 
   let ranking = BOLAO.participantes.map(p => ({
       nome: p, pts: pts[p], acertos: acertos[p], total: total[p], bonus: bonusCamp[p]
-  })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos);
+  })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos || a.nome.localeCompare(b.nome));
   
   // LÓGICA DE DIVISÃO DE PRÊMIOS E EMPATES
   const prizes = [600, 360, 240];
