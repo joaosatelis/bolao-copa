@@ -343,7 +343,6 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
 // ═══════════════════════════════════════════════════════════
 // AUTOMAÇÃO DE RESULTADOS (CRON JOB)
 // ═══════════════════════════════════════════════════════════
@@ -365,18 +364,14 @@ function normalizeTeamName(name) {
   return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// Roda a cada 1 hora ('0 * * * *')
-// Se quiser testar a cada minuto mude para ('* * * * *')
 cron.schedule('0 * * * *', async () => {
   console.log('🔄 [CRON] Buscando resultados automáticos de ontem e hoje...');
   try {
     const d = new Date();
     const dates = [];
     
-    // Formata a data de Hoje
     dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
     
-    // Formata a data de Ontem
     const dYest = new Date(d);
     dYest.setDate(dYest.getDate() - 1);
     dates.push(dYest.getFullYear() + '-' + String(dYest.getMonth() + 1).padStart(2, '0') + '-' + String(dYest.getDate()).padStart(2, '0'));
@@ -396,18 +391,15 @@ cron.schedule('0 * * * *', async () => {
         const apiHome = normalizeTeamName(e.strHomeTeam);
         const apiAway = normalizeTeamName(e.strAwayTeam);
 
-        // Acha o jogo correspondente no bolão
         const jogoMatch = DADOS_BOLAO.jogos.find(j => {
             const localMand = normalizeTeamName(j.mandante);
             const localVis = normalizeTeamName(j.visitante);
-            // Verifica se parte do nome bate (resolve divergências sutis)
             const matchMand = localMand.includes(apiHome.slice(0,5)) || apiHome.includes(localMand.slice(0,5));
             const matchVis = localVis.includes(apiAway.slice(0,5)) || apiAway.includes(localVis.slice(0,5));
             return matchMand && matchVis;
         });
 
         if (jogoMatch) {
-          // Checa o banco para evitar regravar à toa
           const { rows } = await pool.query('SELECT resultado FROM resultados WHERE jogo_num = $1', [jogoMatch.jogo]);
           if (rows.length === 0 || rows[0].resultado !== placarExato) {
              await pool.query(`
@@ -424,4 +416,6 @@ cron.schedule('0 * * * *', async () => {
     console.error('❌ [CRON] Erro na automação de placares:', err.message);
   }
 });
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
