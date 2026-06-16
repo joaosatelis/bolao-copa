@@ -2,6 +2,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
+const cron = require('node-cron');
 
 const app = express();
 app.use(cors());
@@ -343,4 +344,84 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+// ═══════════════════════════════════════════════════════════
+// AUTOMAÇÃO DE RESULTADOS (CRON JOB)
+// ═══════════════════════════════════════════════════════════
+const TEAM_DICTIONARY = {
+  "South Africa": "África do Sul", "South Korea": "Coreia do Sul", "Czech Republic": "Tchéquia", "Spain": "Espanha",
+  "Germany": "Alemanha", "Netherlands": "Países Baixos", "England": "Inglaterra", "France": "França",
+  "Croatia": "Croácia", "Belgium": "Bélgica", "Switzerland": "Suíça", "Cameroon": "Camarões", "Japan": "Japão",
+  "Morocco": "Marrocos", "USA": "Estados Unidos", "United States": "Estados Unidos", "Turkey": "Turquia",
+  "Ivory Coast": "Costa do Marfim", "Cote d'Ivoire": "Costa do Marfim", "Sweden": "Suécia", "New Zealand": "Nova Zelândia",
+  "Egypt": "Egito", "Saudi Arabia": "Arábia Saudita", "Cape Verde": "Cabo Verde", "Senegal": "Senegal",
+  "Iraq": "Iraque", "Norway": "Noruega", "Algeria": "Argélia", "Austria": "Áustria", "Jordan": "Jordânia",
+  "Colombia": "Colômbia", "DR Congo": "RD Congo", "Uzbekistan": "Uzbequistão", "Mexico": "México",
+  "Canada": "Canadá", "Brazil": "Brasil", "Qatar": "Catar"
+};
+
+function normalizeTeamName(name) {
+  if (!name) return '';
+  let translated = TEAM_DICTIONARY[name] || name;
+  return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Roda a cada 1 hora ('0 * * * *')
+// Se quiser testar a cada minuto mude para ('* * * * *')
+cron.schedule('0 * * * *', async () => {
+  console.log('🔄 [CRON] Buscando resultados automáticos de ontem e hoje...');
+  try {
+    const d = new Date();
+    const dates = [];
+    
+    // Formata a data de Hoje
+    dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
+    
+    // Formata a data de Ontem
+    const dYest = new Date(d);
+    dYest.setDate(dYest.getDate() - 1);
+    dates.push(dYest.getFullYear() + '-' + String(dYest.getMonth() + 1).padStart(2, '0') + '-' + String(dYest.getDate()).padStart(2, '0'));
+
+    let allEvents = [];
+    for (let dateStr of dates) {
+       const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${dateStr}&s=Soccer`;
+       const res = await fetch(url);
+       const data = await res.json();
+       if (data.events) allEvents = allEvents.concat(data.events);
+    }
+
+    for (let e of allEvents) {
+      const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
+      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
+        const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
+        const apiHome = normalizeTeamName(e.strHomeTeam);
+        const apiAway = normalizeTeamName(e.strAwayTeam);
+
+        // Acha o jogo correspondente no bolão
+        const jogoMatch = DADOS_BOLAO.jogos.find(j => {
+            const localMand = normalizeTeamName(j.mandante);
+            const localVis = normalizeTeamName(j.visitante);
+            // Verifica se parte do nome bate (resolve divergências sutis)
+            const matchMand = localMand.includes(apiHome.slice(0,5)) || apiHome.includes(localMand.slice(0,5));
+            const matchVis = localVis.includes(apiAway.slice(0,5)) || apiAway.includes(localVis.slice(0,5));
+            return matchMand && matchVis;
+        });
+
+        if (jogoMatch) {
+          // Checa o banco para evitar regravar à toa
+          const { rows } = await pool.query('SELECT resultado FROM resultados WHERE jogo_num = $1', [jogoMatch.jogo]);
+          if (rows.length === 0 || rows[0].resultado !== placarExato) {
+             await pool.query(`
+                INSERT INTO resultados (jogo_num, resultado)
+                VALUES ($1, $2)
+                ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
+             `, [jogoMatch.jogo, placarExato]);
+             console.log(`✅ [CRON] Jogo #${jogoMatch.jogo} salvo no banco: ${placarExato}`);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('❌ [CRON] Erro na automação de placares:', err.message);
+  }
+});
 app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
