@@ -27,7 +27,6 @@ async function init() {
       )
     `);
 
-    // Tenta atualizar o tipo da coluna caso já exista e seja diferente
     await pool.query('ALTER TABLE resultados ALTER COLUMN resultado TYPE VARCHAR(10)').catch(() => {});
 
     await pool.query(`
@@ -170,6 +169,7 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
+// Rota de login atualizada com a migração silenciosa para o bcrypt
 app.post('/api/auth/login', async (req, res) => {
   const { usuario, senha } = req.body;
   
@@ -177,14 +177,37 @@ app.post('/api/auth/login', async (req, res) => {
     const { rows } = await pool.query('SELECT * FROM usuarios WHERE usuario=$1', [usuario]);
     
     if (rows.length > 0) {
-      const isMatch = await bcrypt.compare(senha, rows[0].senha);
+      const user = rows[0];
+      let isMatch = false;
+
+      // 1. Tenta validar assumindo que a senha já é um hash (usuários novos)
+      try {
+        isMatch = await bcrypt.compare(senha, user.senha);
+      } catch (bcryptError) {
+        // Ignora erro interno do bcrypt se a senha no banco for texto puro
+      }
+
+      // 2. Se não deu match via hash, verifica o texto puro (usuários antigos)
+      if (!isMatch && senha === user.senha) {
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(senha, saltRounds);
+        
+        // Atualiza a senha no banco para o formato criptografado
+        await pool.query('UPDATE usuarios SET senha=$1 WHERE usuario=$2', [hashedPassword, usuario]);
+        
+        isMatch = true;
+        console.log(`🔄 Usuário [${usuario}] migrado para Bcrypt com sucesso durante o login.`);
+      }
+
       if (isMatch) {
-        const perfis = [rows[0].perfil1, rows[0].perfil2].filter(Boolean);
+        const perfis = [user.perfil1, user.perfil2].filter(Boolean);
         return res.json({ ok: true, perfis });
       }
     }
+    
     res.status(401).json({ error: 'Usuário ou senha incorretos.' });
   } catch (error) {
+    console.error('Erro no fluxo de login:', error);
     res.status(500).json({ error: 'Erro no servidor durante o login.' });
   }
 });
@@ -342,7 +365,6 @@ cron.schedule('0 * * * *', async () => {
         const apiHome = normalizeTeamName(e.strHomeTeam);
         const apiAway = normalizeTeamName(e.strAwayTeam);
 
-        // Cruza estritamente pelos nomes em vez de ID sequencial
         const jogoMatch = DADOS_BOLAO.jogos.find(j => {
             const localMand = normalizeTeamName(j.mandante);
             const localVis = normalizeTeamName(j.visitante);
