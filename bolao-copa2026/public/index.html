@@ -66,6 +66,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .rank-card.pos-1 .rank-bar-fill { background: var(--gold); }
 .rank-card.pos-2 .rank-bar-fill { background: var(--silver); }
 .rank-card.pos-3 .rank-bar-fill { background: var(--bronze); }
+
+/* Estilos para os últimos 4 colocados (Rebaixados) */
+.rank-card.pos-z4 { border-color: rgba(224,82,82,0.3); background: linear-gradient(90deg, rgba(224,82,82,0.06) 0%, var(--card) 50%); }
+.rank-card.pos-z4 .rank-pos { color: var(--loss); }
+.rank-card.pos-z4 .rank-bar-fill { background: var(--loss); }
+/* Badge de aviso ao lado do nome */
+.badge-z4 { background: var(--loss-bg); color: var(--loss); border: 1px solid rgba(224,82,82,0.3); font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: 600; white-space: nowrap; }
+
 .rank-pts { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: var(--text); line-height: 1; white-space: nowrap; }
 .rank-pts span { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text3); font-weight: 400; display: block; text-align: right; }
 
@@ -412,7 +420,7 @@ const TEAM_DICTIONARY = {
 function normalizeTeamName(name) {
   if (!name) return '';
   let translated = TEAM_DICTIONARY[name] || name;
-  return translated.normalize("NFD").replace(/[\\u0300-\\u036f]/g, "").toLowerCase();
+  return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
 const JOGOS_FASE_FINAL = [
@@ -693,7 +701,7 @@ function calcRanking() {
   }
 
   let ranking = BOLAO.participantes.map(p => ({
-      nome: p, pts: pts[p], acertos: acertos[p], total: total[p], bonus: bonusCamp[p]
+     nome: p, pts: pts[p], acertos: acertos[p], total: total[p], bonus: bonusCamp[p]
   })).sort((a,b) => b.pts - a.pts || b.acertos - a.acertos || a.nome.localeCompare(b.nome));
   
   // LÓGICA DE DIVISÃO DE PRÊMIOS E EMPATES
@@ -752,28 +760,44 @@ function renderRanking() {
   
   const container = document.getElementById('ranking-list');
   container.innerHTML = '';
+  
   ranking.forEach((r, i) => {
     const pos = r.posicao; 
     const pct = Math.round((r.pts / maxPts) * 100) || 0; 
     const pctA = r.total > 0 && encerrados > 0 ? Math.round((r.acertos / encerrados) * 100) : 0;
     
-    let prizeStr = '';
-    // Só mostra o prêmio financeiro se o bolão já estiver valendo (1 ou mais jogos encerrados)
-    if (r.premio > 0 && encerrados > 0) {
-        let color = pos === 1 ? '#4caf7d' : pos === 2 ? '#f5c842' : '#b0b8c4';
-        let bg = pos === 1 ? 'rgba(76,175,125,0.15)' : pos === 2 ? 'rgba(245,200,66,0.15)' : 'rgba(176,184,196,0.15)';
-        if (pos > 3) { color = '#b0b8c4'; bg = 'rgba(176,184,196,0.15)'; } // Fallback visual
-        prizeStr = `<span style="color:${color}; font-weight:600; font-size:12px; margin-left:6px; background:${bg}; padding:2px 6px; border-radius:4px; white-space:nowrap">💰 R$ ${r.premio.toFixed(2).replace('.',',')}</span>`;
+    // Identifica se o índice atual faz parte dos 4 últimos
+    const isZ4 = i >= ranking.length - 4;
+
+    // Agrupa o prêmio e a tag de rebaixado
+    let tags = '';
+    
+    if (encerrados > 0) {
+        if (r.premio > 0) {
+            let color = pos === 1 ? '#4caf7d' : pos === 2 ? '#f5c842' : '#b0b8c4';
+            let bg = pos === 1 ? 'rgba(76,175,125,0.15)' : pos === 2 ? 'rgba(245,200,66,0.15)' : 'rgba(176,184,196,0.15)';
+            if (pos > 3) { color = '#b0b8c4'; bg = 'rgba(176,184,196,0.15)'; } 
+            tags += `<span style="color:${color}; font-weight:600; font-size:12px; margin-left:6px; background:${bg}; padding:2px 6px; border-radius:4px; white-space:nowrap">💰 R$ ${r.premio.toFixed(2).replace('.',',')}</span>`;
+        }
+        
+        // Aplica o rótulo apenas se houver pelo menos 1 jogo encerrado
+        if (isZ4) {
+            tags += `<span class="badge-z4">⬇ Rebaixado</span>`;
+        }
     }
 
     const bonusStr = r.bonus > 0 ? `<span style="color:var(--gold); font-size:10px; margin-left:4px;" title="Acertou o Campeão">(+5 pts)</span>` : '';
     let medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : pos;
 
+    // Controla a cor do card (Top 3 ou Z4)
+    let cardClass = pos <= 3 ? `pos-${pos}` : '';
+    if (isZ4) cardClass = 'pos-z4';
+
     container.innerHTML += `
-      <div class="rank-card ${pos<=3?`pos-${pos}`:''}">
+      <div class="rank-card ${cardClass}">
         <div class="rank-pos">${medal}</div>
         <div class="rank-info">
-           <div class="rank-name" style="display:flex; align-items:center; flex-wrap:wrap;">${r.nome} ${prizeStr}</div>
+           <div class="rank-name" style="display:flex; align-items:center; flex-wrap:wrap;">${r.nome} ${tags}</div>
            <div class="rank-sub">${r.acertos} acertos · ${pctA}% aprov. ${bonusStr}</div>
         </div>
         <div class="rank-bar-wrap"><div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%"></div></div></div>
