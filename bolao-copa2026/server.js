@@ -1,12 +1,21 @@
 const express = require('express');
+const http = require('http'); // Necessário para o Socket.io
+const { Server } = require('socket.io'); // Importação do Socket.io
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
 const cron = require('node-cron');
 const bcrypt = require('bcrypt');
-const DADOS_BOLAO = require('./dados_bolao.json'); // Importação do JSON isolado
+const DADOS_BOLAO = require('./dados_bolao.json');
 
 const app = express();
+const server = http.createServer(app); // Embrulhamos o Express no servidor HTTP
+
+// Configuração do WebSocket com permissões de CORS
+const io = new Server(server, {
+  cors: { origin: '*' }
+});
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -14,6 +23,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
+});
+
+// Monitoriza as ligações em tempo real
+io.on('connection', (socket) => {
+  console.log('📡 Novo utilizador conectado ao tempo real:', socket.id);
 });
 
 // Inicialização do Banco
@@ -139,7 +153,7 @@ app.post('/api/admin/usuarios/delete', async (req, res) => {
 });
 
 // ═══════════════════════════════════════════════════════════
-// ROTAS DE AUTENTICAÇÃO (SISTEMA DE CONTAS)
+// ROTAS DE AUTENTICAÇÃO
 // ═══════════════════════════════════════════════════════════
 app.post('/api/auth/register', async (req, res) => {
   const { usuario, senha, perfil1, perfil2 } = req.body;
@@ -169,7 +183,6 @@ app.post('/api/auth/register', async (req, res) => {
   }
 });
 
-// Rota de login atualizada com a migração silenciosa para o bcrypt
 app.post('/api/auth/login', async (req, res) => {
   const { usuario, senha } = req.body;
   
@@ -180,21 +193,14 @@ app.post('/api/auth/login', async (req, res) => {
       const user = rows[0];
       let isMatch = false;
 
-      // 1. Tenta validar assumindo que a senha já é um hash (usuários novos)
       try {
         isMatch = await bcrypt.compare(senha, user.senha);
-      } catch (bcryptError) {
-        // Ignora erro interno do bcrypt se a senha no banco for texto puro
-      }
+      } catch (bcryptError) {}
 
-      // 2. Se não deu match via hash, verifica o texto puro (usuários antigos)
       if (!isMatch && senha === user.senha) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(senha, saltRounds);
-        
-        // Atualiza a senha no banco para o formato criptografado
         await pool.query('UPDATE usuarios SET senha=$1 WHERE usuario=$2', [hashedPassword, usuario]);
-        
         isMatch = true;
         console.log(`🔄 Usuário [${usuario}] migrado para Bcrypt com sucesso durante o login.`);
       }
@@ -237,6 +243,10 @@ app.post('/api/resultados/:num', async (req, res) => {
       VALUES ($1, $2)
       ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
     `, [num, resultado]);
+
+    // 🔴 DISPARO MANUAL: Avisa o front-end que um resultado entrou via admin
+    io.emit('atualizacao_placar', { jogo: num, placar: resultado });
+
     res.json({ ok: true });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao salvar resultado' });
@@ -382,6 +392,9 @@ cron.schedule('0 * * * *', async () => {
                 ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
              `, [jogoMatch.jogo, placarExato]);
              console.log(`✅ [CRON] Jogo #${jogoMatch.jogo} salvo no banco: ${placarExato}`);
+
+             // 🔴 DISPARO AUTOMÁTICO: O robô avisou que o jogo acabou. Dispara para o front!
+             io.emit('atualizacao_placar', { jogo: jogoMatch.jogo, placar: placarExato });
           }
         }
       }
@@ -392,4 +405,5 @@ cron.schedule('0 * * * *', async () => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
+// Atenção aqui: Passamos a escutar o 'server' em vez de apenas o 'app'
+server.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT} com WebSocket ativo`));

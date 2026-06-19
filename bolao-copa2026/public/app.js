@@ -1,3 +1,11 @@
+const socket = io();
+
+socket.on('atualizacao_placar', (dados) => {
+    console.log(`Jogo ${dados.jogo} finalizado com placar de ${dados.placar}!`);
+    // Aqui tu chamas a tua função que já faz o fetch das pontuações e renderiza a tabela novamente
+    // Exemplo:
+    // buscarDadosDoServidorEAtualizarTela();
+});
 let BOLAO = null;
 let resultados = {}; 
 let cachePalpitesFinais = []; 
