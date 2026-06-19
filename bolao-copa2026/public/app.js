@@ -221,7 +221,10 @@ function drawMeusPalpitesList(perfil) {
       <div class="jogo-header">
         <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div>
         <div class="jogo-mandante">${j.mandante}</div>
-        ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente">${j.hora}</div>`}
+        ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente" style="display:flex; flex-direction:column; gap:2px; padding: 4px 0;">
+    <span style="font-size:10px; color:var(--text3); font-family:'Inter',sans-serif; font-weight:normal; line-height:1;">${j.data || ''}</span>
+    <span style="font-size:14px; line-height:1;">${j.hora || 'A def.'}</span>
+</div>`}
         <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div>
       </div>
       <div style="padding: 10px 14px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2);">
@@ -548,7 +551,10 @@ function renderJogos() {
     <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
       <div class="jogo-header" onclick="toggleJogo(${j.jogo})">
         <div class="jogo-num"><span>#${j.jogo}</span><span class="jogo-grupo-badge">${j.fase.replace('Grupo ','Gr ')}</span></div><div class="jogo-mandante">${j.mandante}</div>
-        ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente">${j.hora}</div>`}
+        ${res ? formatScoreHeader(res) : `<div class="jogo-placar pendente" style="display:flex; flex-direction:column; gap:2px; padding: 4px 0;">
+    <span style="font-size:10px; color:var(--text3); font-family:'Inter',sans-serif; font-weight:normal; line-height:1;">${j.data || ''}</span>
+    <span style="font-size:14px; line-height:1;">${j.hora || 'A def.'}</span>
+</div>`}
         <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">✓</span>':''}</div>
       </div>
       <div class="jogo-detail" id="detail-${j.jogo}">
