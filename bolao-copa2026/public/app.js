@@ -2,16 +2,16 @@ const socket = io();
 
 socket.on('atualizacao_placar', (dados) => {
     console.log(`Jogo ${dados.jogo} finalizado com placar de ${dados.placar}!`);
-    // Aqui tu chamas a tua função que já faz o fetch das pontuações e renderiza a tabela novamente
-    // Exemplo:
-    // buscarDadosDoServidorEAtualizarTela();
+    // Recarrega resultados do servidor de forma silenciosa para atualizar as abas abertas
+    syncLiveScoresBackground(true);
 });
+
 let BOLAO = null;
 let resultados = {}; 
 let cachePalpitesFinais = []; 
 let appConfig = {};
 let customMatchups = {};
-let evolutionChartInstance = null; // Guardamos a referência para destruir ao atualizar
+let evolutionChartInstance = null; 
 
 const TEAM_DICTIONARY = {
   "South Africa": "África do Sul", "South Korea": "Coreia do Sul", "Czech Republic": "Tchéquia", "Spain": "Espanha",
@@ -79,10 +79,32 @@ async function init() {
   } catch (e) { document.getElementById('loader-overlay').innerHTML = '<p>Erro ao conectar com servidor.</p>'; }
 }
 
+// Retorna uma lista unificada contendo Fase de Grupos + Fase Final
+function getTodosJogos() {
+  const baseJogos = BOLAO.jogos.map(j => ({...j})); 
+  const knockoutJogos = JOGOS_FASE_FINAL.map(j => {
+    const palpitesMap = {};
+    cachePalpitesFinais.forEach(pf => {
+      if(pf.jogo_num === j.jogo) palpitesMap[pf.participante] = pf.palpite;
+    });
+    return {
+      jogo: j.jogo,
+      fase: j.fase,
+      mandante: getKnockoutTeam(j.jogo, 'mandante', j.mandante),
+      visitante: getKnockoutTeam(j.jogo, 'visitante', j.visitante),
+      palpites: palpitesMap,
+      data: '',
+      hora: ''
+    };
+  });
+  return [...baseJogos, ...knockoutJogos];
+}
+
 function popularFiltros() {
   if(!BOLAO) return;
-  const grupos = [...new Set(BOLAO.jogos.map(j => j.fase))].sort();
-  let options = '<option value="todos">Todos os Grupos</option>';
+  const todosJogos = getTodosJogos();
+  const grupos = [...new Set(todosJogos.map(j => j.fase))].sort();
+  let options = '<option value="todos">Todos os Grupos / Fases</option>';
   grupos.forEach(g => options += `<option value="${g}">${g}</option>`);
   document.getElementById('filtro-grupo-meus').innerHTML = options;
   document.getElementById('filtro-grupo-galera').innerHTML = options;
@@ -148,7 +170,12 @@ function checkUserSession() {
     document.getElementById('global-auth-screen').style.display = 'none';
     document.getElementById('app-content').style.display = 'block';
     const sel = document.getElementById('active-profile-select');
-    if(sel) { sel.innerHTML = ''; perfis.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); }); renderKnockoutGamesForm(); renderBracket(); }
+    if(sel) { 
+        sel.innerHTML = ''; 
+        perfis.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; sel.appendChild(o); }); 
+        renderKnockoutGamesForm(); 
+        renderBracket(); 
+    }
     if (!document.querySelector('.section.visible') || document.querySelector('.section.visible').id === 'tab-ranking') showTab('meus-palpites'); else renderMeusPalpites();
   } else { document.getElementById('global-auth-screen').style.display = 'flex'; document.getElementById('app-content').style.display = 'none'; }
 }
@@ -184,7 +211,6 @@ function renderMeusPalpites() {
   let profileSelector = perfis.length > 1 ? `<select class="res-input" style="width:auto;text-transform:none;" onchange="drawMeusPalpitesList(this.value)"><option value="${perfis[0]}">${perfis[0]}</option><option value="${perfis[1]}">${perfis[1]}</option></select>` : `<span style="font-weight:bold;color:var(--gold)">${perfis[0]}</span>`;
   document.getElementById('meus-palpites-header').innerHTML = `<div class="import-box" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; margin-bottom:20px;"><div style="display:flex; align-items:center; gap:12px"><span style="color:var(--text2); font-size:13px">Visualizando:</span>${profileSelector}</div></div>`;
   
-  // Utiliza o select ativo ou o primeiro perfil padrão
   const selectedProfile = document.querySelector('#meus-palpites-header select') ? document.querySelector('#meus-palpites-header select').value : perfis[0];
   drawMeusPalpitesList(selectedProfile);
 }
@@ -194,9 +220,8 @@ function drawMeusPalpitesList(perfil) {
   const fGrupo = document.getElementById('filtro-grupo-meus').value;
   const fStatus = document.getElementById('filtro-status-meus').value;
 
-  let jogosFiltrados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  let jogosFiltrados = getTodosJogos().sort((a, b) => a.jogo - b.jogo);
   
-  // Aplica Filtros
   if (fGrupo !== 'todos') jogosFiltrados = jogosFiltrados.filter(j => j.fase === fGrupo);
   if (fStatus === 'encerrados') jogosFiltrados = jogosFiltrados.filter(j => resultados[String(j.jogo)]);
   if (fStatus === 'pendentes') jogosFiltrados = jogosFiltrados.filter(j => !resultados[String(j.jogo)]);
@@ -228,7 +253,7 @@ function drawMeusPalpitesList(perfil) {
         <div class="jogo-visitante">${j.visitante}</div><div class="jogo-meta">${res?'<span class="badge-done">Encerrado</span>':''}</div>
       </div>
       <div style="padding: 10px 14px; border-top: 1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.2);">
-        <span style="font-size:12px; color:var(--text2)">Meu Palpite:</span><div class="palpite-item ${palpiteClass}" style="width:auto; gap:10px; padding:6px 12px; font-size:13px; font-weight:bold;">${icon} ${nomePalpite}</div>
+        <span style="font-size:12px; color:var(--text2)">Meu Palpite:</span><div class="palpite-item ${palpiteClass}" style="width:auto; gap:10px; padding:6px 12px; font-size:13px; font-weight:bold;">${icon} ${nomePalpite || '—'}</div>
       </div>
     </div>`;
   });
@@ -292,7 +317,6 @@ function renderKnockoutGamesForm() {
   });
 }
 
-// NOVO: Renderiza a árvore visual
 function renderBracket() {
   const container = document.getElementById('bracket-view');
   if(!container) return;
@@ -315,8 +339,8 @@ function renderBracket() {
     return col;
   };
 
-  // Montamos: Oitavas(89-96), Quartas(97-100), Semis(101-102), Final(104)
-  container.innerHTML = getColHtml(89, 8) + getColHtml(97, 4) + getColHtml(101, 2) + getColHtml(104, 1);
+  // Montamos: R32 (73-88), Oitavas(89-96), Quartas(97-100), Semis(101-102), Final(104)
+  container.innerHTML = getColHtml(73, 16) + getColHtml(89, 8) + getColHtml(97, 4) + getColHtml(101, 2) + getColHtml(104, 1);
 }
 
 async function submitKnockoutGuess(jogoNum, palpiteVal) {
@@ -336,7 +360,9 @@ function calcRanking() {
   const pts = {}; const acertos = {}; const total = {}; const bonusCamp = {};
   BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; bonusCamp[p]=0; });
   
-  BOLAO.jogos.forEach(j => {
+  // Usamos todos os jogos (Grupos + Finais)
+  const todosJogos = getTodosJogos();
+  todosJogos.forEach(j => {
     const res = resultados[String(j.jogo)];
     const resLetter = getWinnerFromScore(res);
     Object.entries(j.palpites).forEach(([p, pal]) => {
@@ -387,16 +413,15 @@ function calcRanking() {
   return ranking;
 }
 
-// NOVO: Gerar o gráfico Chart.js
 function renderEvolutionChart(top5Names) {
     const ctx = document.getElementById('rankingChart');
     if (!ctx) return;
     
-    // Calcula o histórico (acumulando pontos jogo a jogo)
     const historyData = {};
-    top5Names.forEach(n => historyData[n] = [0]); // Todo mundo começa com 0
+    top5Names.forEach(n => historyData[n] = [0]); 
 
-    const finishedGames = BOLAO.jogos.filter(j => resultados[String(j.jogo)]).sort((a,b) => a.jogo - b.jogo);
+    const todosJogos = getTodosJogos();
+    const finishedGames = todosJogos.filter(j => resultados[String(j.jogo)]).sort((a,b) => a.jogo - b.jogo);
     const currentPts = {};
     top5Names.forEach(n => currentPts[n] = 0);
 
@@ -408,7 +433,6 @@ function renderEvolutionChart(top5Names) {
             if (j.palpites[n] === resLetter) { currentPts[n] += 3; }
         });
         
-        // Registra pontos a cada rodada de 4 jogos (para o gráfico não ficar gigante) ou no fim
         if ((index + 1) % 4 === 0 || index === finishedGames.length - 1) {
             labels.push(`J${j.jogo}`);
             top5Names.forEach(n => historyData[n].push(currentPts[n]));
@@ -447,7 +471,7 @@ function renderRanking() {
   const ranking = calcRanking();
   const maxPts = Math.max(...ranking.map(r => r.pts), 1);
   const encerrados = Object.keys(resultados).length;
-  document.getElementById('stat-jogos').textContent = BOLAO.jogos.length;
+  document.getElementById('stat-jogos').textContent = getTodosJogos().length;
   document.getElementById('stat-encerrados').textContent = encerrados;
   document.getElementById('stat-lider').textContent = ranking[0].pts > 0 ? ranking[0].nome.split(' ')[0] : '—';
   document.getElementById('stat-lider-pts').textContent = ranking[0].pts;
@@ -490,7 +514,6 @@ function renderRanking() {
       </div>`;
   });
 
-  // Dispara a criação do gráfico apenas com os top 5 nomes
   if (encerrados > 0) {
       const top5Names = ranking.slice(0, 5).map(r => r.nome);
       renderEvolutionChart(top5Names);
@@ -524,9 +547,8 @@ function renderJogos() {
   const fGrupo = document.getElementById('filtro-grupo-galera').value;
   const fStatus = document.getElementById('filtro-status-galera').value;
 
-  let jogosFiltrados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  let jogosFiltrados = getTodosJogos().sort((a, b) => a.jogo - b.jogo);
   
-  // Aplica Filtros
   if (fGrupo !== 'todos') jogosFiltrados = jogosFiltrados.filter(j => j.fase === fGrupo);
   if (fStatus === 'encerrados') jogosFiltrados = jogosFiltrados.filter(j => resultados[String(j.jogo)]);
   if (fStatus === 'pendentes') jogosFiltrados = jogosFiltrados.filter(j => !resultados[String(j.jogo)]);
@@ -541,11 +563,18 @@ function renderJogos() {
     const res = resultados[String(j.jogo)];
     const resLetter = getWinnerFromScore(res);
     const cons = {V:0, E:0, D:0};
-    Object.values(j.palpites).forEach(p => cons[p]++);
-    const tot = Object.values(j.palpites).length;
+    const pals = j.palpites || {};
+    
+    Object.values(pals).forEach(p => {
+        if(cons[p] !== undefined) cons[p]++;
+    });
+    const tot = Object.values(pals).length || 1; 
     
     let palsHtml = '';
-    Object.entries(j.palpites).forEach(([p, pal]) => { palsHtml += `<div class="palpite-item ${resLetter?(pal===resLetter?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`; });
+    Object.entries(pals).forEach(([p, pal]) => { 
+        palsHtml += `<div class="palpite-item ${resLetter?(pal===resLetter?'acerto':'erro'):''}"><span class="palpite-name">${p}</span><span class="palpite-val ${pal}">${pal}</span></div>`; 
+    });
+    if(!Object.keys(pals).length) palsHtml = `<span style="font-size:12px; color:var(--text3)">Nenhum palpite registrado.</span>`;
     
     html += `
     <div class="jogo-card ${res?'encerrado':''}" id="jogo-card-${j.jogo}">
@@ -575,40 +604,18 @@ function toggleJogo(num) { document.getElementById(`detail-${num}`).classList.to
 
 async function syncLiveScoresBackground(silent = true) {
   try {
-    const d = new Date(); const dates = [];
-    dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
-    const dYest = new Date(d); dYest.setDate(dYest.getDate() - 1);
-    dates.push(dYest.getFullYear() + '-' + String(dYest.getMonth() + 1).padStart(2, '0') + '-' + String(dYest.getDate()).padStart(2, '0'));
-    
-    let allEvents = [];
-    for (let dateStr of dates) {
-       const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${dateStr}&s=Soccer`;
-       const res = await fetch(url); const data = await res.json();
-       if (data.events) allEvents = allEvents.concat(data.events);
+    const resResults = await fetch('/api/resultados');
+    const remoteResultados = await resResults.json();
+    let updated = false;
+
+    for (const j in remoteResultados) {
+       if (resultados[j] !== remoteResultados[j]) {
+           resultados[j] = remoteResultados[j];
+           updated = true;
+       }
     }
     
-    let dbUpdated = false;
-    allEvents.forEach(e => {
-      const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
-      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
-        const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
-        const apiHome = normalizeTeamName(e.strHomeTeam); const apiAway = normalizeTeamName(e.strAwayTeam);
-
-        const jogoMatch = BOLAO.jogos.find(j => {
-            const localMand = normalizeTeamName(j.mandante); const localVis = normalizeTeamName(j.visitante);
-            return (localMand.includes(apiHome.slice(0,5)) || apiHome.includes(localMand.slice(0,5))) && (localVis.includes(apiAway.slice(0,5)) || apiAway.includes(localVis.slice(0,5)));
-        });
-        
-        if (jogoMatch && resultados[String(jogoMatch.jogo)] !== placarExato) {
-          resultados[String(jogoMatch.jogo)] = placarExato;
-          fetch(`/api/resultados/${jogoMatch.jogo}`, { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({resultado:placarExato}) });
-          if (!silent) showToast(`🔄 Auto: Jogo #${jogoMatch.jogo} encerrado em ${placarExato}`);
-          dbUpdated = true;
-        }
-      }
-    });
-
-    if (dbUpdated) {
+    if (updated) {
       renderRanking();
       if (document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
       if (document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
@@ -635,7 +642,6 @@ async function fetchLiveScores() {
       html += `<div class="live-game-card"><div class="lgc-teams"><div class="lgc-team">${e.strHomeTeam}</div><div class="lgc-score">${e.intHomeScore??'–'}:${e.intAwayScore??'–'}</div><div class="lgc-team right">${e.strAwayTeam}</div></div><div class="lgc-status ${live?'live':''}">${live?`⏱ ${e.strStatus}'`:isFinished?'✓ Encerrado':e.strTime}</div></div>`;
     });
     container.innerHTML = html + '</div>';
-    syncLiveScoresBackground(false);
   } catch (e) { container.innerHTML = '<div class="empty-state"><p>⚠️ Erro ao buscar dados ao vivo</p></div>'; }
 }
 
@@ -649,7 +655,7 @@ async function checkAdminPass() {
     if(r.ok) { 
         adminAuthorized = true; sessionStorage.setItem('bolao_admin', '1'); sessionStorage.setItem('bolao_admin_senha', pass); 
         document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; 
-        carregarUsuariosAdmin(); renderTabelaAdmin(); renderJogos(); 
+        carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses();
     }
     else showToast('❌ Senha incorreta');
   } catch(e) {}
@@ -657,7 +663,7 @@ async function checkAdminPass() {
 
 function adminLogout() { 
   adminAuthorized = false; sessionStorage.removeItem('bolao_admin'); sessionStorage.removeItem('bolao_admin_senha');
-  document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none'; renderJogos(); 
+  document.getElementById('admin-login').style.display='block'; document.getElementById('admin-panel').style.display='none';
 }
 
 async function carregarUsuariosAdmin() {
@@ -716,6 +722,61 @@ async function salvarMatchups() {
   if(document.getElementById('tab-proximas-fases').classList.contains('visible')) { renderKnockoutGamesForm(); renderBracket(); }
 }
 
+// Botão mágico de auto completar confrontos na aba Admin
+async function autoFetchMatchupsAdmin() {
+    showToast('Buscando jogos recentes...');
+    try {
+        const d = new Date();
+        let allEvents = [];
+        // Checa ontém, hoje e amanhã no servidor
+        for (let i = -1; i <= 2; i++) {
+            let dt = new Date(d);
+            dt.setDate(dt.getDate() + i);
+            let dateStr = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+            let res = await fetch(`https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${dateStr}&s=Soccer`);
+            let data = await res.json();
+            if (data.events) allEvents = allEvents.concat(data.events);
+        }
+
+        let validTeams = Object.values(TEAM_DICTIONARY).map(t => normalizeTeamName(t));
+        let baseTeams = BOLAO.jogos.flatMap(j => [normalizeTeamName(j.mandante), normalizeTeamName(j.visitante)]);
+        
+        let knockoutFound = [];
+        allEvents.forEach(e => {
+            let h = normalizeTeamName(e.strHomeTeam);
+            let a = normalizeTeamName(e.strAwayTeam);
+            
+            // Só importa se for jogo de seleções da Copa
+            if (baseTeams.includes(h) || baseTeams.includes(a) || validTeams.includes(h)) {
+                // E também verificamos se já não é jogo que estava na fase de grupos
+                let isGroup = BOLAO.jogos.find(j => 
+                    (normalizeTeamName(j.mandante).includes(h) || h.includes(normalizeTeamName(j.mandante))) &&
+                    (normalizeTeamName(j.visitante).includes(a) || a.includes(normalizeTeamName(j.visitante)))
+                );
+                if (!isGroup) {
+                    knockoutFound.push(`${e.strHomeTeam} x ${e.strAwayTeam}`);
+                }
+            }
+        });
+        
+        if(knockoutFound.length > 0) {
+            let unique = [...new Set(knockoutFound)];
+            let txt = document.getElementById('admin-matchups').value;
+            unique.forEach(mt => {
+                if (!txt.includes(mt)) {
+                    txt += `\n?? ${mt}`; 
+                }
+            });
+            document.getElementById('admin-matchups').value = txt.trim();
+            showToast('✅ Adicionados! Troque "??" pelo Nº correto do jogo (ex: 73) e clique em "Atualizar nomes das seleções".');
+        } else {
+            showToast('Nenhum novo confronto de mata-mata encontrado nos últimos/próximos dias.');
+        }
+    } catch(e) {
+        showToast('⚠️ Erro ao conectar na TheSportsDB');
+    }
+}
+
 async function salvarCampeao() {
   const val = document.getElementById('admin-campeao').value.trim();
   try {
@@ -743,7 +804,8 @@ async function bulkImport() {
     }
   }
   if (count > 0) {
-    renderRanking(); renderJogos();
+    renderRanking(); 
+    if(document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
     if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
     if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
     showToast(`✅ ${count} resultado(s) importado(s)!`); document.getElementById('bulk-input').value = '';
@@ -753,7 +815,8 @@ async function bulkImport() {
 async function resetAll() {
   if (!confirm('Limpar TODOS os resultados do banco de dados?')) return;
   resultados = {}; await fetch('/api/resultados', { method: 'DELETE' });
-  renderRanking(); renderJogos();
+  renderRanking(); 
+  if(document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
   if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
   if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
   showToast('🗑️ Banco limpo');
@@ -782,6 +845,72 @@ function exportReportCSV() {
   a.download = `palpites_bolao.csv`; a.click(); showToast('📥 Planilha gerada!');
 }
 
+function renderAdminKnockoutGuesses() {
+  const viewType = document.getElementById('admin-mm-view-type').value;
+  const personSelect = document.getElementById('admin-mm-person');
+  const container = document.getElementById('admin-mm-content');
+
+  if(viewType === 'pessoa') {
+    personSelect.style.display = 'inline-block';
+    if(personSelect.options.length === 0) {
+      BOLAO.participantes.forEach(p => {
+        personSelect.innerHTML += `<option value="${p}">${p}</option>`;
+      });
+    }
+  } else {
+    personSelect.style.display = 'none';
+  }
+
+  let html = '';
+  if (viewType === 'geral') {
+    html = '<table style="width:100%; border-collapse:collapse; font-size:11px; white-space:nowrap;">';
+    html += '<tr><th style="padding:6px; border-bottom:1px solid var(--border); text-align:left;">Jogo</th>';
+    BOLAO.participantes.forEach(p => {
+      html += `<th style="padding:6px; border-bottom:1px solid var(--border); text-align:center;">${p.split(' ')[0]}</th>`;
+    });
+    html += '</tr>';
+
+    JOGOS_FASE_FINAL.forEach(j => {
+      const m = getKnockoutTeam(j.jogo, 'mandante', j.mandante);
+      const v = getKnockoutTeam(j.jogo, 'visitante', j.visitante);
+      html += `<tr><td style="padding:6px; border-bottom:1px solid var(--border); color:var(--text2)">#${j.jogo} ${m} x ${v}</td>`;
+      
+      BOLAO.participantes.forEach(p => {
+        const saved = cachePalpitesFinais.find(i => i.participante === p && i.jogo_num === j.jogo);
+        const pal = saved ? saved.palpite : '-';
+        const color = pal === 'V' ? 'var(--win)' : pal === 'E' ? 'var(--draw)' : pal === 'D' ? 'var(--loss)' : 'var(--text3)';
+        html += `<td style="padding:6px; border-bottom:1px solid var(--border); text-align:center; color:${color}; font-weight:bold;">${pal}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</table>';
+  } else {
+    const person = personSelect.value || BOLAO.participantes[0];
+    html = '<table style="width:100%; border-collapse:collapse; font-size:11px;">';
+    html += '<tr><th style="padding:6px; border-bottom:1px solid var(--border); text-align:left;">Jogo</th><th style="padding:6px; border-bottom:1px solid var(--border); text-align:center;">Palpite</th></tr>';
+    JOGOS_FASE_FINAL.forEach(j => {
+      const m = getKnockoutTeam(j.jogo, 'mandante', j.mandante);
+      const v = getKnockoutTeam(j.jogo, 'visitante', j.visitante);
+      const saved = cachePalpitesFinais.find(i => i.participante === person && i.jogo_num === j.jogo);
+      const pal = saved ? saved.palpite : null;
+      
+      let label = 'Não enviado';
+      let color = 'var(--text3)';
+      if(pal) {
+         label = pal === 'V' ? m : pal === 'E' ? 'Empate' : pal === 'D' ? v : pal;
+         color = pal === 'V' ? 'var(--win)' : pal === 'E' ? 'var(--draw)' : pal === 'D' ? 'var(--loss)' : 'var(--text)';
+      }
+      
+      html += `<tr>
+        <td style="padding:6px; border-bottom:1px solid var(--border); color:var(--text)">#${j.jogo} - ${j.fase}<br><span style="color:var(--text2)">${m} x ${v}</span></td>
+        <td style="padding:6px; border-bottom:1px solid var(--border); text-align:center; font-weight:bold; color:${color}">${label}</td>
+      </tr>`;
+    });
+    html += '</table>';
+  }
+  container.innerHTML = html;
+}
+
 function renderTabelaAdmin() {
   const ranking = calcRanking(); const encerrados = Object.keys(resultados).length;
   let html = '<table style="border-collapse:collapse;font-size:11px;min-width:600px;width:100%"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border)">Pos</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--border)">Participante</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Pts</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Acertos</th><th style="text-align:right;padding:8px;border-bottom:1px solid var(--border)">Prêmio Estimado</th></tr>';
@@ -800,7 +929,7 @@ function renderPorPessoa() {
   const current = container.dataset.pessoa || participantes[0];
   container.dataset.pessoa = current;
 
-  const jogosOrdenados = [...BOLAO.jogos].sort((a, b) => a.jogo - b.jogo);
+  const jogosOrdenados = getTodosJogos().sort((a, b) => a.jogo - b.jogo);
   const encerrados = jogosOrdenados.filter(j => resultados[String(j.jogo)]);
   const acertos = encerrados.filter(j => { return j.palpites[current] && j.palpites[current] === getWinnerFromScore(resultados[String(j.jogo)]); });
   const pct = encerrados.length > 0 ? Math.round((acertos.length / encerrados.length) * 100) : 0;
@@ -844,6 +973,7 @@ function showTab(name) {
   
   if (name === 'por-pessoa') renderPorPessoa();
   if (name === 'meus-palpites') renderMeusPalpites();
+  if (name === 'jogos') renderJogos();
   if (name === 'campeao') renderCampeoes();
   
   if (name === 'ao-vivo') {
@@ -852,14 +982,12 @@ function showTab(name) {
   }
   
   if (name === 'admin') { 
-    if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; carregarUsuariosAdmin(); renderTabelaAdmin(); }
+    if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses(); }
     else { document.getElementById('admin-login').style.display = 'block'; document.getElementById('admin-panel').style.display = 'none'; } 
   }
 }
 
 let toastTimer;
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3000); }
-
-setInterval(() => syncLiveScoresBackground(true), 60000);
 
 init();
