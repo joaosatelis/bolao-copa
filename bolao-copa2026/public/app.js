@@ -2,7 +2,6 @@ const socket = io();
 
 socket.on('atualizacao_placar', (dados) => {
     console.log(`Jogo ${dados.jogo} finalizado com placar de ${dados.placar}!`);
-    // Recarrega resultados do servidor de forma silenciosa para atualizar as abas abertas
     syncLiveScoresBackground(true);
 });
 
@@ -54,6 +53,27 @@ async function init() {
     const resConfig = await fetch('/api/config');
     appConfig = await resConfig.json();
     
+    // Busca dados reais do mata-mata da API-Football
+    try {
+      const resMataMata = await fetch('/api/matamata-info');
+      const infoMataMata = await resMataMata.json();
+      JOGOS_FASE_FINAL.forEach(j => {
+        const apiData = infoMataMata.find(m => m.jogo === j.jogo);
+        if (apiData) {
+          const nomeValido = (nome) => nome && !nome.toLowerCase().includes('winner');
+          if (nomeValido(apiData.mandante)) j.mandante = TEAM_DICTIONARY[apiData.mandante] || apiData.mandante; 
+          if (nomeValido(apiData.visitante)) j.visitante = TEAM_DICTIONARY[apiData.visitante] || apiData.visitante;
+          if (apiData.data) {
+            const dataObj = new Date(apiData.data);
+            j.data = dataObj.toLocaleDateString('pt-BR');
+            j.hora = dataObj.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+          }
+        }
+      });
+    } catch(e) {
+      console.warn("Ainda não foi possível carregar os confrontos reais.");
+    }
+
     if(appConfig.knockout_matchups) {
       try { customMatchups = JSON.parse(appConfig.knockout_matchups); } catch(e){}
     }
@@ -79,7 +99,6 @@ async function init() {
   } catch (e) { document.getElementById('loader-overlay').innerHTML = '<p>Erro ao conectar com servidor.</p>'; }
 }
 
-// Retorna uma lista unificada contendo Fase de Grupos + Fase Final
 function getTodosJogos() {
   const baseJogos = BOLAO.jogos.map(j => ({...j})); 
   const knockoutJogos = JOGOS_FASE_FINAL.map(j => {
@@ -88,13 +107,10 @@ function getTodosJogos() {
       if(pf.jogo_num === j.jogo) palpitesMap[pf.participante] = pf.palpite;
     });
     return {
-      jogo: j.jogo,
-      fase: j.fase,
+      jogo: j.jogo, fase: j.fase,
       mandante: getKnockoutTeam(j.jogo, 'mandante', j.mandante),
       visitante: getKnockoutTeam(j.jogo, 'visitante', j.visitante),
-      palpites: palpitesMap,
-      data: '',
-      hora: ''
+      palpites: palpitesMap, data: j.data || '', hora: j.hora || ''
     };
   });
   return [...baseJogos, ...knockoutJogos];
@@ -219,13 +235,11 @@ function drawMeusPalpitesList(perfil) {
   const container = document.getElementById('meus-palpites-list');
   const fGrupo = document.getElementById('filtro-grupo-meus').value;
   const fStatus = document.getElementById('filtro-status-meus').value;
-
   let jogosFiltrados = getTodosJogos().sort((a, b) => a.jogo - b.jogo);
   
   if (fGrupo !== 'todos') jogosFiltrados = jogosFiltrados.filter(j => j.fase === fGrupo);
   if (fStatus === 'encerrados') jogosFiltrados = jogosFiltrados.filter(j => resultados[String(j.jogo)]);
   if (fStatus === 'pendentes') jogosFiltrados = jogosFiltrados.filter(j => !resultados[String(j.jogo)]);
-
   if(jogosFiltrados.length === 0) {
       container.innerHTML = '<div class="empty-state"><p>Nenhum jogo encontrado com os filtros atuais.</p></div>';
       return;
@@ -265,7 +279,6 @@ function renderKnockoutGamesForm() {
   if (!participante) return;
   const container = document.getElementById('knockout-games-list');
   container.innerHTML = '';
-
   const groups = {};
   JOGOS_FASE_FINAL.forEach(j => { if (!groups[j.fase]) groups[j.fase] = []; groups[j.fase].push(j); });
 
@@ -339,7 +352,6 @@ function renderBracket() {
     return col;
   };
 
-  // Montamos: R32 (73-88), Oitavas(89-96), Quartas(97-100), Semis(101-102), Final(104)
   container.innerHTML = getColHtml(73, 16) + getColHtml(89, 8) + getColHtml(97, 4) + getColHtml(101, 2) + getColHtml(104, 1);
 }
 
@@ -360,7 +372,6 @@ function calcRanking() {
   const pts = {}; const acertos = {}; const total = {}; const bonusCamp = {};
   BOLAO.participantes.forEach(p => { pts[p]=0; acertos[p]=0; total[p]=0; bonusCamp[p]=0; });
   
-  // Usamos todos os jogos (Grupos + Finais)
   const todosJogos = getTodosJogos();
   todosJogos.forEach(j => {
     const res = resultados[String(j.jogo)];
@@ -523,7 +534,6 @@ function renderRanking() {
 function renderCampeoes() {
   const container = document.getElementById('campeao-list');
   container.innerHTML = '';
-  
   const campeaoOficial = appConfig.campeao_oficial ? appConfig.campeao_oficial.trim().toLowerCase() : null;
   if (campeaoOficial) {
      document.getElementById('campeao-oficial-badge').style.display = 'block';
@@ -533,11 +543,9 @@ function renderCampeoes() {
   BOLAO.participantes.forEach(p => {
     const palpite = BOLAO.palpites_campeao[p] || 'Não definido';
     let border = 'var(--border)'; let bg = 'var(--bg3)'; let badge = '';
-    
     if (campeaoOficial && palpite.toLowerCase() === campeaoOficial) {
       border = 'var(--win)'; bg = 'var(--win-bg)'; badge = '<span style="color:var(--win);font-weight:bold;font-size:11px;margin-left:auto">+5 pts</span>';
     } else if (campeaoOficial) { border = 'var(--loss)'; bg = 'var(--loss-bg)'; }
-
     container.innerHTML += `<div style="border:1px solid ${border}; background:${bg}; padding:10px 14px; border-radius:var(--r-sm); display:flex; flex-direction:column; gap:4px"><span style="font-weight:600; font-size:13px; color:var(--text)">${p}</span><div style="display:flex; align-items:center;"><span style="color:var(--text2); font-size:12px">${palpite}</span>${badge}</div></div>`;
   });
 }
@@ -546,13 +554,11 @@ function renderJogos() {
   const container = document.getElementById('jogos-list');
   const fGrupo = document.getElementById('filtro-grupo-galera').value;
   const fStatus = document.getElementById('filtro-status-galera').value;
-
   let jogosFiltrados = getTodosJogos().sort((a, b) => a.jogo - b.jogo);
   
   if (fGrupo !== 'todos') jogosFiltrados = jogosFiltrados.filter(j => j.fase === fGrupo);
   if (fStatus === 'encerrados') jogosFiltrados = jogosFiltrados.filter(j => resultados[String(j.jogo)]);
   if (fStatus === 'pendentes') jogosFiltrados = jogosFiltrados.filter(j => !resultados[String(j.jogo)]);
-
   if(jogosFiltrados.length === 0) {
       container.innerHTML = '<div class="empty-state"><p>Nenhum jogo encontrado com os filtros atuais.</p></div>';
       return;
@@ -564,10 +570,7 @@ function renderJogos() {
     const resLetter = getWinnerFromScore(res);
     const cons = {V:0, E:0, D:0};
     const pals = j.palpites || {};
-    
-    Object.values(pals).forEach(p => {
-        if(cons[p] !== undefined) cons[p]++;
-    });
+    Object.values(pals).forEach(p => { if(cons[p] !== undefined) cons[p]++; });
     const tot = Object.values(pals).length || 1; 
     
     let palsHtml = '';
@@ -607,14 +610,12 @@ async function syncLiveScoresBackground(silent = true) {
     const resResults = await fetch('/api/resultados');
     const remoteResultados = await resResults.json();
     let updated = false;
-
     for (const j in remoteResultados) {
        if (resultados[j] !== remoteResultados[j]) {
            resultados[j] = remoteResultados[j];
            updated = true;
        }
     }
-    
     if (updated) {
       renderRanking();
       if (document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
@@ -656,8 +657,7 @@ async function checkAdminPass() {
         adminAuthorized = true; sessionStorage.setItem('bolao_admin', '1'); sessionStorage.setItem('bolao_admin_senha', pass); 
         document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; 
         carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses();
-    }
-    else showToast('❌ Senha incorreta');
+    } else showToast('❌ Senha incorreta');
   } catch(e) {}
 }
 
@@ -749,28 +749,18 @@ async function autoFetchMatchupsAdmin() {
                     (normalizeTeamName(j.mandante).includes(h) || h.includes(normalizeTeamName(j.mandante))) &&
                     (normalizeTeamName(j.visitante).includes(a) || a.includes(normalizeTeamName(j.visitante)))
                 );
-                if (!isGroup) {
-                    knockoutFound.push(`${e.strHomeTeam} x ${e.strAwayTeam}`);
-                }
+                if (!isGroup) knockoutFound.push(`${e.strHomeTeam} x ${e.strAwayTeam}`);
             }
         });
         
         if(knockoutFound.length > 0) {
             let unique = [...new Set(knockoutFound)];
             let txt = document.getElementById('admin-matchups').value;
-            unique.forEach(mt => {
-                if (!txt.includes(mt)) {
-                    txt += `\n?? ${mt}`; 
-                }
-            });
+            unique.forEach(mt => { if (!txt.includes(mt)) txt += `\n?? ${mt}`; });
             document.getElementById('admin-matchups').value = txt.trim();
-            showToast('✅ Adicionados! Troque "??" pelo Nº correto do jogo (ex: 73) e clique em "Atualizar nomes das seleções".');
-        } else {
-            showToast('Nenhum novo confronto de mata-mata encontrado nos últimos/próximos dias.');
-        }
-    } catch(e) {
-        showToast('⚠️ Erro ao conectar na TheSportsDB');
-    }
+            showToast('✅ Adicionados! Troque "??" pelo Nº correto do jogo (ex: 73).');
+        } else { showToast('Nenhum novo confronto de mata-mata encontrado.'); }
+    } catch(e) { showToast('⚠️ Erro ao conectar na TheSportsDB'); }
 }
 
 async function salvarCampeao() {
@@ -849,20 +839,15 @@ function renderAdminKnockoutGuesses() {
   if(viewType === 'pessoa') {
     personSelect.style.display = 'inline-block';
     if(personSelect.options.length === 0) {
-      BOLAO.participantes.forEach(p => {
-        personSelect.innerHTML += `<option value="${p}">${p}</option>`;
-      });
+      BOLAO.participantes.forEach(p => { personSelect.innerHTML += `<option value="${p}">${p}</option>`; });
     }
-  } else {
-    personSelect.style.display = 'none';
-  }
+  } else { personSelect.style.display = 'none'; }
 
   let html = '';
   if (viewType === 'geral') {
     html = '<table style="width:100%; border-collapse:collapse; font-size:11px; white-space:nowrap;">';
     html += '<tr><th style="padding:6px 6px 6px 0; border-bottom:1px solid var(--border); text-align:left; vertical-align:bottom;">Jogo</th>';
     
-    // Deixa os nomes na vertical para economizar espaço
     BOLAO.participantes.forEach(p => {
       const shortName = p.split(' ')[0];
       html += `<th style="padding:2px; border-bottom:1px solid var(--border); text-align:center; vertical-align:bottom;">
@@ -877,7 +862,6 @@ function renderAdminKnockoutGuesses() {
       const m = getKnockoutTeam(j.jogo, 'mandante', j.mandante);
       const v = getKnockoutTeam(j.jogo, 'visitante', j.visitante);
       
-      // Controla a largura máxima da primeira coluna para não empurrar a tabela
       html += `<tr>
         <td style="padding:4px 6px 4px 0; border-bottom:1px solid var(--border); color:var(--text2); font-size:10px; max-width:160px; overflow:hidden; text-overflow:ellipsis;">
           #${j.jogo} ${m} x ${v}
@@ -887,8 +871,6 @@ function renderAdminKnockoutGuesses() {
         const saved = cachePalpitesFinais.find(i => i.participante === p && i.jogo_num === j.jogo);
         const pal = saved ? saved.palpite : '-';
         const color = pal === 'V' ? 'var(--win)' : pal === 'E' ? 'var(--draw)' : pal === 'D' ? 'var(--loss)' : 'var(--text3)';
-        
-        // Reduz o padding lateral das células
         html += `<td style="padding:4px 2px; border-bottom:1px solid var(--border); text-align:center; color:${color}; font-weight:bold; font-size:12px;">${pal}</td>`;
       });
       html += '</tr>';
