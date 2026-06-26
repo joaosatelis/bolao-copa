@@ -58,7 +58,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .rank-card.pos-2 .rank-bar-fill { background: var(--silver); }
 .rank-card.pos-3 .rank-bar-fill { background: var(--bronze); }
 
-/* Z4 Rebaixados */
 .rank-card.pos-z4 { border-color: rgba(224,82,82,0.3); background: linear-gradient(90deg, rgba(224,82,82,0.06) 0%, var(--card) 50%); }
 .rank-card.pos-z4 .rank-pos { color: var(--loss); }
 .rank-card.pos-z4 .rank-bar-fill { background: var(--loss); }
@@ -102,16 +101,15 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
 .cons-e { background: var(--draw); }
 .cons-d { background: var(--loss); }
 
-/* Filtros */
 .filter-container { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
 .filter-select { background: var(--bg3); border: 1px solid var(--border2); color: var(--text2); padding: 8px 12px; border-radius: var(--r-sm); font-size: 13px; text-transform: none; width: auto; flex: 1; min-width: 150px; }
 
 /* Bracket Visão */
 .bracket-scroll-container { width: 100%; overflow-x: auto; scrollbar-width: thin; padding-bottom: 10px; }
-.bracket-layout { display: flex; gap: 24px; min-width: 800px; justify-content: space-between; }
-.bracket-col { display: flex; flex-direction: column; justify-content: space-around; flex: 1; gap: 16px; }
-.bracket-match { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 8px; font-size: 11px; text-align: center; position: relative; }
-.bracket-team { color: var(--text); padding: 4px; border-bottom: 1px solid var(--border2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bracket-layout { display: flex; gap: 16px; min-width: 1200px; justify-content: space-between; }
+.bracket-col { display: flex; flex-direction: column; justify-content: space-around; flex: 1; gap: 8px; min-width: 140px; }
+.bracket-match { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 6px; font-size: 10px; text-align: center; position: relative; margin-bottom: 4px; }
+.bracket-team { color: var(--text); padding: 2px; border-bottom: 1px solid var(--border2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; }
 .bracket-team:last-child { border-bottom: none; }
 .bracket-match-num { position: absolute; top: -8px; left: -8px; background: var(--pitch-mid); color: #fff; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 10px; }
 
@@ -168,5 +166,5 @@ body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-ser
   .palpites-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
   .jogo-mandante, .jogo-visitante { font-size: 12px; }
   .nav-tab { padding: 14px 12px; font-size: 12px; }
-  .bracket-layout { min-width: 600px; gap: 10px; }
+  .bracket-layout { min-width: 900px; gap: 10px; }
 }
