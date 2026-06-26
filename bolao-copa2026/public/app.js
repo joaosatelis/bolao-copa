@@ -104,7 +104,7 @@ function popularFiltros() {
   if(!BOLAO) return;
   const todosJogos = getTodosJogos();
   const grupos = [...new Set(todosJogos.map(j => j.fase))].sort();
-  let options = '<option value="todos">Todos os Grupos / Fases</option>';
+  let options = '<option value="todos">Todas as Fases / Grupos</option>';
   grupos.forEach(g => options += `<option value="${g}">${g}</option>`);
   document.getElementById('filtro-grupo-meus').innerHTML = options;
   document.getElementById('filtro-grupo-galera').innerHTML = options;
@@ -722,13 +722,11 @@ async function salvarMatchups() {
   if(document.getElementById('tab-proximas-fases').classList.contains('visible')) { renderKnockoutGamesForm(); renderBracket(); }
 }
 
-// Botão mágico de auto completar confrontos na aba Admin
 async function autoFetchMatchupsAdmin() {
     showToast('Buscando jogos recentes...');
     try {
         const d = new Date();
         let allEvents = [];
-        // Checa ontém, hoje e amanhã no servidor
         for (let i = -1; i <= 2; i++) {
             let dt = new Date(d);
             dt.setDate(dt.getDate() + i);
@@ -746,9 +744,7 @@ async function autoFetchMatchupsAdmin() {
             let h = normalizeTeamName(e.strHomeTeam);
             let a = normalizeTeamName(e.strAwayTeam);
             
-            // Só importa se for jogo de seleções da Copa
             if (baseTeams.includes(h) || baseTeams.includes(a) || validTeams.includes(h)) {
-                // E também verificamos se já não é jogo que estava na fase de grupos
                 let isGroup = BOLAO.jogos.find(j => 
                     (normalizeTeamName(j.mandante).includes(h) || h.includes(normalizeTeamName(j.mandante))) &&
                     (normalizeTeamName(j.visitante).includes(a) || a.includes(normalizeTeamName(j.visitante)))
@@ -864,22 +860,36 @@ function renderAdminKnockoutGuesses() {
   let html = '';
   if (viewType === 'geral') {
     html = '<table style="width:100%; border-collapse:collapse; font-size:11px; white-space:nowrap;">';
-    html += '<tr><th style="padding:6px; border-bottom:1px solid var(--border); text-align:left;">Jogo</th>';
+    html += '<tr><th style="padding:6px 6px 6px 0; border-bottom:1px solid var(--border); text-align:left; vertical-align:bottom;">Jogo</th>';
+    
+    // Deixa os nomes na vertical para economizar espaço
     BOLAO.participantes.forEach(p => {
-      html += `<th style="padding:6px; border-bottom:1px solid var(--border); text-align:center;">${p.split(' ')[0]}</th>`;
+      const shortName = p.split(' ')[0];
+      html += `<th style="padding:2px; border-bottom:1px solid var(--border); text-align:center; vertical-align:bottom;">
+                 <div style="writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; font-size:10px; font-weight:500; color:var(--text2); margin-bottom:6px;">
+                   ${shortName}
+                 </div>
+               </th>`;
     });
     html += '</tr>';
 
     JOGOS_FASE_FINAL.forEach(j => {
       const m = getKnockoutTeam(j.jogo, 'mandante', j.mandante);
       const v = getKnockoutTeam(j.jogo, 'visitante', j.visitante);
-      html += `<tr><td style="padding:6px; border-bottom:1px solid var(--border); color:var(--text2)">#${j.jogo} ${m} x ${v}</td>`;
+      
+      // Controla a largura máxima da primeira coluna para não empurrar a tabela
+      html += `<tr>
+        <td style="padding:4px 6px 4px 0; border-bottom:1px solid var(--border); color:var(--text2); font-size:10px; max-width:160px; overflow:hidden; text-overflow:ellipsis;">
+          #${j.jogo} ${m} x ${v}
+        </td>`;
       
       BOLAO.participantes.forEach(p => {
         const saved = cachePalpitesFinais.find(i => i.participante === p && i.jogo_num === j.jogo);
         const pal = saved ? saved.palpite : '-';
         const color = pal === 'V' ? 'var(--win)' : pal === 'E' ? 'var(--draw)' : pal === 'D' ? 'var(--loss)' : 'var(--text3)';
-        html += `<td style="padding:6px; border-bottom:1px solid var(--border); text-align:center; color:${color}; font-weight:bold;">${pal}</td>`;
+        
+        // Reduz o padding lateral das células
+        html += `<td style="padding:4px 2px; border-bottom:1px solid var(--border); text-align:center; color:${color}; font-weight:bold; font-size:12px;">${pal}</td>`;
       });
       html += '</tr>';
     });
