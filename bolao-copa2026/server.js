@@ -1,6 +1,6 @@
 const express = require('express');
-const http = require('http'); // Necessário para o Socket.io
-const { Server } = require('socket.io'); // Importação do Socket.io
+const http = require('http'); 
+const { Server } = require('socket.io'); 
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
@@ -9,9 +9,8 @@ const bcrypt = require('bcrypt');
 const DADOS_BOLAO = require('./dados_bolao.json');
 
 const app = express();
-const server = http.createServer(app); // Embrulhamos o Express no servidor HTTP
+const server = http.createServer(app); 
 
-// Configuração do WebSocket com permissões de CORS
 const io = new Server(server, {
   cors: { origin: '*' }
 });
@@ -25,12 +24,10 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Monitoriza as ligações em tempo real
 io.on('connection', (socket) => {
   console.log('📡 Novo utilizador conectado ao tempo real:', socket.id);
 });
 
-// Inicialização do Banco
 async function init() {
   try {
     await pool.query(`
@@ -76,16 +73,10 @@ async function init() {
 }
 init();
 
-// ═══════════════════════════════════════════════════════════
-// ROTAS BASE
-// ═══════════════════════════════════════════════════════════
 app.get('/api/dados-bolao', (req, res) => {
   res.json(DADOS_BOLAO);
 });
 
-// ═══════════════════════════════════════════════════════════
-// ROTAS DE CONFIGURAÇÕES GLOBAIS E ADMIN
-// ═══════════════════════════════════════════════════════════
 app.get('/api/config', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT chave, valor FROM configuracoes');
@@ -152,9 +143,6 @@ app.post('/api/admin/usuarios/delete', async (req, res) => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
-// ROTAS DE AUTENTICAÇÃO
-// ═══════════════════════════════════════════════════════════
 app.post('/api/auth/register', async (req, res) => {
   const { usuario, senha, perfil1, perfil2 } = req.body;
   if (!usuario || !senha || !perfil1) {
@@ -218,9 +206,6 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
-// ROTAS DO BOLÃO
-// ═══════════════════════════════════════════════════════════
 app.get('/api/resultados', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT jogo_num, resultado FROM resultados');
@@ -244,9 +229,7 @@ app.post('/api/resultados/:num', async (req, res) => {
       ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
     `, [num, resultado]);
 
-    // 🔴 DISPARO MANUAL: Avisa o front-end que um resultado entrou via admin
     io.emit('atualizacao_placar', { jogo: num, placar: resultado });
-
     res.json({ ok: true });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao salvar resultado' });
@@ -327,9 +310,6 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
-// AUTOMAÇÃO DE RESULTADOS (CRON JOB)
-// ═══════════════════════════════════════════════════════════
 const TEAM_DICTIONARY = {
   "South Africa": "África do Sul", "South Korea": "Coreia do Sul", "Czech Republic": "Tchéquia", "Spain": "Espanha",
   "Germany": "Alemanha", "Netherlands": "Países Baixos", "England": "Inglaterra", "France": "França",
@@ -353,7 +333,6 @@ cron.schedule('0 * * * *', async () => {
   try {
     const d = new Date();
     const dates = [];
-    
     dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
     
     const dYest = new Date(d);
@@ -393,7 +372,6 @@ cron.schedule('0 * * * *', async () => {
              `, [jogoMatch.jogo, placarExato]);
              console.log(`✅ [CRON] Jogo #${jogoMatch.jogo} salvo no banco: ${placarExato}`);
 
-             // 🔴 DISPARO AUTOMÁTICO: O robô avisou que o jogo acabou. Dispara para o front!
              io.emit('atualizacao_placar', { jogo: jogoMatch.jogo, placar: placarExato });
           }
         }
@@ -405,5 +383,4 @@ cron.schedule('0 * * * *', async () => {
 });
 
 const PORT = process.env.PORT || 3000;
-// Atenção aqui: Passamos a escutar o 'server' em vez de apenas o 'app'
 server.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT} com WebSocket ativo`));
