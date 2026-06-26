@@ -309,7 +309,6 @@ app.post('/api/admin/login', (req, res) => {
     res.status(401).json({ error: 'Não autorizado' });
   }
 });
-
 const TEAM_DICTIONARY = {
   "South Africa": "África do Sul", "South Korea": "Coreia do Sul", "Czech Republic": "Tchéquia", "Spain": "Espanha",
   "Germany": "Alemanha", "Netherlands": "Países Baixos", "England": "Inglaterra", "France": "França",
@@ -328,57 +327,164 @@ function normalizeTeamName(name) {
   return translated.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-cron.schedule('0 * * * *', async () => {
-  console.log('🔄 [CRON] Buscando resultados automáticos de ontem e hoje...');
+// 1. Controle de Cache do Calendário (6 horas)
+let cachedWorldCupEvents = [];
+let lastCacheTime = 0;
+
+async function fetchWorldCupEvents() {
+  const now = Date.now();
+  // 6 horas em milissegundos = 21600000
+  if (cachedWorldCupEvents.length > 0 && (now - lastCacheTime < 21600000)) {
+    return cachedWorldCupEvents;
+  }
+
   try {
-    const d = new Date();
-    const dates = [];
-    dates.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'));
-    
-    const dYest = new Date(d);
-    dYest.setDate(dYest.getDate() - 1);
-    dates.push(dYest.getFullYear() + '-' + String(dYest.getMonth() + 1).padStart(2, '0') + '-' + String(dYest.getDate()).padStart(2, '0'));
+    // Busca a temporada completa da Copa de 2026 (League ID 4429)
+    const url = `https://www.thesportsdb.com/api/v1/json/3/eventsseason.php?id=4429&s=2026`;
+    const res = await fetch(url);
+    const data = await res.json();
 
-    let allEvents = [];
-    for (const dateStr of dates) {
-       const url = `https://www.thesportsdb.com/api/v1/json/1/eventsday.php?d=${dateStr}&s=Soccer`;
-       const res = await fetch(url);
-       const data = await res.json();
-       if (data.events) allEvents = allEvents.concat(data.events);
-    }
-
-    for (const e of allEvents) {
-      const isFinished = e.strStatus === 'FT' || e.strStatus === 'AET';
-      if (isFinished && e.intHomeScore !== null && e.intAwayScore !== null) {
-        const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
-        const apiHome = normalizeTeamName(e.strHomeTeam);
-        const apiAway = normalizeTeamName(e.strAwayTeam);
-
-        const jogoMatch = DADOS_BOLAO.jogos.find(j => {
-            const localMand = normalizeTeamName(j.mandante);
-            const localVis = normalizeTeamName(j.visitante);
-            const matchMand = localMand.includes(apiHome.slice(0,5)) || apiHome.includes(localMand.slice(0,5));
-            const matchVis = localVis.includes(apiAway.slice(0,5)) || apiAway.includes(localVis.slice(0,5));
-            return matchMand && matchVis;
-        });
-
-        if (jogoMatch) {
-          const { rows } = await pool.query('SELECT resultado FROM resultados WHERE jogo_num = $1', [jogoMatch.jogo]);
-          if (rows.length === 0 || rows[0].resultado !== placarExato) {
-             await pool.query(`
-                INSERT INTO resultados (jogo_num, resultado)
-                VALUES ($1, $2)
-                ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
-             `, [jogoMatch.jogo, placarExato]);
-             console.log(`✅ [CRON] Jogo #${jogoMatch.jogo} salvo no banco: ${placarExato}`);
-
-             io.emit('atualizacao_placar', { jogo: jogoMatch.jogo, placar: placarExato });
-          }
-        }
-      }
+    if (data.events) {
+      // Ordenação cronológica fundamental para o mapeamento do mata-mata (fallback)
+      cachedWorldCupEvents = data.events.sort((a, b) => {
+        const dateA = new Date(`${a.dateEvent}T${a.strTime || '00:00:00'}`);
+        const dateB = new Date(`${b.dateEvent}T${b.strTime || '00:00:00'}`);
+        return dateA - dateB;
+      });
+      lastCacheTime = now;
+      console.log(`✅ [CACHE] Calendário da Copa carregado com ${cachedWorldCupEvents.length} jogos.`);
     }
   } catch (err) {
-    console.error('❌ [CRON] Erro na automação de placares:', err.message);
+    console.error('❌ Erro ao buscar calendário da Copa:', err.message);
+  }
+  
+  return cachedWorldCupEvents;
+}
+
+// 2. Motor de Sincronização Duplo (Nome -> Cronologia)
+async function runSyncResultados() {
+  const events = await fetchWorldCupEvents();
+  const jogosAtualizados = [];
+
+  for (let i = 0; i < events.length; i++) {
+    const e = events[i];
+    const isFinished = ['FT', 'AET', 'PEN'].includes(e.strStatus);
+    
+    // Ignora jogos não finalizados ou sem placar
+    if (!isFinished || e.intHomeScore === null || e.intAwayScore === null) continue;
+
+    const placarExato = `${e.intHomeScore}-${e.intAwayScore}`;
+    const apiHome = normalizeTeamName(e.strHomeTeam);
+    const apiAway = normalizeTeamName(e.strAwayTeam);
+
+    let jogoBolaoNum = null;
+
+    // Estratégia 1: Match por Nome dos times (Resolve jogos 1 a 72 perfeitamente)
+    const jogoMatchNome = DADOS_BOLAO.jogos.find(j => {
+      const localMand = normalizeTeamName(j.mandante);
+      const localVis = normalizeTeamName(j.visitante);
+      const matchMand = localMand.includes(apiHome.slice(0, 5)) || apiHome.includes(localMand.slice(0, 5));
+      const matchVis = localVis.includes(apiAway.slice(0, 5)) || apiAway.includes(localVis.slice(0, 5));
+      return matchMand && matchVis;
+    });
+
+    if (jogoMatchNome) {
+      jogoBolaoNum = jogoMatchNome.jogo;
+    } else {
+      // Estratégia 2: Fallback Sequencial (Resolve jogos 73 a 104)
+      // O índice da API ordenada bate com o número do jogo (índice 72 = Jogo 73)
+      const expectedJogoNum = i + 1;
+      if (expectedJogoNum >= 73 && expectedJogoNum <= 104) {
+        jogoBolaoNum = expectedJogoNum;
+      }
+    }
+
+    // Se encontrou o mapeamento, salva/atualiza o resultado
+    if (jogoBolaoNum) {
+      const { rows } = await pool.query('SELECT resultado FROM resultados WHERE jogo_num = $1', [jogoBolaoNum]);
+      
+      if (rows.length === 0 || rows[0].resultado !== placarExato) {
+        await pool.query(`
+          INSERT INTO resultados (jogo_num, resultado)
+          VALUES ($1, $2)
+          ON CONFLICT (jogo_num) DO UPDATE SET resultado=$2, updated_at=NOW()
+        `, [jogoBolaoNum, placarExato]);
+        
+        io.emit('atualizacao_placar', { jogo: jogoBolaoNum, placar: placarExato });
+        jogosAtualizados.push({ jogo: jogoBolaoNum, placar: placarExato, metodo: jogoMatchNome ? 'nome' : 'cronologia' });
+      }
+    }
+  }
+  return jogosAtualizados;
+}
+
+// 3. Novas Rotas Administrativas
+
+// Sincronização manual
+app.post('/api/admin/sync-resultados', async (req, res) => {
+  const { senha } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senha !== ADMIN_SENHA) return res.status(401).json({ error: 'Não autorizado' });
+
+  try {
+    const atualizados = await runSyncResultados();
+    res.json({ ok: true, atualizados, mensagem: `${atualizados.length} jogos salvos/atualizados.` });
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao rodar sincronização manual', detalhe: err.message });
+  }
+});
+
+// Preview de cruzamento (Ótimo para debuggar o mata-mata)
+app.post('/api/admin/preview-matamata', async (req, res) => {
+  const { senha } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senha !== ADMIN_SENHA) return res.status(401).json({ error: 'Não autorizado' });
+
+  try {
+    const events = await fetchWorldCupEvents();
+    const preview = events.map((e, index) => {
+      const num = index + 1;
+      const apiHome = normalizeTeamName(e.strHomeTeam);
+      const apiAway = normalizeTeamName(e.strAwayTeam);
+
+      let metodo = num >= 73 ? 'Ordem Cronológica (Mata-mata)' : 'Sem Match';
+      
+      const matchNome = DADOS_BOLAO.jogos.find(j => {
+        const localMand = normalizeTeamName(j.mandante);
+        const localVis = normalizeTeamName(j.visitante);
+        return (localMand.includes(apiHome.slice(0, 5)) || apiHome.includes(localMand.slice(0, 5))) &&
+               (localVis.includes(apiAway.slice(0, 5)) || apiAway.includes(localVis.slice(0, 5)));
+      });
+
+      if (matchNome) metodo = `Nome (Match exato com Jogo ${matchNome.jogo})`;
+
+      return {
+        jogo_bolao: num,
+        data_hora: `${e.dateEvent} ${e.strTime || ''}`.trim(),
+        mandante_api: e.strHomeTeam,
+        visitante_api: e.strAwayTeam,
+        status: e.strStatus,
+        metodo_aplicado: metodo
+      };
+    });
+    res.json(preview);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro ao gerar preview', detalhe: err.message });
+  }
+});
+
+// 4. CRON atualizado para rodar :00 e :30
+cron.schedule('0,30 * * * *', async () => {
+  console.log('🔄 [CRON] Iniciando sincronização dupla de placares...');
+  try {
+    const atualizados = await runSyncResultados();
+    if (atualizados.length > 0) {
+      console.log(`✅ [CRON] Atualizou ${atualizados.length} jogos com sucesso.`);
+    } else {
+      console.log(`✅ [CRON] Nenhum novo resultado finalizado encontrado.`);
+    }
+  } catch (err) {
+    console.error('❌ [CRON] Erro na automação dupla:', err.message);
   }
 });
 
