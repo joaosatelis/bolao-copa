@@ -104,7 +104,7 @@
       
       <div class="filter-container">
         <select id="filtro-grupo-meus" class="res-input filter-select" onchange="renderMeusPalpites()">
-          <option value="todos">Todos os Grupos</option>
+          <option value="todos">Todas as Fases / Grupos</option>
         </select>
         <select id="filtro-status-meus" class="res-input filter-select" onchange="renderMeusPalpites()">
           <option value="todos">Todos os Status</option>
@@ -119,7 +119,7 @@
     <div id="tab-jogos" class="section">
       <div class="filter-container">
         <select id="filtro-grupo-galera" class="res-input filter-select" onchange="renderJogos()">
-          <option value="todos">Todos os Grupos</option>
+          <option value="todos">Todas as Fases / Grupos</option>
         </select>
         <select id="filtro-status-galera" class="res-input filter-select" onchange="renderJogos()">
           <option value="todos">Todos os Status</option>
@@ -200,6 +200,19 @@
         </div>
 
         <div class="import-box">
+          <h3>🔮 Visualizar Palpites do Mata-Mata</h3>
+          <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Verifique as apostas das Finais. Escolha visualizar lado a lado (todos) ou um por vez.</p>
+          <div style="display:flex; gap:8px; margin-bottom:12px">
+             <select id="admin-mm-view-type" class="res-input" style="width:auto; padding:6px; text-transform:none" onchange="renderAdminKnockoutGuesses()">
+               <option value="geral">Visão Geral (Todos)</option>
+               <option value="pessoa">Visão por Participante</option>
+             </select>
+             <select id="admin-mm-person" class="res-input" style="width:auto; padding:6px; text-transform:none; display:none" onchange="renderAdminKnockoutGuesses()"></select>
+          </div>
+          <div id="admin-mm-content" style="overflow-x:auto;"></div>
+        </div>
+
+        <div class="import-box">
           <h3>👥 Gerenciar Usuários</h3>
           <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Controle quem tem acesso, altere senhas esquecidas ou remova contas.</p>
           <button class="btn-primary" onclick="carregarUsuariosAdmin()" style="margin-bottom:12px">Listar Usuários</button>
@@ -221,7 +234,9 @@
 
             <div class="import-box" style="flex:1;min-width:300px">
               <h3>🔄 Atualizar Confrontos Reais</h3>
-              <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Cole os jogos definidos no formato: <code>73 Brasil x Espanha</code></p>
+              <p style="color:var(--text2);font-size:12px;margin-bottom:6px">O sistema preenche a seleção real de cada jogo assim que divulgado.</p>
+              <button class="btn-primary" style="width:100%; margin:4px 0 12px; background:var(--pitch-mid)" onclick="autoFetchMatchupsAdmin()">🪄 Buscar Confrontos na API (Auto-Completar)</button>
+              <p style="color:var(--text2);font-size:11px;margin-bottom:6px">Ou cole os jogos no formato: <code>73 Brasil x Espanha</code></p>
               <textarea class="import-textarea" id="admin-matchups" placeholder="73 Brasil x Espanha&#10;74 Argentina x França"></textarea>
               <button class="btn-primary" style="width:100%" onclick="salvarMatchups()">Atualizar nomes das seleções</button>
             </div>
