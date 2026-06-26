@@ -91,6 +91,10 @@ async function getCopaEvents() {
         headers: { 'x-apisports-key': API_FOOTBALL_KEY }
       });
       const data = await res.json();
+      // 👇 ADICIONA ISSO
+      console.log('📦 Resposta da API:', JSON.stringify(data).slice(0, 500));
+      console.log('🔑 API Key presente?', !!API_FOOTBALL_KEY);
+      console.log('📊 data.response length:', data.response?.length);
       
       let eventos = data.response || [];
       eventos.sort((a, b) => new Date(a.fixture.date) - new Date(b.fixture.date));
