@@ -375,10 +375,15 @@ app.post('/api/palpites-finais', async (req, res) => {
   try {
     const dKey = getFaseDeadlineKey(parseInt(jogo_num));
     if (dKey) {
-      const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
-      if (confRow.rows.length > 0 && confRow.rows[0].valor) {
-        if (new Date() > new Date(confRow.rows[0].valor)) return res.status(403).json({ error: 'O prazo encerrou.' });
-      }
+const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
+if (confRow.rows.length > 0 && confRow.rows[0].valor) {
+  // Horário atual em Brasília (UTC-3)
+  const agoraBrasilia = new Date(
+    new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })
+  );
+  const deadline = new Date(confRow.rows[0].valor);
+  if (agoraBrasilia > deadline) return res.status(403).json({ error: 'O prazo encerrou.' });
+}
     }
     await pool.query('INSERT INTO palpites_fase_final (participante, jogo_num, palpite) VALUES ($1, $2, $3) ON CONFLICT (participante, jogo_num) DO UPDATE SET palpite=$3, updated_at=NOW()', [participante, parseInt(jogo_num), palpite]);
     res.json({ ok: true });
