@@ -91,7 +91,6 @@ async function getCopaEvents() {
         headers: { 'x-apisports-key': API_FOOTBALL_KEY }
       });
       const data = await res.json();
-      // 👇 ADICIONA ISSO
       console.log('📦 Resposta da API:', JSON.stringify(data).slice(0, 500));
       console.log('🔑 API Key presente?', !!API_FOOTBALL_KEY);
       console.log('📊 data.response length:', data.response?.length);
@@ -339,11 +338,23 @@ app.post('/api/resultados/:num', async (req, res) => {
   } catch (error) { res.status(500).json({ error: 'Erro ao salvar' }); }
 });
 
+// NOVA ROTA DE EXCLUSÃO PROTEGIDA COM SENHA DE ADMIN
 app.delete('/api/resultados/:num', async (req, res) => {
+  const { senhaAdmin } = req.body;
+  const ADMIN_SENHA = process.env.ADMIN_SENHA || 'admin123';
+  if (senhaAdmin !== ADMIN_SENHA) {
+    return res.status(401).json({ error: 'Não autorizado' });
+  }
+  
   try {
-    await pool.query('DELETE FROM resultados WHERE jogo_num=$1', [parseInt(req.params.num)]);
+    const jogoNum = parseInt(req.params.num);
+    await pool.query('DELETE FROM resultados WHERE jogo_num=$1', [jogoNum]);
+    // Transmite aviso pelo socket de que o placar daquele jogo agora está vazio
+    io.emit('atualizacao_placar', { jogo: jogoNum, placar: '' });
     res.json({ ok: true });
-  } catch (error) { res.status(500).json({ error: 'Erro' }); }
+  } catch (error) { 
+    res.status(500).json({ error: 'Erro ao excluir placar' }); 
+  }
 });
 
 app.delete('/api/resultados', async (req, res) => {
@@ -375,15 +386,14 @@ app.post('/api/palpites-finais', async (req, res) => {
   try {
     const dKey = getFaseDeadlineKey(parseInt(jogo_num));
     if (dKey) {
-const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
-if (confRow.rows.length > 0 && confRow.rows[0].valor) {
-  // Horário atual em Brasília (UTC-3)
-  const agoraBrasilia = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })
-  );
-  const deadline = new Date(confRow.rows[0].valor);
-  if (agoraBrasilia > deadline) return res.status(403).json({ error: 'O prazo encerrou.' });
-}
+      const confRow = await pool.query('SELECT valor FROM configuracoes WHERE chave = $1', [dKey]);
+      if (confRow.rows.length > 0 && confRow.rows[0].valor) {
+        const agoraBrasilia = new Date(
+          new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' })
+        );
+        const deadline = new Date(confRow.rows[0].valor);
+        if (agoraBrasilia > deadline) return res.status(403).json({ error: 'O prazo encerrou.' });
+      }
     }
     await pool.query('INSERT INTO palpites_fase_final (participante, jogo_num, palpite) VALUES ($1, $2, $3) ON CONFLICT (participante, jogo_num) DO UPDATE SET palpite=$3, updated_at=NOW()', [participante, parseInt(jogo_num), palpite]);
     res.json({ ok: true });
