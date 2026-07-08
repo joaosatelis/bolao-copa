@@ -1,7 +1,7 @@
 const socket = io();
 
 socket.on('atualizacao_placar', (dados) => {
-    console.log(`Jogo ${dados.jogo} finalizado com placar de ${dados.placar}!`);
+    console.log(`Jogo ${dados.jogo} atualizado!`);
     syncLiveScoresBackground(true);
 });
 
@@ -53,7 +53,6 @@ async function init() {
     const resConfig = await fetch('/api/config');
     appConfig = await resConfig.json();
     
-    // Busca dados reais do mata-mata da API-Football
     try {
       const resMataMata = await fetch('/api/matamata-info');
       const infoMataMata = await resMataMata.json();
@@ -610,17 +609,28 @@ async function syncLiveScoresBackground(silent = true) {
     const resResults = await fetch('/api/resultados');
     const remoteResultados = await resResults.json();
     let updated = false;
+    
+    // Atualiza ou adiciona resultados remotos
     for (const j in remoteResultados) {
        if (resultados[j] !== remoteResultados[j]) {
            resultados[j] = remoteResultados[j];
            updated = true;
        }
     }
+    // Remove os que foram deletados pelo admin
+    for (const j in resultados) {
+       if (!(j in remoteResultados)) {
+           delete resultados[j];
+           updated = true;
+       }
+    }
+
     if (updated) {
       renderRanking();
       if (document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
       if (document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
       if (document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
+      if (document.getElementById('tab-admin').classList.contains('visible') && isAdmin()) renderAdminResultados();
     }
   } catch(e) {}
 }
@@ -656,7 +666,7 @@ async function checkAdminPass() {
     if(r.ok) { 
         adminAuthorized = true; sessionStorage.setItem('bolao_admin', '1'); sessionStorage.setItem('bolao_admin_senha', pass); 
         document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; 
-        carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses();
+        carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses(); renderAdminResultados();
     } else showToast('❌ Senha incorreta');
   } catch(e) {}
 }
@@ -794,8 +804,71 @@ async function bulkImport() {
     if(document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
     if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
     if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
+    renderAdminResultados();
     showToast(`✅ ${count} resultado(s) importado(s)!`); document.getElementById('bulk-input').value = '';
   } else { showToast('⚠️ Nenhum formato válido'); }
+}
+
+// NOVA FUNÇÃO: RENDERIZA OS RESULTADOS COM BOTÃO DE EXCLUIR
+function renderAdminResultados() {
+  const container = document.getElementById('admin-resultados-list');
+  if(!container) return;
+  let html = '';
+  const encerrados = Object.keys(resultados).sort((a,b) => parseInt(b) - parseInt(a));
+  
+  if(encerrados.length === 0) {
+      container.innerHTML = '<p style="color:var(--text3); font-size:12px;">Nenhum placar lançado.</p>';
+      return;
+  }
+  
+  encerrados.forEach(jNum => {
+      const jogo = BOLAO.jogos.find(j => j.jogo == jNum) || JOGOS_FASE_FINAL.find(j => j.jogo == jNum);
+      const mandante = jogo ? (getKnockoutTeam(jNum, 'mandante', jogo.mandante)) : 'Time 1';
+      const visitante = jogo ? (getKnockoutTeam(jNum, 'visitante', jogo.visitante)) : 'Time 2';
+      
+      html += `<div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:6px; font-size:13px;">
+          <span style="color:var(--text2)">Jogo #${jNum}: <b style="color:var(--text)">${mandante} ${resultados[jNum]} ${visitante}</b></span>
+          <button onclick="excluirPlacarUnico(${jNum})" style="background:transparent; border:1px solid var(--loss); color:var(--loss); padding:4px 8px; border-radius:4px; cursor:pointer; font-size:11px;">Excluir</button>
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// NOVA FUNÇÃO: EXCLUI O PLACAR COM SEGURANÇA E ATUALIZA A TELA
+async function excluirPlacarUnico(jogoNum) {
+  const senhaAdmin = document.getElementById('admin-pass-input').value || sessionStorage.getItem('bolao_admin_senha');
+  
+  if (!senhaAdmin) {
+    showToast('⚠️ Faça login no painel de admin primeiro.');
+    return;
+  }
+
+  if (!confirm(`Tem certeza que deseja excluir o placar do jogo ${jogoNum}?`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/resultados/${jogoNum}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ senhaAdmin })
+    });
+
+    if (res.ok) {
+      delete resultados[jogoNum]; // Apaga localmente
+      showToast(`✅ Placar do jogo ${jogoNum} removido!`);
+      renderAdminResultados();
+      renderRanking();
+      if(document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
+      if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
+      if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
+    } else {
+      const err = await res.json();
+      showToast('⚠️ Falha na exclusão: ' + (err.error || 'Verifique sua permissão'));
+    }
+  } catch (error) {
+    showToast('⚠️ Erro na requisição');
+  }
 }
 
 async function resetAll() {
@@ -805,6 +878,7 @@ async function resetAll() {
   if(document.getElementById('tab-jogos').classList.contains('visible')) renderJogos();
   if(document.getElementById('tab-meus-palpites').classList.contains('visible')) renderMeusPalpites();
   if(document.getElementById('tab-por-pessoa').classList.contains('visible')) renderPorPessoa();
+  renderAdminResultados();
   showToast('🗑️ Banco limpo');
 }
 
@@ -974,7 +1048,7 @@ function showTab(name) {
   }
   
   if (name === 'admin') { 
-    if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses(); }
+    if (adminAuthorized) { document.getElementById('admin-login').style.display = 'none'; document.getElementById('admin-panel').style.display = 'block'; carregarUsuariosAdmin(); renderTabelaAdmin(); renderAdminKnockoutGuesses(); renderAdminResultados(); }
     else { document.getElementById('admin-login').style.display = 'block'; document.getElementById('admin-panel').style.display = 'none'; } 
   }
 }
