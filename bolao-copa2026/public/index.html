@@ -259,6 +259,12 @@
         </div>
 
         <div class="import-box">
+          <h3>🗑️ Gerenciar Placares Lançados</h3>
+          <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Remova placares que foram inseridos incorretamente.</p>
+          <div id="admin-resultados-list" style="max-height: 200px; overflow-y: auto; display: grid; gap: 8px;"></div>
+        </div>
+
+        <div class="import-box">
           <h3>📊 Exportar Relatórios</h3>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
             <select id="export-type" class="res-input" style="flex:1;text-align:left;padding:8px;text-transform:none" onchange="document.getElementById('export-game-num').style.display = this.value === 'jogo' ? 'block' : 'none'">
